@@ -9,9 +9,10 @@ import org.json.simple.parser.ParseException;
 
 
 public class BuildUnit {
+	public static int SUCCESS = 0;
 	public static int NO_FILE = 1;
 	public static int NO_BIN = 2;
-	public static int NO_FUNCTION = 3;
+	public static int DISABLED = 3;
 
 	private BuildUnit parent;
 	private ArrayList<BuildUnit> childUnits = new ArrayList<BuildUnit>();
@@ -29,9 +30,13 @@ public class BuildUnit {
 	private String arOpts;
 	private String linkerOpts;
 
+	private String buildType;
+
 	private boolean compress = false;
 
 	private JSONArray dynamic;
+	private JSONArray dynamicConf;
+	private JSONObject config;
 	
 	public String toString()
 	{
@@ -53,6 +58,7 @@ public class BuildUnit {
 			s += "aflags:   " + getArOpts() + "\n";
 		if (getLinkerOpts() != null)
 			s += "ldflags:  " + getLinkerOpts() + "\n";
+		s += "buildtype:" + buildType + "\n";
 		s += "dynamic:  " + dynamic.toString() + "\n";
 		Iterator<BuildUnit> i = childUnits.iterator();
 		while (i.hasNext())
@@ -99,6 +105,13 @@ public class BuildUnit {
 			}
 		}
 
+		config = Config.getInstance().get(this.name);
+		if (config != null)
+		{
+			buildType   = (String)config.get("type");
+			dynamicConf = (JSONArray)config.get("dynamic");
+		}
+
 		JSONArray style = (JSONArray)o.get("type");
 		if (style != null)
 		{
@@ -107,7 +120,7 @@ public class BuildUnit {
 			while (j.hasNext())
 			{
 				JSONObject obj = j.next();
-				if (((String)obj.get("type")).equals("static"))
+				if (((String)obj.get("type")).equals(buildType))
 				{
 					compilerOpts = (String)obj.get("cflags");
 					linkerOpts   = (String)obj.get("ldflags");
@@ -115,6 +128,7 @@ public class BuildUnit {
 				}
 			}
 		}
+
 		System.out.println(this.toString());
 	}
 
@@ -155,10 +169,13 @@ public class BuildUnit {
 		return linkerOpts; 
 	}
 
-	public int compile() throws IOException
+	public int compile() throws IOException, DisabledException, InterruptedException, FailedException
 	{
 		if (getCompiler() == null)
 			return NO_BIN;
+
+		if (buildType.equals("disabled"))
+			throw new DisabledException(this.name);
 
 		Iterator<BuildUnit> ib = childUnits.iterator();
 		while(ib.hasNext())
@@ -169,29 +186,32 @@ public class BuildUnit {
 
 		Runtime r = Runtime.getRuntime();
 
+		@SuppressWarnings("unchecked")
 		Iterator<String> f = files.iterator();
 		String[] c = {getCompiler(), getCompilerOpts(), ""};
 		while (f.hasNext())
 		{
 			String file = f.next();
 			c[2] = file;
-			r.exec(c);
+			Process p = r.exec(c);
+			if (p.waitFor() != 0)
+				throw new FailedException(this.name);
 		}
 		
-		return NO_FUNCTION;
+		return SUCCESS;
 	}
 
 	public int compress()
 	{
 		if (getAr() == null)
 			return NO_BIN;
-		return NO_FUNCTION;
+		return SUCCESS;
 	}
 
 	public int link()
 	{
 		if (getLinker() == null)
 			return NO_BIN;
-		return NO_FUNCTION;
+		return SUCCESS;
 	}
 }

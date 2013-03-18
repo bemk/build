@@ -8,7 +8,7 @@
 	},{
 	"type"    : "module"
 	"cflags"  : "-I../include -nostdlib",
-	},{"type" : "not"}],
+	},{"type" : "disabled"}],
 "compiler":"cc",
 "linker"  :"ld",
 "ar"      :"ar",

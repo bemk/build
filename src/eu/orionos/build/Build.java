@@ -11,8 +11,9 @@ public class Build {
 	public Build(String path)
 	{
 		try {
-			this.units = new BuildUnit(path);
 			this.cfg = Config.getInstance(".config");
+			this.cfg.configure();
+			this.units = new BuildUnit(path);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

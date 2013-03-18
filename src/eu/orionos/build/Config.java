@@ -32,11 +32,13 @@ public class Config {
 
 	public void configure()
 	{
-
+		System.err.println("Configuration options should be set here!!!");
 	}
 
-	public String get(String key)
+	public JSONObject get(String key)
 	{
-		return (String)conf.get(key);
+		if (conf != null)
+			return (JSONObject)conf.get(key);
+		return null;
 	}
 }
