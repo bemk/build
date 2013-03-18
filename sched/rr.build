@@ -2,7 +2,13 @@
 "name"    :"roundrobin",
 "file"    :["rr.c"],
 "out"     :"rr.ar",
-"style"   :[{}],
+"type"    :[{
+	"type" : "static",
+	"cflags" : "",
+	"ldflags" : ""
+	},{
+	"type" : "disabled"
+	}],
 "depend"  :[],
 "dyn"     :[],
 "compress":true

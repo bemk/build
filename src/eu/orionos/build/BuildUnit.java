@@ -74,9 +74,11 @@ public class BuildUnit {
 	@SuppressWarnings("unchecked")
 	public BuildUnit(String pwd, BuildUnit parent) throws IOException, ParseException
 	{
+		/* Set some file info */
 		this.parent = parent;
 		this.pwd = pwd;
 
+		/* File point stuff */
 		File f = new File(pwd);
 		if (f.exists() == false)
 			throw new FileNotFoundException();
@@ -86,6 +88,7 @@ public class BuildUnit {
 		int len = this.pwd.lastIndexOf('/');
 		this.pwd = this.pwd.substring(0, len);
 
+		/* Parse info */
 		JSONParser p = new JSONParser();
 		JSONObject o = (JSONObject)p.parse(unit);
 
@@ -98,6 +101,7 @@ public class BuildUnit {
 		dynamic      = (JSONArray) o.get("dyn");
 		compress     = (Boolean)   o.get("compress");
 
+		/* Read config info */
 		config = Config.getInstance().get(this.name);
 		if (config != null)
 		{
@@ -105,6 +109,7 @@ public class BuildUnit {
 			dynamicConf = (JSONArray)config.get("dyn");
 		}
 		
+		/* Resolve static dependencies */
 		JSONArray deps = (JSONArray) o.get("depend");
 		@SuppressWarnings("unchecked")
 		Iterator<String> i = deps.iterator();
@@ -121,6 +126,7 @@ public class BuildUnit {
 			}
 		}
 
+		/* Resolve dynamic dependencies */
 		deps = (JSONArray) o.get("dyn");
 		i = deps.iterator();
 		while(i.hasNext() && dynamicConf != null)
@@ -144,19 +150,23 @@ public class BuildUnit {
 			}
 		}
 
-		JSONArray style = (JSONArray)o.get("type");
+		/* Resolve dynamic configuration */
+		JSONArray style = (JSONArray)o.get("type"); /* Read build file */
 		if (style != null)
 		{
 			@SuppressWarnings("unchecked")
-			Iterator<JSONObject>j = style.iterator();
-			while (j.hasNext())
+			Iterator<JSONObject>j = style.iterator(); /* Match the conf file */
+			if (j != null)
 			{
-				JSONObject obj = j.next();
-				if (((String)obj.get("type")).equals(buildType))
+				while (j.hasNext())
 				{
-					compilerOpts = (String)obj.get("cflags");
-					linkerOpts   = (String)obj.get("ldflags");
-					arOpts       = (String)obj.get("aflags");
+					JSONObject obj = j.next();
+					if (((String)obj.get("type")).equals(buildType))
+					{
+						compilerOpts = (String)obj.get("cflags");
+						linkerOpts   = (String)obj.get("ldflags");
+						arOpts       = (String)obj.get("aflags");
+					}
 				}
 			}
 		}

@@ -2,7 +2,15 @@
 "name"    :"sched",
 "file"    :["sched.c"],
 "out"     :"sched.ar",
-"style"   :[{}],
+"type"    :	[{
+		"type" : "static",
+		"cflags" : "-nostdlib -I../../include",
+		"ldflags" : "-nostdlib -I../../include"
+		},{
+		"type" : "module"
+		"cflags" : "-nostdlib -I../../include",
+		"ldflags" : "-nostdlib -I../../include"
+		}],
 "depend"  :[],
 "dyn"     :["rr", "rr.build", "cfs", "cfs.build", "O1", "O1.build"],
 "compress":true
