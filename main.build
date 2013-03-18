@@ -1,18 +1,16 @@
 {
 "name"    :"andromeda",
-"file"    :["atomic.c", "core.c", "buffer.c"],
-"out"     :"andromeda.ar"
+"file"    :[],
+"out"     :"andromeda.img"
 "type"    :[{
 	"type"    : "static",
 	"cflags"  : "-I../include -nostdlib",
-	},{
-	"type"    : "module"
-	"cflags"  : "-I../include -nostdlib",
-	},{"type" : "disabled"}],
+	"ldflags" : ""
+	}],
 "compiler":"cc",
 "linker"  :"ld",
 "ar"      :"ar",
 "depend"  :["sched/sched.build"],
 "dyn"     :[],
-"compress":true
+"compress":false
 }

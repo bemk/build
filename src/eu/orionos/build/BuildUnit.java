@@ -67,16 +67,24 @@ public class BuildUnit {
 		}
 		return s;
 	}
-	
 	public BuildUnit(String pwd) throws IOException, ParseException
 	{
+		this(pwd, null);
+	}
+	@SuppressWarnings("unchecked")
+	public BuildUnit(String pwd, BuildUnit parent) throws IOException, ParseException
+	{
+		this.parent = parent;
 		this.pwd = pwd;
-		File f = new File(pwd);
-		pwd = f.getAbsolutePath();
-		unit = new FileReader(new File(pwd));
 
-		if (unit == null)
+		File f = new File(pwd);
+		if (f.exists() == false)
 			throw new FileNotFoundException();
+		unit = new FileReader(f);
+		
+		this.pwd = f.getAbsolutePath();
+		int len = this.pwd.lastIndexOf('/');
+		this.pwd = this.pwd.substring(0, len);
 
 		JSONParser p = new JSONParser();
 		JSONObject o = (JSONObject)p.parse(unit);
@@ -90,14 +98,22 @@ public class BuildUnit {
 		dynamic      = (JSONArray) o.get("dyn");
 		compress     = (Boolean)   o.get("compress");
 
+		config = Config.getInstance().get(this.name);
+		if (config != null)
+		{
+			buildType   = (String)config.get("type");
+			dynamicConf = (JSONArray)config.get("dyn");
+		}
+		
 		JSONArray deps = (JSONArray) o.get("depend");
 		@SuppressWarnings("unchecked")
 		Iterator<String> i = deps.iterator();
 		while (i.hasNext())
 		{
 			String dep = i.next();
+			String depPath = this.pwd + "/" + dep;
 			try {
-				this.childUnits.add(new BuildUnit(dep));
+				this.childUnits.add(new BuildUnit(depPath, this));
 			} catch (Exception e)
 			{
 				e.printStackTrace();
@@ -105,11 +121,27 @@ public class BuildUnit {
 			}
 		}
 
-		config = Config.getInstance().get(this.name);
-		if (config != null)
+		deps = (JSONArray) o.get("dyn");
+		i = deps.iterator();
+		while(i.hasNext() && dynamicConf != null)
 		{
-			buildType   = (String)config.get("type");
-			dynamicConf = (JSONArray)config.get("dynamic");
+			String s = i.next();
+			Iterator<String> finder = dynamicConf.iterator();
+			if (finder == null)
+				break;
+			while(finder.hasNext())
+			{
+				if (s.equals(finder.next()))
+				{
+					String depPath = this.pwd + "/" + i.next();
+					this.childUnits.add(new BuildUnit(depPath, this));
+					break;
+				}
+				else
+				{
+					i.next();
+				}
+			}
 		}
 
 		JSONArray style = (JSONArray)o.get("type");
@@ -176,6 +208,8 @@ public class BuildUnit {
 
 		if (buildType.equals("disabled"))
 			throw new DisabledException(this.name);
+		
+		System.setProperty("user.dir", pwd);
 
 		Iterator<BuildUnit> ib = childUnits.iterator();
 		while(ib.hasNext())
@@ -197,6 +231,9 @@ public class BuildUnit {
 			if (p.waitFor() != 0)
 				throw new FailedException(this.name);
 		}
+		System.setProperty("user.dir", pwd);
+		
+		System.err.println("Do linking or compressing here!");
 		
 		return SUCCESS;
 	}

@@ -3,10 +3,7 @@
 "file"    :["sched.c"],
 "out"     :"sched.ar",
 "style"   :[{}],
-"compiler":"cc",
-"linker"  :"ld",
-"ar"      :"ar",
 "depend"  :[],
-"dyn"     :["rr", "rr.build", "cfs", "cfs.build", "O1", "O1.build"]
+"dyn"     :["rr", "rr.build", "cfs", "cfs.build", "O1", "O1.build"],
 "compress":true
 }

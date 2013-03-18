@@ -1,0 +1,9 @@
+{
+"name"    :"roundrobin",
+"file"    :["rr.c"],
+"out"     :"rr.ar",
+"style"   :[{}],
+"depend"  :[],
+"dyn"     :[],
+"compress":true
+}
