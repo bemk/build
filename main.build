@@ -1,7 +1,6 @@
 {
-"name"    :"andromeda",
-"ldfile"  :["sched.a"],
-"out"     :"test"
+"name"    :"build",
+"out"     :"test.bin"
 "type"    :[{
 	"type"     : "static",
 	"cflags"   : "",
@@ -11,6 +10,6 @@
 "compiler":"cc",
 "linker"  :"cc",
 "ar"      :"ar",
-"depend"  :["sched/sched.build"],
+"depend"  :["test/test.build"],
 "dyn"     :[],
 }

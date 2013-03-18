@@ -1,7 +1,7 @@
 {
-"name"    :"sched",
-"file"    :["sched.c"],
-"out"     :"sched.a",
+"name"    :"test3",
+"file"    :["test3.c"],
+"out"     :"test3.a",
 "type"    :	[{
 		"type" : "static",
 		"cflags" : "-c"
@@ -12,6 +12,5 @@
 		"compress" : true
 		}],
 "depend"  :[],
-"dyn"     :["rr", "rr.build", "cfs", "cfs.build", "O1", "O1.build"],
 "compress":true
 }

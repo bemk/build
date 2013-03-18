@@ -7,14 +7,15 @@ public class Build {
 	
 	private BuildUnit units;
 	private Config cfg;
-	
+
 	private static final int BUILD = 1;
 	private static final int CLEAN = 2;
-	
+
 	public Build(String path, int task)
 	{
 		try {
 			this.cfg = Config.getInstance(".config");
+				if (task == BUILD)
 			this.cfg.configure();
 			this.units = new BuildUnit(path);
 		} catch (IOException e) {
@@ -26,7 +27,7 @@ public class Build {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		if (task == BUILD)
 		{
 			try {

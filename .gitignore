@@ -3,4 +3,7 @@
 *.settings
 *.classpath
 *.o
+*.a
+build.jar
+test.bin
 bin/

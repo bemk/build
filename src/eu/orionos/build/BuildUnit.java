@@ -7,7 +7,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-
 public class BuildUnit {
 	public static final int SUCCESS = 0;
 	public static final int NO_FILE = 1;
@@ -17,7 +16,6 @@ public class BuildUnit {
 	private BuildUnit parent;
 	private ArrayList<BuildUnit> childUnits = new ArrayList<BuildUnit>();
 	private JSONArray files;
-	private JSONArray ldfiles;
 	private String pwd;
 	private String name;
 	private String out;
@@ -38,6 +36,25 @@ public class BuildUnit {
 	private JSONArray dynamic;
 	private JSONArray dynamicConf;
 	private JSONObject config;
+
+	private void writeStream(InputStream p, PrintStream out) throws IOException
+	{
+		BufferedReader in = new BufferedReader(new InputStreamReader(p));
+		String line;
+		while ((line = in.readLine()) != null)
+		{
+			out.println(line);
+		}
+	}
+
+	private void writeCmd(String cmd[])
+	{
+		for (String s : cmd)
+		{
+			System.out.print(s + "\t");
+		}
+		System.out.println("");
+	}
 
 	public String toString()
 	{
@@ -100,7 +117,6 @@ public class BuildUnit {
 		linker       = (String)    o.get("linker");
 		out          = (String)    o.get("out");
 		files        = (JSONArray) o.get("file");
-		ldfiles      = (JSONArray) o.get("ldfile");
 		dynamic      = (JSONArray) o.get("dyn");
 
 		/* Read config info */
@@ -113,7 +129,6 @@ public class BuildUnit {
 
 		/* Resolve static dependencies */
 		JSONArray deps = (JSONArray) o.get("depend");
-		@SuppressWarnings("unchecked")
 		Iterator<String> i = deps.iterator();
 		while (i.hasNext())
 		{
@@ -130,24 +145,25 @@ public class BuildUnit {
 
 		/* Resolve dynamic dependencies */
 		deps = (JSONArray) o.get("dyn");
-		i = deps.iterator();
-		while(i.hasNext() && dynamicConf != null)
+		if (deps != null)
 		{
-			String s = i.next();
-			Iterator<String> finder = dynamicConf.iterator();
-			if (finder == null)
-				break;
-			while(finder.hasNext())
+			Iterator<JSONObject> ii = deps.iterator();
+			while(ii.hasNext() && dynamicConf != null)
 			{
-				if (s.equals(finder.next()))
-				{
-					String depPath = this.pwd + "/" + i.next();
-					this.childUnits.add(new BuildUnit(depPath, this));
+				JSONObject obj = ii.next();
+				String s = (String) obj.get("id");
+				Iterator<String> finder = dynamicConf.iterator();
+				if (finder == null)
 					break;
-				}
-				else
+				while(finder.hasNext())
 				{
-					i.next();
+					if (s.equals(finder.next()))
+					{
+						String depPath = this.pwd + "/" + obj.get("dep");
+						this.childUnits.add(new BuildUnit(depPath, this));
+
+						break;
+					}
 				}
 			}
 		}
@@ -156,7 +172,6 @@ public class BuildUnit {
 		JSONArray style = (JSONArray)o.get("type"); /* Read build file */
 		if (style != null)
 		{
-			@SuppressWarnings("unchecked")
 			Iterator<JSONObject>j = style.iterator(); /* Match the conf file */
 			if (j != null)
 			{
@@ -216,6 +231,7 @@ public class BuildUnit {
 		return linkerOpts; 
 	}
 
+	@SuppressWarnings("unchecked")
 	public int compile() throws IOException, DisabledException, InterruptedException, FailedException
 	{
 		if (getCompiler() == null)
@@ -235,17 +251,19 @@ public class BuildUnit {
 
 		if (files != null)
 		{
-			@SuppressWarnings("unchecked")
 			Iterator<String> f = files.iterator();
-			String[] c = {getCompiler(), getCompilerOpts(), "-o", "", ""};
+			String[] c = {getCompiler(), getCompilerOpts(), "", "-o",  ""};
 			String[] a = {getAr(), getArOpts(), out, ""};
 			while (f.hasNext())
 			{
 				String file = f.next();
 				String ofile = this.pwd + "/" + file.substring(0, file.lastIndexOf('.')) + ".o";
-				c[c.length-2] = ofile;
-				c[c.length-1] = this.pwd + "/" + file;
+				c[c.length-1] = ofile;
+				c[c.length-3] = this.pwd + "/" + file;
 				Process p = r.exec(c);
+				writeCmd(c);
+				writeStream(p.getErrorStream(), System.err);
+				writeStream(p.getInputStream(), System.out);
 				if (p.waitFor() != 0)
 					throw new FailedException(ofile);
 
@@ -253,6 +271,9 @@ public class BuildUnit {
 				{
 					a[a.length-1] = ofile;
 					p = r.exec(a);
+					writeCmd(a);
+					writeStream(p.getErrorStream(), System.err);
+					writeStream(p.getInputStream(), System.out);
 					if (p.waitFor() != 0)
 						throw new FailedException(ofile);
 				}
@@ -264,40 +285,72 @@ public class BuildUnit {
 		return SUCCESS;
 	}
 
+	public ArrayList<String> getOfiles()
+	{
+		Iterator<BuildUnit> b = childUnits.iterator();
+		ArrayList<String> tmp = new ArrayList<String>();
+		tmp.add(out);
+		while (b.hasNext())
+		{
+			BuildUnit bu = b.next();
+			tmp.addAll(bu.getOfiles());
+		}
+		return tmp;
+	}
+
 	public int link() throws FailedException, IOException, InterruptedException
 	{
 		if (getLinker() == null || getLinkerOpts() == null)
 			return NO_BIN;
 
+		/* Formulate command */
 		ArrayList<String> cmdDyn = new ArrayList<String>();
 		cmdDyn.add(getLinker());
 		if (getLinkerOpts() != null && !getLinkerOpts().equals(""))
 		{
 			cmdDyn.add(getLinkerOpts());
 		}
+
+		Iterator<BuildUnit> chIterator = childUnits.iterator();
+		while (chIterator.hasNext())
+		{
+			ArrayList<String> of = chIterator.next().getOfiles();
+			if (of != null)
+			{
+				Iterator<String> i = of.iterator();
+				while (i.hasNext())
+				{
+					cmdDyn.add(i.next());
+				}
+			}
+		}
+
 		cmdDyn.add("-o");
 		cmdDyn.add(out);
 
-		@SuppressWarnings("unchecked")
-		Iterator<String> i = ldfiles.iterator();
-		while (i.hasNext())
-			cmdDyn.add(i.next());
-
+		/* Make a static array out of that command */
 		String[] cmd = new String[cmdDyn.size()];
 		Iterator<String> I = cmdDyn.iterator();
 		int idx = 0;
+
 		while (I.hasNext())
 		{
 			cmd[idx] = (String) I.next();
+			System.out.print(cmd[idx] + "\t");
 			idx++;
 		}
+		System.out.println("");
 		Process p = Runtime.getRuntime().exec(cmd);
+
+		writeStream(p.getErrorStream(), System.err);
+		writeStream(p.getInputStream(), System.out);
 		if (p.waitFor() != 0)
 			throw new FailedException(out);
 
 		return SUCCESS;
 	}
 
+	@SuppressWarnings("unchecked")
 	public int clean()
 	{
 		Iterator<BuildUnit> i = childUnits.iterator();
