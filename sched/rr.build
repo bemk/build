@@ -4,8 +4,7 @@
 "out"     :"rr.ar",
 "type"    :[{
 	"type" : "static",
-	"cflags" : "",
-	"ldflags" : ""
+	"compress" : true
 	},{
 	"type" : "disabled"
 	}],

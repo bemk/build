@@ -4,12 +4,11 @@
 "out"     :"sched.ar",
 "type"    :	[{
 		"type" : "static",
-		"cflags" : "-nostdlib -I../../include",
-		"ldflags" : "-nostdlib -I../../include"
+		"cflags" : "-c"
+		"compress" : true
 		},{
 		"type" : "module"
-		"cflags" : "-nostdlib -I../../include",
-		"ldflags" : "-nostdlib -I../../include"
+		"compress" : true
 		}],
 "depend"  :[],
 "dyn"     :["rr", "rr.build", "cfs", "cfs.build", "O1", "O1.build"],

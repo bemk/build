@@ -99,7 +99,6 @@ public class BuildUnit {
 		out          = (String)    o.get("out");
 		files        = (JSONArray) o.get("file");
 		dynamic      = (JSONArray) o.get("dyn");
-		compress     = (Boolean)   o.get("compress");
 
 		/* Read config info */
 		config = Config.getInstance().get(this.name);
@@ -163,9 +162,13 @@ public class BuildUnit {
 					JSONObject obj = j.next();
 					if (((String)obj.get("type")).equals(buildType))
 					{
-						compilerOpts = (String)obj.get("cflags");
-						linkerOpts   = (String)obj.get("ldflags");
-						arOpts       = (String)obj.get("aflags");
+						if (!obj.get("type").equals("disabled"))
+						{
+							compilerOpts = (String)obj.get("cflags");
+							linkerOpts   = (String)obj.get("ldflags");
+							arOpts       = (String)obj.get("aflags");
+							compress     = (boolean)obj.get("compress");
+						}
 					}
 				}
 			}
@@ -218,8 +221,6 @@ public class BuildUnit {
 
 		if (buildType.equals("disabled"))
 			throw new DisabledException(this.name);
-		
-		System.setProperty("user.dir", pwd);
 
 		Iterator<BuildUnit> ib = childUnits.iterator();
 		while(ib.hasNext())
@@ -232,19 +233,25 @@ public class BuildUnit {
 
 		@SuppressWarnings("unchecked")
 		Iterator<String> f = files.iterator();
-		String[] c = {getCompiler(), getCompilerOpts(), ""};
+		String[] c = {getCompiler(), getCompilerOpts(), "-o", "", ""};
 		while (f.hasNext())
 		{
 			String file = f.next();
-			c[2] = file;
+			String ofile = this.pwd + "/" + file.substring(0, file.lastIndexOf('.')) + ".o";
+			c[c.length-2] = ofile;
+			c[c.length-1] = this.pwd + "/" + file;
 			Process p = r.exec(c);
 			if (p.waitFor() != 0)
 				throw new FailedException(this.name);
 		}
-		System.setProperty("user.dir", pwd);
 		
 		System.err.println("Do linking or compressing here!");
 		
+		return SUCCESS;
+	}
+
+	public int clean()
+	{
 		return SUCCESS;
 	}
 

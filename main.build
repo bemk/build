@@ -3,14 +3,14 @@
 "file"    :[],
 "out"     :"andromeda.img"
 "type"    :[{
-	"type"    : "static",
-	"cflags"  : "-I../include -nostdlib",
-	"ldflags" : ""
+	"type"     : "static",
+	"cflags"   : "-I../include -nostdlib",
+	"ldflags"  : ""
+	"compress" : false
 	}],
 "compiler":"cc",
 "linker"  :"ld",
 "ar"      :"ar",
 "depend"  :["sched/sched.build"],
 "dyn"     :[],
-"compress":false
 }
