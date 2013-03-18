@@ -4,7 +4,7 @@
 "out"     :"andromeda.img"
 "type"    :[{
 	"type"     : "static",
-	"cflags"   : "-I../include -nostdlib",
+	"cflags"   : "",
 	"ldflags"  : ""
 	"compress" : false
 	}],

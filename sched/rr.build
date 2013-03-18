@@ -1,7 +1,7 @@
 {
 "name"    :"roundrobin",
 "file"    :["rr.c"],
-"out"     :"rr.ar",
+"out"     :"rr.a",
 "type"    :[{
 	"type" : "static",
 	"compress" : true

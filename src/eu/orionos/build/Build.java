@@ -8,7 +8,10 @@ public class Build {
 	private BuildUnit units;
 	private Config cfg;
 	
-	public Build(String path)
+	private static final int BUILD = 1;
+	private static final int CLEAN = 2;
+	
+	public Build(String path, int task)
 	{
 		try {
 			this.cfg = Config.getInstance(".config");
@@ -24,25 +27,41 @@ public class Build {
 			System.exit(1);
 		}
 		
-		try {
-			units.compile();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DisabledException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FailedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (task == BUILD)
+		{
+			try {
+				units.compile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (DisabledException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (FailedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else
+		{
+			units.clean();
 		}
 	}
 	
 	public static void main(String args[])
 	{
-		new Build("main.build");
+		if (args.length > 0)
+		{
+			if (args[0].equals("clean"))
+			{
+				new Build("main.build", CLEAN);
+				System.exit(0);
+			}
+		}
+		new Build("main.build", BUILD);
+		System.err.println("args: " + args.length);
 	}
 }

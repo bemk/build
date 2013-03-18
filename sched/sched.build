@@ -1,10 +1,11 @@
 {
 "name"    :"sched",
 "file"    :["sched.c"],
-"out"     :"sched.ar",
+"out"     :"sched.a",
 "type"    :	[{
 		"type" : "static",
 		"cflags" : "-c"
+		"aflags" : "rs"
 		"compress" : true
 		},{
 		"type" : "module"

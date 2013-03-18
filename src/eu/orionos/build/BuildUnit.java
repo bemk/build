@@ -9,10 +9,10 @@ import org.json.simple.parser.ParseException;
 
 
 public class BuildUnit {
-	public static int SUCCESS = 0;
-	public static int NO_FILE = 1;
-	public static int NO_BIN = 2;
-	public static int DISABLED = 3;
+	public static final int SUCCESS = 0;
+	public static final int NO_FILE = 1;
+	public static final int NO_BIN = 2;
+	public static final int DISABLED = 3;
 
 	private BuildUnit parent;
 	private ArrayList<BuildUnit> childUnits = new ArrayList<BuildUnit>();
@@ -234,6 +234,7 @@ public class BuildUnit {
 		@SuppressWarnings("unchecked")
 		Iterator<String> f = files.iterator();
 		String[] c = {getCompiler(), getCompilerOpts(), "-o", "", ""};
+		String[] a = {getAr(), getArOpts(), out, ""};
 		while (f.hasNext())
 		{
 			String file = f.next();
@@ -242,7 +243,15 @@ public class BuildUnit {
 			c[c.length-1] = this.pwd + "/" + file;
 			Process p = r.exec(c);
 			if (p.waitFor() != 0)
-				throw new FailedException(this.name);
+				throw new FailedException(ofile);
+			
+			if (compress)
+			{
+				a[a.length-1] = ofile;
+				p = r.exec(a);
+				if (p.waitFor() != 0)
+					throw new FailedException(ofile);
+			}
 		}
 		
 		System.err.println("Do linking or compressing here!");
@@ -252,20 +261,31 @@ public class BuildUnit {
 
 	public int clean()
 	{
-		return SUCCESS;
-	}
-
-	public int compress()
-	{
-		if (getAr() == null)
-			return NO_BIN;
-		return SUCCESS;
-	}
-
-	public int link()
-	{
-		if (getLinker() == null)
-			return NO_BIN;
+		Iterator<BuildUnit> i = childUnits.iterator();
+		while (i.hasNext())
+		{
+			i.next().clean();
+		}
+		Runtime r = Runtime.getRuntime();
+		Iterator<String> j = files.iterator();
+		while (j.hasNext())
+		{
+			String file = j.next();
+			String ofile = this.pwd + "/" + file.substring(0, file.lastIndexOf('.')) + ".o";
+			String cmd[] = {"rm", "-fv", ofile};
+			try {
+				r.exec(cmd);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		String c[] = {"rm", "-fv", out};
+		try {
+			r.exec(c);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return SUCCESS;
 	}
 }
