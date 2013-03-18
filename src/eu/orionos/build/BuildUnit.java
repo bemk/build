@@ -29,9 +29,8 @@ public class BuildUnit {
 	private String arOpts;
 	private String linkerOpts;
 
-	private boolean compress;
-	private boolean link;
-	
+	private boolean compress = false;
+
 	private JSONArray dynamic;
 	
 	public String toString()
@@ -41,6 +40,7 @@ public class BuildUnit {
 		s += "pwd:      " + pwd + "\n";
 		s += "out:      " + out + "\n";
 		s += "files:    " + files.toString() + "\n";
+		s += "compress: " + compress + "\n";
 		if (getCompiler() != null)
 			s += "compiler: " + getCompiler() + "\n";
 		if (getAr() != null)
@@ -82,6 +82,7 @@ public class BuildUnit {
 		out          = (String)    o.get("out");
 		files        = (JSONArray) o.get("file");
 		dynamic      = (JSONArray) o.get("dyn");
+		compress     = (Boolean)   o.get("compress");
 
 		JSONArray deps = (JSONArray) o.get("depend");
 		@SuppressWarnings("unchecked")

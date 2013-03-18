@@ -13,5 +13,6 @@
 "linker"  :"ld",
 "ar"      :"ar",
 "depend"  :["sched/sched.build"],
-"dyn"     :[]
+"dyn"     :[],
+"compress":true
 }
