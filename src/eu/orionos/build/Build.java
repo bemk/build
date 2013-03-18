@@ -37,12 +37,14 @@ public class Build {
 			} catch (DisabledException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				System.err.println("Compilation failed on module: " + e.getMsg());
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (FailedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				System.err.println("Compilation failed on module: " + e.getMsg());
 			}
 		}
 		else
@@ -62,6 +64,5 @@ public class Build {
 			}
 		}
 		new Build("main.build", BUILD);
-		System.err.println("args: " + args.length);
 	}
 }

@@ -1,15 +1,15 @@
 {
 "name"    :"andromeda",
-"file"    :[],
-"out"     :"andromeda.img"
+"ldfile"  :["sched.a"],
+"out"     :"test"
 "type"    :[{
 	"type"     : "static",
 	"cflags"   : "",
-	"ldflags"  : ""
+	"ldflags"  : "",
 	"compress" : false
 	}],
 "compiler":"cc",
-"linker"  :"ld",
+"linker"  :"cc",
 "ar"      :"ar",
 "depend"  :["sched/sched.build"],
 "dyn"     :[],

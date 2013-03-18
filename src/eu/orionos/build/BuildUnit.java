@@ -17,11 +17,12 @@ public class BuildUnit {
 	private BuildUnit parent;
 	private ArrayList<BuildUnit> childUnits = new ArrayList<BuildUnit>();
 	private JSONArray files;
+	private JSONArray ldfiles;
 	private String pwd;
 	private String name;
 	private String out;
 	private FileReader unit;
-	
+
 	private String compiler;
 	private String ar;
 	private String linker;
@@ -37,14 +38,15 @@ public class BuildUnit {
 	private JSONArray dynamic;
 	private JSONArray dynamicConf;
 	private JSONObject config;
-	
+
 	public String toString()
 	{
 		String s = "";
 		s += "name:     " + name + "\n";
 		s += "pwd:      " + pwd + "\n";
 		s += "out:      " + out + "\n";
-		s += "files:    " + files.toString() + "\n";
+		if (files != null)
+			s += "files:    " + files.toString() + "\n";
 		s += "compress: " + compress + "\n";
 		if (getCompiler() != null)
 			s += "compiler: " + getCompiler() + "\n";
@@ -83,7 +85,7 @@ public class BuildUnit {
 		if (f.exists() == false)
 			throw new FileNotFoundException();
 		unit = new FileReader(f);
-		
+
 		this.pwd = f.getAbsolutePath();
 		int len = this.pwd.lastIndexOf('/');
 		this.pwd = this.pwd.substring(0, len);
@@ -98,6 +100,7 @@ public class BuildUnit {
 		linker       = (String)    o.get("linker");
 		out          = (String)    o.get("out");
 		files        = (JSONArray) o.get("file");
+		ldfiles      = (JSONArray) o.get("ldfile");
 		dynamic      = (JSONArray) o.get("dyn");
 
 		/* Read config info */
@@ -107,7 +110,7 @@ public class BuildUnit {
 			buildType   = (String)config.get("type");
 			dynamicConf = (JSONArray)config.get("dyn");
 		}
-		
+
 		/* Resolve static dependencies */
 		JSONArray deps = (JSONArray) o.get("depend");
 		@SuppressWarnings("unchecked")
@@ -174,7 +177,6 @@ public class BuildUnit {
 			}
 		}
 
-		System.out.println(this.toString());
 	}
 
 	public String getCompiler()
@@ -231,31 +233,68 @@ public class BuildUnit {
 
 		Runtime r = Runtime.getRuntime();
 
-		@SuppressWarnings("unchecked")
-		Iterator<String> f = files.iterator();
-		String[] c = {getCompiler(), getCompilerOpts(), "-o", "", ""};
-		String[] a = {getAr(), getArOpts(), out, ""};
-		while (f.hasNext())
+		if (files != null)
 		{
-			String file = f.next();
-			String ofile = this.pwd + "/" + file.substring(0, file.lastIndexOf('.')) + ".o";
-			c[c.length-2] = ofile;
-			c[c.length-1] = this.pwd + "/" + file;
-			Process p = r.exec(c);
-			if (p.waitFor() != 0)
-				throw new FailedException(ofile);
-			
-			if (compress)
+			@SuppressWarnings("unchecked")
+			Iterator<String> f = files.iterator();
+			String[] c = {getCompiler(), getCompilerOpts(), "-o", "", ""};
+			String[] a = {getAr(), getArOpts(), out, ""};
+			while (f.hasNext())
 			{
-				a[a.length-1] = ofile;
-				p = r.exec(a);
+				String file = f.next();
+				String ofile = this.pwd + "/" + file.substring(0, file.lastIndexOf('.')) + ".o";
+				c[c.length-2] = ofile;
+				c[c.length-1] = this.pwd + "/" + file;
+				Process p = r.exec(c);
 				if (p.waitFor() != 0)
 					throw new FailedException(ofile);
+
+				if (compress)
+				{
+					a[a.length-1] = ofile;
+					p = r.exec(a);
+					if (p.waitFor() != 0)
+						throw new FailedException(ofile);
+				}
 			}
 		}
-		
-		System.err.println("Do linking or compressing here!");
-		
+		if (!compress)
+			return link();
+
+		return SUCCESS;
+	}
+
+	public int link() throws FailedException, IOException, InterruptedException
+	{
+		if (getLinker() == null || getLinkerOpts() == null)
+			return NO_BIN;
+
+		ArrayList<String> cmdDyn = new ArrayList<String>();
+		cmdDyn.add(getLinker());
+		if (getLinkerOpts() != null && !getLinkerOpts().equals(""))
+		{
+			cmdDyn.add(getLinkerOpts());
+		}
+		cmdDyn.add("-o");
+		cmdDyn.add(out);
+
+		@SuppressWarnings("unchecked")
+		Iterator<String> i = ldfiles.iterator();
+		while (i.hasNext())
+			cmdDyn.add(i.next());
+
+		String[] cmd = new String[cmdDyn.size()];
+		Iterator<String> I = cmdDyn.iterator();
+		int idx = 0;
+		while (I.hasNext())
+		{
+			cmd[idx] = (String) I.next();
+			idx++;
+		}
+		Process p = Runtime.getRuntime().exec(cmd);
+		if (p.waitFor() != 0)
+			throw new FailedException(out);
+
 		return SUCCESS;
 	}
 
@@ -267,16 +306,19 @@ public class BuildUnit {
 			i.next().clean();
 		}
 		Runtime r = Runtime.getRuntime();
-		Iterator<String> j = files.iterator();
-		while (j.hasNext())
+		if (files != null)
 		{
-			String file = j.next();
-			String ofile = this.pwd + "/" + file.substring(0, file.lastIndexOf('.')) + ".o";
-			String cmd[] = {"rm", "-fv", ofile};
-			try {
-				r.exec(cmd);
-			} catch (IOException e) {
-				e.printStackTrace();
+			Iterator<String> j = files.iterator();
+			while (j.hasNext())
+			{
+				String file = j.next();
+				String ofile = this.pwd + "/" + file.substring(0, file.lastIndexOf('.')) + ".o";
+				String cmd[] = {"rm", "-fv", ofile};
+				try {
+					r.exec(cmd);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		String c[] = {"rm", "-fv", out};
