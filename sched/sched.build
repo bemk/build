@@ -1,0 +1,14 @@
+{
+"name"    :"sched",
+"file"    :["sched.c"],
+"out"     :"sched.ar",
+"style"   :[{}],
+"compiler":"cc",
+"cflags"  :"-I../../include -nostdlib"
+"linker"  :"ld",
+"ldflags" :"",
+"ar"      :"ar",
+"aflags"  :"",
+"depend"  :[],
+"dyn"     :["rr", "rr.build", "cfs", "cfs.build", "O1", "O1.build"]
+}

@@ -1,0 +1,17 @@
+{
+"name"    :"andromeda",
+"file"    :["atomic.c", "core.c", "buffer.c"],
+"out"     :"andromeda.ar"
+"type"    :[{
+	"type"    : "static",
+	"cflags"  : "-I../include -nostdlib",
+	},{
+	"type"    : "module"
+	"cflags"  : "-I../include -nostdlib",
+	},{"type" : "not"}],
+"compiler":"cc",
+"linker"  :"ld",
+"ar"      :"ar",
+"depend"  :["sched/sched.build"],
+"dyn"     :[]
+}
