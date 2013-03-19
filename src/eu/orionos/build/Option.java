@@ -24,6 +24,7 @@ public abstract class Option {
 	private char  shortForm;
 	private String longForm;
 	private boolean operands;
+	protected String operand;
 
 	public Option(char c, String s, boolean operands)
 	{
@@ -37,6 +38,11 @@ public abstract class Option {
 	public boolean operands()
 	{
 		return this.operands;
+	}
+
+	public void operand(String operand)
+	{
+		this.operand = operand;
 	}
 
 	public char getShort()

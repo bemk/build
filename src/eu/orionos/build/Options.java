@@ -48,6 +48,8 @@ public class Options {
 				String s = "-" + op.getShort();
 				if (args[i].equals(l) || args[i].equals(s))
 				{
+					if (op.operands())
+						op.operand(args[++i]);
 					op.option();
 					break;
 				}
