@@ -1,3 +1,23 @@
+/*  Build - Hopefully a simple build system
+    Copyright (C) 2013 - Bart Kuivenhoven
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
+
+    A version of the licence can also be found at http://gnu.org/licences/
+*/
+
 package eu.orionos.build;
 import java.io.*;
 import java.util.*;
@@ -51,7 +71,7 @@ public class BuildUnit {
 	{
 		for (String s : cmd)
 		{
-			System.out.print(s + "\t");
+			System.out.print(s + " ");
 		}
 		System.out.println("");
 	}
@@ -240,6 +260,7 @@ public class BuildUnit {
 		if (buildType.equals("disabled"))
 			throw new DisabledException(this.name);
 
+		/* Compile all dependencies */
 		Iterator<BuildUnit> ib = childUnits.iterator();
 		while(ib.hasNext())
 		{
@@ -249,6 +270,7 @@ public class BuildUnit {
 
 		Runtime r = Runtime.getRuntime();
 
+		/* And iterate through our own files */
 		if (files != null)
 		{
 			Iterator<String> f = files.iterator();
@@ -261,9 +283,15 @@ public class BuildUnit {
 				c[c.length-1] = ofile;
 				c[c.length-3] = this.pwd + "/" + file;
 				Process p = r.exec(c);
-				writeCmd(c);
-				writeStream(p.getErrorStream(), System.err);
-				writeStream(p.getInputStream(), System.out);
+				if (!Config.getInstance().silent())
+				{
+					if (Config.getInstance().verbose())
+					{
+						writeCmd(c);
+						writeStream(p.getErrorStream(), System.err);
+						writeStream(p.getInputStream(), System.out);
+					}
+				}
 				if (p.waitFor() != 0)
 					throw new FailedException(ofile);
 
@@ -271,12 +299,20 @@ public class BuildUnit {
 				{
 					a[a.length-1] = ofile;
 					p = r.exec(a);
-					writeCmd(a);
-					writeStream(p.getErrorStream(), System.err);
-					writeStream(p.getInputStream(), System.out);
+					if (!Config.getInstance().silent())
+					{
+						if (Config.getInstance().verbose())
+						{
+							writeCmd(a);
+							writeStream(p.getErrorStream(), System.err);
+							writeStream(p.getInputStream(), System.out);
+						}
+					}
 					if (p.waitFor() != 0)
 						throw new FailedException(ofile);
 				}
+				if (!Config.getInstance().silent())
+					System.out.println("[ OK ] " + ofile);
 			}
 		}
 		if (!compress)
@@ -336,16 +372,24 @@ public class BuildUnit {
 		while (I.hasNext())
 		{
 			cmd[idx] = (String) I.next();
-			System.out.print(cmd[idx] + "\t");
 			idx++;
 		}
 		System.out.println("");
 		Process p = Runtime.getRuntime().exec(cmd);
-
-		writeStream(p.getErrorStream(), System.err);
-		writeStream(p.getInputStream(), System.out);
+		if (!Config.getInstance().silent())
+		{
+			if (Config.getInstance().verbose())
+			{
+				writeCmd(cmd);
+				writeStream(p.getErrorStream(), System.err);
+				writeStream(p.getInputStream(), System.out);
+			}
+		}
 		if (p.waitFor() != 0)
 			throw new FailedException(out);
+		
+		if (!Config.getInstance().silent())
+			System.out.println("[ OK ] LD: " + out);
 
 		return SUCCESS;
 	}

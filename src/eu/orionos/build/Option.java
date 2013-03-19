@@ -13,15 +13,30 @@
 
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to the Free Software Foundation, Inc.,
-    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
 
-#include "test.h"
-#include <stdio.h>
+package eu.orionos.build;
 
-void printTest()
-{
-	printf("Hello sun!\n");
+public abstract class Option {
+	private char  shortForm;
+	private String longForm;
+
+	public Option(char c, String s)
+	{
+		
+	}
+
+	public abstract void option();
+
+	public char getShort()
+	{
+		return shortForm;
+	}
+	public String getLong()
+	{
+		return longForm;
+	}
 }

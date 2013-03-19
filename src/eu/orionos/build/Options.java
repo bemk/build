@@ -13,15 +13,36 @@
 
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to the Free Software Foundation, Inc.,
-    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
 
-#include "test.h"
-#include <stdio.h>
+package eu.orionos.build;
 
-void printTest()
-{
-	printf("Hello sun!\n");
+import java.util.ArrayList;
+import java.util.Iterator;
+
+public class Options {
+
+	private ArrayList<Option> options = new ArrayList<Option>();
+
+	public Options(String args[])
+	{
+		int i = 0;
+		if (args.length == 0)
+			return;
+		
+		for (; i < args.length; i++)
+		{
+			Iterator<Option> o = options.iterator();
+			while (o.hasNext())
+			{
+				Option op = o.next();
+				char c[] = {op.getShort()};
+				if (args[i].equals(op.getLong()) || args[i].equals(new String(c)))
+					op.option();
+			}
+		}
+	}
 }

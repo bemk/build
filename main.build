@@ -7,8 +7,8 @@
 	"ldflags"  : "",
 	"compress" : false
 	}],
-"compiler":"cc",
-"linker"  :"cc",
+"compiler":"clang",
+"linker"  :"clang",
 "ar"      :"ar",
 "depend"  :["test/test.build"],
 "dyn"     :[],
