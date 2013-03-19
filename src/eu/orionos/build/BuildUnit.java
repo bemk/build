@@ -27,6 +27,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import eu.orionos.build.exception.DisabledException;
+import eu.orionos.build.exception.FailedException;
+
 public class BuildUnit {
 	public static final int SUCCESS = 0;
 	public static final int NO_FILE = 1;

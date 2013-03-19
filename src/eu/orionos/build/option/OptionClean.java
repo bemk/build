@@ -18,24 +18,20 @@
     A version of the licence can also be found at http://gnu.org/licences/
 */
 
-package eu.orionos.build;
+package eu.orionos.build.option;
 
-public class DisabledException extends Exception {
+import eu.orionos.build.Config;
 
-	private String msg;
+public class OptionClean extends Option {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-
-	public DisabledException(String msg) {
-		this.msg = msg;
+	public OptionClean() {
+		super('c', "clean", false);
 	}
 
-	public String getMsg()
-	{
-		return this.msg;
+	@Override
+	public void option() {
+		Config.getInstance().units().clean();
+		System.exit(0);
 	}
 
 }

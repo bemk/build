@@ -18,39 +18,19 @@
     A version of the licence can also be found at http://gnu.org/licences/
 */
 
-package eu.orionos.build;
+package eu.orionos.build.option;
 
-public abstract class Option {
-	private char  shortForm;
-	private String longForm;
-	private boolean operands;
-	protected String operand;
+import eu.orionos.build.Config;
 
-	public Option(char c, String s, boolean operands)
-	{
-		this.shortForm = c;
-		this.longForm = s;
-		this.operands = operands;
+public class OptionSilent extends Option {
+
+	public OptionSilent() {
+		super('s', "silent", false);
 	}
 
-	public abstract void option();
-
-	public boolean operands()
-	{
-		return this.operands;
+	@Override
+	public void option() {
+		Config.getInstance().silent(true);
 	}
 
-	public void operand(String operand)
-	{
-		this.operand = operand;
-	}
-
-	public char getShort()
-	{
-		return shortForm;
-	}
-	public String getLong()
-	{
-		return longForm;
-	}
 }

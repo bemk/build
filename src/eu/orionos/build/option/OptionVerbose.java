@@ -18,42 +18,18 @@
     A version of the licence can also be found at http://gnu.org/licences/
 */
 
-package eu.orionos.build;
+package eu.orionos.build.option;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import eu.orionos.build.Config;
 
-public class Options {
+public class OptionVerbose extends Option {
 
-	private ArrayList<Option> options = new ArrayList<Option>();
+	public OptionVerbose() {
+		super('v', "verbose", false);
+	}
 
-	public Options(String args[])
-	{
-		int i = 0;
-		if (args.length == 0)
-			return;
-		
-		options.add(new OptionSilent());
-		options.add(new OptionVerbose());
-		options.add(new OptionClean());
-		
-		
-		for (; i < args.length; i++)
-		{
-			Iterator<Option> o = options.iterator();
-			while (o.hasNext())
-			{
-				Option op = o.next();
-				String l = "--" + op.getLong();
-				String s = "-" + op.getShort();
-				if (args[i].equals(l) || args[i].equals(s))
-				{
-					if (op.operands())
-						op.operand(args[++i]);
-					op.option();
-					break;
-				}
-			}
-		}
+	@Override
+	public void option() {
+		Config.getInstance().verbose(true);
 	}
 }

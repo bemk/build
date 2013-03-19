@@ -18,16 +18,24 @@
     A version of the licence can also be found at http://gnu.org/licences/
 */
 
-package eu.orionos.build;
+package eu.orionos.build.exception;
 
-public class OptionVerbose extends Option {
+public class DisabledException extends Exception {
 
-	public OptionVerbose() {
-		super('v', "verbose", false);
+	private String msg;
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public DisabledException(String msg) {
+		this.msg = msg;
 	}
 
-	@Override
-	public void option() {
-		Config.getInstance().verbose(true);
+	public String getMsg()
+	{
+		return this.msg;
 	}
+
 }

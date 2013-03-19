@@ -18,24 +18,39 @@
     A version of the licence can also be found at http://gnu.org/licences/
 */
 
-package eu.orionos.build;
+package eu.orionos.build.option;
 
-public class FailedException extends Exception {
+public abstract class Option {
+	private char  shortForm;
+	private String longForm;
+	private boolean operands;
+	protected String operand;
 
-	private String msg;
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 3275320329877934820L;
-
-	public FailedException(String msg)
+	public Option(char c, String s, boolean operands)
 	{
-		this.msg = msg;
+		this.shortForm = c;
+		this.longForm = s;
+		this.operands = operands;
 	}
 
-	public String getMsg()
+	public abstract void option();
+
+	public boolean operands()
 	{
-		return msg;
+		return this.operands;
 	}
 
+	public void operand(String operand)
+	{
+		this.operand = operand;
+	}
+
+	public char getShort()
+	{
+		return shortForm;
+	}
+	public String getLong()
+	{
+		return longForm;
+	}
 }
