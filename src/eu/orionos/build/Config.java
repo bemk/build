@@ -34,6 +34,8 @@ public class Config {
 	private static Config instance;
 	private boolean silent = false;
 	private boolean verbose = false;
+	
+	BuildUnit units = null;
 
 	public static Config getInstance()
 	{
@@ -61,9 +63,17 @@ public class Config {
 	{
 		return this.silent;
 	}
+	public void silent(boolean silent)
+	{
+		this.silent = silent;
+	}
 	public boolean verbose()
 	{
 		return this.verbose;
+	}
+	public void verbose(boolean verbose)
+	{
+		this.verbose = verbose;
 	}
 
 	public JSONObject get(String key)
@@ -71,5 +81,14 @@ public class Config {
 		if (conf != null)
 			return (JSONObject)conf.get(key);
 		return null;
+	}
+	
+	public void units(BuildUnit b)
+	{
+		this.units = b;
+	}
+	public BuildUnit units()
+	{
+		return this.units;
 	}
 }

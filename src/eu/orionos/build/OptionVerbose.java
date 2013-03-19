@@ -20,31 +20,14 @@
 
 package eu.orionos.build;
 
-public abstract class Option {
-	private char  shortForm;
-	private String longForm;
-	private boolean operands;
+public class OptionVerbose extends Option {
 
-	public Option(char c, String s, boolean operands)
-	{
-		this.shortForm = c;
-		this.longForm = s;
-		this.operands = operands;
+	public OptionVerbose() {
+		super('v', "verbose", false);
 	}
 
-	public abstract void option();
-
-	public boolean operands()
-	{
-		return this.operands;
-	}
-
-	public char getShort()
-	{
-		return shortForm;
-	}
-	public String getLong()
-	{
-		return longForm;
+	@Override
+	public void option() {
+		Config.getInstance().verbose(true);
 	}
 }

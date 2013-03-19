@@ -20,31 +20,15 @@
 
 package eu.orionos.build;
 
-public abstract class Option {
-	private char  shortForm;
-	private String longForm;
-	private boolean operands;
+public class OptionSilent extends Option {
 
-	public Option(char c, String s, boolean operands)
-	{
-		this.shortForm = c;
-		this.longForm = s;
-		this.operands = operands;
+	public OptionSilent() {
+		super('s', "silent", false);
 	}
 
-	public abstract void option();
-
-	public boolean operands()
-	{
-		return this.operands;
+	@Override
+	public void option() {
+		Config.getInstance().silent(true);
 	}
 
-	public char getShort()
-	{
-		return shortForm;
-	}
-	public String getLong()
-	{
-		return longForm;
-	}
 }

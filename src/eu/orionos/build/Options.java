@@ -33,15 +33,24 @@ public class Options {
 		if (args.length == 0)
 			return;
 		
+		options.add(new OptionSilent());
+		options.add(new OptionVerbose());
+		options.add(new OptionClean());
+		
+		
 		for (; i < args.length; i++)
 		{
 			Iterator<Option> o = options.iterator();
 			while (o.hasNext())
 			{
 				Option op = o.next();
-				char c[] = {op.getShort()};
-				if (args[i].equals(op.getLong()) || args[i].equals(new String(c)))
+				String l = "--" + op.getLong();
+				String s = "-" + op.getShort();
+				if (args[i].equals(l) || args[i].equals(s))
+				{
 					op.option();
+					break;
+				}
 			}
 		}
 	}

@@ -420,7 +420,12 @@ public class BuildUnit {
 		}
 		String c[] = {"rm", "-fv", out};
 		try {
-			r.exec(c);
+			Process p = r.exec(c);
+			if (Config.getInstance().verbose())
+			{
+				writeStream(p.getErrorStream(), System.err);
+				writeStream(p.getInputStream(), System.out);
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
