@@ -33,4 +33,9 @@ public class OptionSilent extends Option {
 		Config.getInstance().silent(true);
 	}
 
+	public String help()
+	{
+		return "-s | --silent\tKeep all text output from going to screen";
+	}
+
 }

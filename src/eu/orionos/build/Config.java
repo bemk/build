@@ -34,9 +34,9 @@ public class Config {
 	private static Config instance;
 	private boolean silent = false;
 	private boolean verbose = false;
+	private String buildFile = "main.build";
+	private boolean clean = false;
 	
-	BuildUnit units = null;
-
 	public static Config getInstance()
 	{
 		return instance;
@@ -75,6 +75,14 @@ public class Config {
 	{
 		this.verbose = verbose;
 	}
+	public void buildFile(String buildFile)
+	{
+		this.buildFile = buildFile;
+	}
+	public String buildFile()
+	{
+		return this.buildFile;
+	}
 
 	public JSONObject get(String key)
 	{
@@ -82,13 +90,12 @@ public class Config {
 			return (JSONObject)conf.get(key);
 		return null;
 	}
-	
-	public void units(BuildUnit b)
+	public void setClean()
 	{
-		this.units = b;
+		this.clean = true;
 	}
-	public BuildUnit units()
+	public boolean getClean()
 	{
-		return this.units;
+		return this.clean;
 	}
 }

@@ -119,11 +119,16 @@ public class BuildUnit {
 		/* Set some file info */
 		this.parent = parent;
 		this.pwd = pwd;
+		
+		if (Config.getInstance().verbose())
+		{
+			System.out.println("Parsing: " + pwd);
+		}
 
 		/* File point stuff */
 		File f = new File(pwd);
 		if (f.exists() == false)
-			throw new FileNotFoundException();
+			throw new FileNotFoundException("No such file: " + pwd);
 		unit = new FileReader(f);
 
 		this.pwd = f.getAbsolutePath();
@@ -257,11 +262,19 @@ public class BuildUnit {
 	@SuppressWarnings("unchecked")
 	public int compile() throws IOException, DisabledException, InterruptedException, FailedException
 	{
+		if (Config.getInstance().getClean())
+			return clean();
+
 		if (getCompiler() == null)
 			return NO_BIN;
 
 		if (buildType.equals("disabled"))
 			throw new DisabledException(this.name);
+		
+		if (Config.getInstance().verbose())
+		{
+			System.out.println("Evaluating module: " + name);
+		}
 
 		/* Compile all dependencies */
 		Iterator<BuildUnit> ib = childUnits.iterator();

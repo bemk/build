@@ -20,38 +20,32 @@
 
 package eu.orionos.build.option;
 
-public abstract class Option {
-	private char  shortForm;
-	private String longForm;
-	private boolean operands;
-	protected String operand;
+public class OptionHelp extends Option {
 
-	public Option(char c, String s, boolean operands)
+	private Options o;
+	
+	public OptionHelp(char c, String s, Options o)
 	{
-		this.shortForm = c;
-		this.longForm = s;
-		this.operands = operands;
+		super(c, s, false);
+		this.o = o;
+	}
+	public OptionHelp(Options o) {
+		this('h', "help", o);
 	}
 
-	public abstract void option();
-	public abstract String help();
+	@Override
+	public void option() {
+		System.out.println("USAGE");
+		System.out.println("\tjava -jar build.jar [options] [build file]");
+		System.out.println("");
+		o.help();
 
-	public boolean operands()
+		System.exit(0);
+	}
+	
+	public String help()
 	{
-		return this.operands;
+		return "-" + getShort() + " | --" + getLong() + " \tPrint this message";
 	}
 
-	public void operand(String operand)
-	{
-		this.operand = operand;
-	}
-
-	public char getShort()
-	{
-		return shortForm;
-	}
-	public String getLong()
-	{
-		return longForm;
-	}
 }

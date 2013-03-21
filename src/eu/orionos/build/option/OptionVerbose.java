@@ -32,4 +32,9 @@ public class OptionVerbose extends Option {
 	public void option() {
 		Config.getInstance().verbose(true);
 	}
+
+	public String help()
+	{
+		return "-v | --verbose\tPrint the compiler output to screen";
+	}
 }

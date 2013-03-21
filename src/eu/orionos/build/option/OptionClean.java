@@ -30,8 +30,11 @@ public class OptionClean extends Option {
 
 	@Override
 	public void option() {
-		Config.getInstance().units().clean();
-		System.exit(0);
+		Config.getInstance().setClean();
 	}
 
+	public String help()
+	{
+		return "-c | --clean\tCleanse the project of its object files";
+	}
 }

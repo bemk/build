@@ -23,6 +23,8 @@ package eu.orionos.build.option;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import eu.orionos.build.Config;
+
 public class Options {
 
 	private ArrayList<Option> options = new ArrayList<Option>();
@@ -32,15 +34,17 @@ public class Options {
 		int i = 0;
 		if (args.length == 0)
 			return;
-		
+
+		options.add(new OptionHelp(this));
+		options.add(new OptionHelp('u', "usage", this));
 		options.add(new OptionSilent());
 		options.add(new OptionVerbose());
 		options.add(new OptionClean());
-		
-		
+
 		for (; i < args.length; i++)
 		{
 			Iterator<Option> o = options.iterator();
+			boolean found = false;
 			while (o.hasNext())
 			{
 				Option op = o.next();
@@ -51,9 +55,30 @@ public class Options {
 					if (op.operands())
 						op.operand(args[++i]);
 					op.option();
+					found = true;
 					break;
 				}
 			}
+			if (args[i].endsWith(".build"))
+			{
+				Config.getInstance().buildFile(args[i]);
+			}
+			else if (found == false)
+			{
+				System.err.println(args[i] + " Invalid option!");
+				new OptionHelp(this).option();
+			}
+		}
+	}
+	
+	public void help()
+	{
+		System.out.println("OPTIONS");
+		for (Option o : options)
+		{
+			String s = o.help();
+			if (s.length() > 0);
+				System.out.println("\t" + s);
 		}
 	}
 }

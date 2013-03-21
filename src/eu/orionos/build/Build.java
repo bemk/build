@@ -37,35 +37,23 @@ public class Build {
 	{
 		try {
 			this.cfg = Config.getInstance(".config");
-			this.units = new BuildUnit("main.build");
-			cfg.units(this.units);
+			new Options(args);
+
+			this.units = new BuildUnit(cfg.buildFile());
+
+			units.compile();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println(e.getMessage());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		new Options(args);
-		
-		try {
-			units.compile();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (DisabledException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Trying to compile disabled module: " + e.getMsg());
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (FailedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Error in handling file: " + e.getMsg());
 		}
 	}
 	
