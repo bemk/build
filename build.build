@@ -1,0 +1,16 @@
+{
+	"name" : "build",
+	"out" : "build",
+	"compiler" : "clang",
+	"linker" : "clang",
+	"ar" : "ar",
+	"type" : [{
+		"type" : "static",
+		"cflags" : "-c",
+		"ldflags" : "",
+		"compress" : false
+	}],
+	"file" : ["src/cmd/build.c"],
+	"depend" : [],
+	"dyn" : []
+}

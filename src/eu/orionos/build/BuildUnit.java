@@ -139,13 +139,21 @@ public class BuildUnit {
 		JSONParser p = new JSONParser();
 		JSONObject o = (JSONObject)p.parse(unit);
 
-		name         = (String)    o.get("name");
-		compiler     = (String)    o.get("compiler");
-		ar           = (String)    o.get("ar");
-		linker       = (String)    o.get("linker");
-		out          = (String)    o.get("out");
-		files        = (JSONArray) o.get("file");
-		dynamic      = (JSONArray) o.get("dyn");
+		try {
+			name         = (String)    o.get("name");
+			compiler     = (String)    o.get("compiler");
+			ar           = (String)    o.get("ar");
+			linker       = (String)    o.get("linker");
+			out          = (String)    o.get("out");
+			files        = (JSONArray) o.get("file");
+			dynamic      = (JSONArray) o.get("dyn");
+		}
+		catch(ClassCastException e)
+		{
+			System.err.println("Invalid field in " + pwd);
+			System.err.println(e.getMessage());
+			System.exit(1);
+		}
 
 		/* Read config info */
 		config = Config.getInstance().get(this.name);
@@ -286,6 +294,7 @@ public class BuildUnit {
 
 		Runtime r = Runtime.getRuntime();
 
+		ArrayList<String> ofiles = new ArrayList<String>();
 		/* And iterate through our own files */
 		if (files != null)
 		{
@@ -296,6 +305,7 @@ public class BuildUnit {
 			{
 				String file = f.next();
 				String ofile = this.pwd + "/" + file.substring(0, file.lastIndexOf('.')) + ".o";
+				ofiles.add(ofile);
 				c[c.length-1] = ofile;
 				c[c.length-3] = this.pwd + "/" + file;
 				Process p = r.exec(c);
@@ -332,7 +342,7 @@ public class BuildUnit {
 			}
 		}
 		if (!compress)
-			return link();
+			return link(ofiles);
 
 		return SUCCESS;
 	}
@@ -350,7 +360,7 @@ public class BuildUnit {
 		return tmp;
 	}
 
-	public int link() throws FailedException, IOException, InterruptedException
+	public int link(ArrayList<String>ofiles) throws FailedException, IOException, InterruptedException
 	{
 		if (getLinker() == null || getLinkerOpts() == null)
 			return NO_BIN;
@@ -379,6 +389,14 @@ public class BuildUnit {
 
 		cmdDyn.add("-o");
 		cmdDyn.add(out);
+
+		if (ofiles != null)
+		{
+			if (!ofiles.isEmpty())
+			{
+				cmdDyn.addAll(ofiles);
+			}
+		}
 
 		/* Make a static array out of that command */
 		String[] cmd = new String[cmdDyn.size()];
