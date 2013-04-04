@@ -39,12 +39,14 @@ int main(int argc, char** argv)
 		char pwd[256];
 		getcwd(pwd, 256);
 		strcat(pwd, "/build.jar");
+		char arg[256];
+		strcat(arg, "-jar ");
+		strcat(arg, pwd);
 
 		int i = 0;
 		cmd[i++] = "-classpath";
 		cmd[i++] = "eu.orionos.build.Build";
-		cmd[i++] = "-jar";
-		cmd[i++] = pwd;
+		cmd[i++] = arg;
 
 		int ac = 1;
 
@@ -52,11 +54,16 @@ int main(int argc, char** argv)
 			cmd[i] = argv[ac];
 
 		strcpy(command, "java ");
+
+		//printf("java ");
 		for (i = 0; cmd[i] != 0; i++)
 		{
 			strcat(command, cmd[i]);
 			strcat(command, " ");
+		//	printf("%s ", cmd[i]);
 		}
+		//printf("\n");
+		//execlp("java", cmd, NULL);
 		system(command);
 		exit (0);
 	}

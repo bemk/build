@@ -19,5 +19,12 @@
 		"id"    : "test3",
 		"dep"   : "test3.build",
 	}],
+"dynarg" : [{
+		"id"    : "sun",
+		"carg"   : "-D OBJECT=\"sun\""
+	},{
+		"id"	: "moon",
+		"carg"	: "-D OBJECT=\"moon\""
+	}]
 "compress":true
 }

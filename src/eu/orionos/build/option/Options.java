@@ -43,27 +43,48 @@ public class Options {
 
 		for (; i < args.length; i++)
 		{
-			Iterator<Option> o = options.iterator();
-			boolean found = false;
-			while (o.hasNext())
+			nextarg:
+			if (args[i].startsWith("-") && !args[i].startsWith("--"))
 			{
-				Option op = o.next();
-				String l = "--" + op.getLong();
-				String s = "-" + op.getShort();
-				if (args[i].equals(l) || args[i].equals(s))
+				String arg = args[i].substring(1);
+				for (char a : arg.toCharArray())
 				{
-					if (op.operands())
-						op.operand(args[++i]);
-					op.option();
-					found = true;
-					break;
+					Iterator<Option> o = options.iterator();
+					while (o.hasNext())
+					{
+						Option op = o.next();
+						if (a == op.getShort())
+						{
+							if (op.operands())
+								op.operand(args[++i]);
+							op.option();
+							if (op.operands())
+								break nextarg;
+						}
+					}
 				}
 			}
-			if (args[i].endsWith(".build"))
+			else if (args[i].startsWith("--"))
+			{
+				Iterator<Option> o = options.iterator();
+				while (o.hasNext())
+				{
+					Option op = o.next();
+					String l = "--" + op.getLong();
+					if (args[i].equals(l))
+					{
+						if (op.operands())
+							op.operand(args[++i]);
+						op.option();
+						break;
+					}
+				}
+			}
+			else if (args[i].endsWith(".build"))
 			{
 				Config.getInstance().buildFile(args[i]);
 			}
-			else if (found == false)
+			else
 			{
 				System.err.println(args[i] + " Invalid option!");
 				new OptionHelp(this).option();
