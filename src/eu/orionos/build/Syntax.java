@@ -33,5 +33,4 @@ public class Syntax {
 	public static final String ARCHIVED = "archived-file";
 
 	public static final String LINK = "link";
-	
 }
