@@ -5,6 +5,6 @@
 *.o
 *.a
 build.jar
-build
 test.bin
+build.bin
 bin/

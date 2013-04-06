@@ -1,6 +1,6 @@
 {
 	"name" : "build",
-	"out" : "build",
+	"out" : "build.bin",
 	"compiler" : "clang",
 	"linker" : "clang",
 	"ar" : "ar",
