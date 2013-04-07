@@ -10,6 +10,8 @@ public class Syntax {
 	public static final String GLOBAL_ARCHIVER = "archiver";
 	public static final String GLOBAL_ARCHIVER_FLAGS = "archiver-flags";
 
+	public static final String GLOBAL_DEFS = "global";
+
 	public static final String MOD_COMPILER = "mcompiler";
 	public static final String MOD_COMPILER_FLAGS = "mcompiler-flags";
 	public static final String MOD_LINKER = "mlinker";

@@ -24,7 +24,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Iterator;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -97,5 +99,23 @@ public class Config {
 	public boolean getClean()
 	{
 		return this.clean;
+	}
+
+	public boolean getKey(String key)
+	{
+		if (!conf.containsKey(Syntax.GLOBAL_DEFS))
+			return false;
+
+		JSONArray a = (JSONArray) conf.get(Syntax.GLOBAL_DEFS);
+		@SuppressWarnings("rawtypes")
+		Iterator i = a.iterator();
+
+		while (i.hasNext())
+		{
+			String s = (String) i.next();
+			if (s.equals(key))
+				return true;
+		}
+		return false;
 	}
 }
