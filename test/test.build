@@ -4,11 +4,11 @@
 "out"     :"test.a",
 "type"    :	[{
 		"type" : "static",
-		"cflags" : "-c"
-		"aflags" : "rs"
+		"cflags" : "-c",
+		"aflags" : "rs",
 		"compress" : true
 		},{
-		"type" : "module"
+		"type" : "module",
 		"compress" : true
 		}],
 "depend"  :[],
@@ -17,7 +17,7 @@
 		"dep"   : "test2.build"
 	},{
 		"id"    : "test3",
-		"dep"   : "test3.build",
+		"dep"   : "test3.build"
 	}],
 "dynarg" : [{
 		"id"    : "sun",
@@ -25,6 +25,6 @@
 	},{
 		"id"	: "moon",
 		"carg"	: "-D OBJECT=\"moon\""
-	}]
+	}],
 "compress":true
 }

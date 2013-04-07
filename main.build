@@ -1,6 +1,6 @@
 {
 "name"    :"build",
-"out"     :"test.bin"
+"out"     :"test.bin",
 "type"    :[{
 	"type"     : "static",
 	"cflags"   : "",
@@ -11,5 +11,5 @@
 "linker"  :"clang",
 "ar"      :"ar",
 "depend"  :["test/test.build"],
-"dyn"     :[],
+"dyn"     :[]
 }

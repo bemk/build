@@ -1,15 +1,11 @@
 package eu.orionos.build;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import java.io.*;
+import java.util.ArrayList;
 
 public class Module {
 	private ArrayList<Module> subModules = new ArrayList<Module>();
@@ -41,12 +37,12 @@ public class Module {
 	private JSONArray dynModCompilerFlags;
 	private JSONArray dynModLinkerFlags;
 
-	public Module(String path) throws FileNotFoundException, IOException, ParseException
+	public Module(String path) throws FileNotFoundException, IOException, JSONException
 	{
 		this(path, null);
 	}
 
-	public Module(String path, Module parent) throws FileNotFoundException, IOException, ParseException
+	public Module(String path, Module parent) throws FileNotFoundException, IOException, JSONException
 	{
 		/* Get some verbosity out of our system */
 		if (Config.getInstance().verbose())
@@ -60,55 +56,44 @@ public class Module {
 			System.err.println("Module at " +  path +  " can not be found");
 			System.exit(1);
 		}
-		module = (JSONObject) new JSONParser().parse(new FileReader(f));
+		BufferedReader reader = new BufferedReader(new FileReader(f));
+		StringBuilder stringBuilder = new StringBuilder();
+		String line;
+		while ((line = reader.readLine()) != null) {
+			stringBuilder.append(line);
+			stringBuilder.append('\n');
+		}
+		module = new JSONObject(stringBuilder.toString());
 		/* Get some paths right */
 		this.cwd = f.getAbsolutePath();
 		int len = this.cwd.lastIndexOf('/');
 		this.cwd = this.cwd.substring(0, len);
 
 		/* Read global stuff into local variables for easier access */
-		if (module.containsKey(Syntax.GLOBAL_COMPILER))
-			this.globalCompiler = (String)module.get(Syntax.GLOBAL_COMPILER);
-		if (module.containsKey(Syntax.GLOBAL_COMPILER_FLAGS))
-			this.globalCompilerFlags = (String)module.get(Syntax.GLOBAL_COMPILER_FLAGS);
-		if (module.containsKey(Syntax.GLOBAL_LINKER))
-			this.globalLinker = (String)module.get(Syntax.GLOBAL_LINKER);
-		if (module.containsKey(Syntax.GLOBAL_LINKER_FLAGS))
-			this.globalLinkerFlags = (String)module.get(Syntax.GLOBAL_LINKER_FLAGS);
-		if (module.containsKey(Syntax.GLOBAL_ARCHIVER))
-			this.globalArchiver = (String)module.get(Syntax.GLOBAL_ARCHIVER);
-		if (module.containsKey(Syntax.GLOBAL_ARCHIVER_FLAGS))
-			this.globalArchiverFlags = (String)module.get(Syntax.GLOBAL_ARCHIVER_FLAGS);
+		this.globalCompiler = module.optString(Syntax.GLOBAL_COMPILER, null);
+		this.globalCompilerFlags = module.optString(Syntax.GLOBAL_COMPILER_FLAGS, null);
+		this.globalLinker = module.optString(Syntax.GLOBAL_LINKER, null);
+		this.globalLinkerFlags = module.optString(Syntax.GLOBAL_LINKER_FLAGS, null);
+		this.globalArchiver = module.optString(Syntax.GLOBAL_ARCHIVER, null);
+		this.globalArchiverFlags = module.optString(Syntax.GLOBAL_ARCHIVER_FLAGS, null);
 
 		/* Get all the modular data in place */
-		if (module.containsKey(Syntax.MOD_COMPILER))
-			this.modCompiler = (String)module.get(Syntax.MOD_COMPILER);
-		if (module.containsKey(Syntax.MOD_ARCHIVER_FLAGS))
-			this.modArchiverFlags = (String)module.get(Syntax.MOD_ARCHIVER_FLAGS);
-		if (module.containsKey(Syntax.MOD_ARCHIVER))
-			this.modArchiver = (String)module.get(Syntax.MOD_ARCHIVER);
-		if (module.containsKey(Syntax.MOD_ARCHIVER_FLAGS))
-			this.modArchiverFlags = (String)module.get(Syntax.MOD_ARCHIVER_FLAGS);
-		if (module.containsKey(Syntax.MOD_LINKER))
-			this.modLinker = (String)module.get(Syntax.MOD_LINKER);
-		if (module.containsKey(Syntax.MOD_LINKER_FLAGS))
-			this.modLinkerFlags = (String)module.get(Syntax.MOD_LINKER_FLAGS);
+		this.modCompiler = module.optString(Syntax.MOD_COMPILER, null);
+		this.modArchiverFlags = module.optString(Syntax.MOD_ARCHIVER_FLAGS, null);
+		this.modArchiver = module.optString(Syntax.MOD_ARCHIVER, null);
+		this.modArchiverFlags = module.optString(Syntax.MOD_ARCHIVER_FLAGS, null);
+		this.modLinker = module.optString(Syntax.MOD_LINKER, null);
+		this.modLinkerFlags = module.optString(Syntax.MOD_LINKER_FLAGS, null);
 
 		/* The dynamic flags */
-		if (module.containsKey(Syntax.DYN_ARCHIVER_FLAGS))
-			this.dynArchiverFlags = (JSONArray)module.get(Syntax.DYN_ARCHIVER_FLAGS);
-		if (module.containsKey(Syntax.DYN_COMPILER_FLAGS))
-			this.dynCompilerFlags = (JSONArray)module.get(Syntax.DYN_COMPILER_FLAGS);
-		if (module.containsKey(Syntax.DYN_LINKER_FLAGS))
-			this.dynLinkerFlags = (JSONArray)module.get(Syntax.DYN_LINKER_FLAGS);
+		this.dynArchiverFlags = module.optJSONArray(Syntax.DYN_ARCHIVER_FLAGS);
+		this.dynCompilerFlags = module.optJSONArray(Syntax.DYN_COMPILER_FLAGS);
+		this.dynLinkerFlags = module.optJSONArray(Syntax.DYN_LINKER_FLAGS);
 		
 		/* And the dynamic module wide flags */
-		if (module.containsKey(Syntax.DYN_MOD_ARCHIVER_FLAGS))
-			this.dynModArchiverFlags = (JSONArray)module.get(Syntax.DYN_MOD_ARCHIVER_FLAGS);
-		if (module.containsKey(Syntax.DYN_MOD_COMPILER_FLAGS))
-			this.dynModCompilerFlags = (JSONArray)module.get(Syntax.DYN_MOD_COMPILER_FLAGS);
-		if (module.containsKey(Syntax.DYN_MOD_LINKER_FLAGS))
-			this.dynModLinkerFlags = (JSONArray)module.get(Syntax.DYN_MOD_LINKER_FLAGS);
+		this.dynModArchiverFlags = module.optJSONArray(Syntax.DYN_MOD_ARCHIVER_FLAGS);
+		this.dynModCompilerFlags = module.optJSONArray(Syntax.DYN_MOD_COMPILER_FLAGS);
+		this.dynModLinkerFlags = module.optJSONArray(Syntax.DYN_MOD_LINKER_FLAGS);
 	}
 
 	protected String getGlobalArchiver()

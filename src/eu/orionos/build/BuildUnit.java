@@ -19,16 +19,16 @@
 */
 
 package eu.orionos.build;
-import java.io.*;
-import java.util.*;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import eu.orionos.build.exception.DisabledException;
 import eu.orionos.build.exception.FailedException;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class BuildUnit {
 	public static final int SUCCESS = 0;
@@ -42,7 +42,7 @@ public class BuildUnit {
 	private String pwd;
 	private String name;
 	private String out;
-	private FileReader unit;
+	private BufferedReader unit;
 
 	private String compiler;
 	private String ar;
@@ -109,12 +109,12 @@ public class BuildUnit {
 		}
 		return s;
 	}
-	public BuildUnit(String pwd) throws IOException, ParseException
+	public BuildUnit(String pwd) throws IOException, JSONException
 	{
 		this(pwd, null);
 	}
 	@SuppressWarnings("unchecked")
-	public BuildUnit(String pwd, BuildUnit parent) throws IOException, ParseException
+	public BuildUnit(String pwd, BuildUnit parent) throws IOException, JSONException
 	{
 		/* Set some file info */
 		this.parent = parent;
@@ -129,26 +129,30 @@ public class BuildUnit {
 		File f = new File(pwd);
 		if (f.exists() == false)
 			throw new FileNotFoundException("No such file: " + pwd);
-		unit = new FileReader(f);
+		unit = new BufferedReader(new FileReader(f));
 
 		this.pwd = f.getAbsolutePath();
 		int len = this.pwd.lastIndexOf('/');
 		this.pwd = this.pwd.substring(0, len);
 
 		/* Parse info */
-		JSONParser p = new JSONParser();
-		JSONObject o = (JSONObject)p.parse(unit);
+		StringBuilder stringBuilder = new StringBuilder();
+		String line;
+		while ((line = unit.readLine()) != null) {
+			stringBuilder.append(line);
+		}
+		JSONObject o = new JSONObject(stringBuilder.toString());
 
 		try {
-			name         = (String)    o.get("name");
-			compiler     = (String)    o.get("compiler");
-			ar           = (String)    o.get("ar");
-			linker       = (String)    o.get("linker");
-			out          = (String)    o.get("out");
-			files        = (JSONArray) o.get("file");
-			dynamic      = (JSONArray) o.get("dyn");
+			name         = o.getString("name");
+			compiler     = o.optString("compiler", null);
+			ar           = o.optString("ar", null);
+			linker       = o.optString("linker", null);
+			out          = o.getString("out");
+			files        = o.optJSONArray("file");
+			dynamic      = o.optJSONArray("dyn");
 		}
-		catch(ClassCastException e)
+		catch(JSONException e)
 		{
 			System.err.println("Invalid field in " + pwd);
 			System.err.println(e.getMessage());
@@ -159,75 +163,61 @@ public class BuildUnit {
 		config = Config.getInstance().get(this.name);
 		if (config != null)
 		{
-			buildType   = (String)config.get("type");
-			dynamicConf = (JSONArray)config.get("dyn");
+			buildType   = config.getString("type");
+			dynamicConf = config.optJSONArray("dyn");
 		}
 
 		/* Resolve static dependencies */
-		JSONArray deps = (JSONArray) o.get("depend");
-		Iterator<String> i = deps.iterator();
-		while (i.hasNext())
-		{
-			String dep = i.next();
-			String depPath = this.pwd + "/" + dep;
+		JSONArray deps = o.getJSONArray("depend");
+		for (int i = 0; i < deps.length(); i++) {
 			try {
+				String depPath = this.pwd + "/" + deps.getString(i);
 				this.childUnits.add(new BuildUnit(depPath, this));
-			} catch (Exception e)
-			{
+			} catch (Exception e) {
 				e.printStackTrace();
-				continue;
 			}
 		}
 
 		/* Resolve dynamic dependencies */
-		deps = (JSONArray) o.get("dyn");
+		deps = o.optJSONArray("dyn");
 		if (deps != null)
 		{
-			Iterator<JSONObject> ii = deps.iterator();
-			while(ii.hasNext() && dynamicConf != null)
-			{
-				JSONObject obj = ii.next();
-				String s = (String) obj.get("id");
-				Iterator<String> finder = dynamicConf.iterator();
-				if (finder == null)
-					break;
-				while(finder.hasNext())
-				{
-					if (s.equals(finder.next()))
-					{
-						String depPath = this.pwd + "/" + obj.get("dep");
-						this.childUnits.add(new BuildUnit(depPath, this));
-
-						break;
+			for (int i = 0; i < deps.length() && dynamicConf != null; i++) {
+				try {
+					JSONObject obj = deps.getJSONObject(i);
+					String s = obj.getString("id");
+					for (int j = 0; j < dynamicConf.length(); j++) {
+						if (s.equals(dynamicConf.optString(j, null))) {
+							String depPath = this.pwd + "/" + obj.get("dep");
+							this.childUnits.add(new BuildUnit(depPath, this));
+						}
 					}
+				} catch (JSONException e) {
+					e.printStackTrace();
 				}
 			}
 		}
 
 		/* Resolve dynamic configuration */
-		JSONArray style = (JSONArray)o.get("type"); /* Read build file */
+		JSONArray style = o.getJSONArray("type"); /* Read build file */
 		if (style != null)
 		{
-			Iterator<JSONObject>j = style.iterator(); /* Match the conf file */
-			if (j != null)
-			{
-				while (j.hasNext())
-				{
-					JSONObject obj = j.next();
-					if (((String)obj.get("type")).equals(buildType))
-					{
-						if (!obj.get("type").equals("disabled"))
-						{
-							compilerOpts = (String)obj.get("cflags");
-							linkerOpts   = (String)obj.get("ldflags");
-							arOpts       = (String)obj.get("aflags");
-							compress     = (boolean)obj.get("compress");
+			for (int i = 0; i < style.length(); i++) {
+				try {
+					JSONObject obj = style.getJSONObject(i);
+					if (buildType.equals(obj.getString("type"))) {
+						if (!obj.getString("type").equals("type")) {
+							compilerOpts = obj.getString("cflags");
+							linkerOpts   = obj.optString("ldflags", null);
+							arOpts       = obj.optString("aflags", null);
+							compress     = obj.getBoolean("compress");
 						}
 					}
+				} catch (JSONException e) {
+					e.printStackTrace();
 				}
 			}
 		}
-
 	}
 
 	public String getCompiler()
@@ -298,47 +288,49 @@ public class BuildUnit {
 		/* And iterate through our own files */
 		if (files != null)
 		{
-			Iterator<String> f = files.iterator();
 			String[] c = {getCompiler(), getCompilerOpts(), "", "-o",  ""};
 			String[] a = {getAr(), getArOpts(), out, ""};
-			while (f.hasNext())
-			{
-				String file = f.next();
-				String ofile = this.pwd + "/" + file.substring(0, file.lastIndexOf('.')) + ".o";
-				ofiles.add(ofile);
-				c[c.length-1] = ofile;
-				c[c.length-3] = this.pwd + "/" + file;
-				Process p = r.exec(c);
-				if (!Config.getInstance().silent())
-				{
-					if (Config.getInstance().verbose())
-					{
-						writeCmd(c);
-						writeStream(p.getErrorStream(), System.err);
-						writeStream(p.getInputStream(), System.out);
-					}
-				}
-				if (p.waitFor() != 0)
-					throw new FailedException(ofile);
-
-				if (compress)
-				{
-					a[a.length-1] = ofile;
-					p = r.exec(a);
+			for (int i = 0; i < files.length(); i++) {
+				try {
+					String file = files.getString(i);
+					String ofile = this.pwd + "/" + file.substring(0, file.lastIndexOf('.')) + ".o";
+					ofiles.add(ofile);
+					c[c.length-1] = ofile;
+					c[c.length-3] = this.pwd + "/" + file;
+					Process p = r.exec(c);
 					if (!Config.getInstance().silent())
 					{
 						if (Config.getInstance().verbose())
 						{
-							writeCmd(a);
+							writeCmd(c);
 							writeStream(p.getErrorStream(), System.err);
 							writeStream(p.getInputStream(), System.out);
 						}
 					}
 					if (p.waitFor() != 0)
 						throw new FailedException(ofile);
+
+					if (compress)
+					{
+						a[a.length-1] = ofile;
+						p = r.exec(a);
+						if (!Config.getInstance().silent())
+						{
+							if (Config.getInstance().verbose())
+							{
+								writeCmd(a);
+								writeStream(p.getErrorStream(), System.err);
+								writeStream(p.getInputStream(), System.out);
+							}
+						}
+						if (p.waitFor() != 0)
+							throw new FailedException(ofile);
+					}
+					if (!Config.getInstance().silent())
+						System.out.println("[ OK ] " + ofile);
+				} catch (JSONException e) {
+					e.printStackTrace();
 				}
-				if (!Config.getInstance().silent())
-					System.out.println("[ OK ] " + ofile);
 			}
 		}
 		if (!compress)
@@ -439,14 +431,14 @@ public class BuildUnit {
 		Runtime r = Runtime.getRuntime();
 		if (files != null)
 		{
-			Iterator<String> j = files.iterator();
-			while (j.hasNext())
-			{
-				String file = j.next();
-				String ofile = this.pwd + "/" + file.substring(0, file.lastIndexOf('.')) + ".o";
-				String cmd[] = {"rm", "-fv", ofile};
+			for (int j = 0; j < files.length(); j++) {
 				try {
+					String file = files.getString(j);
+					String ofile = this.pwd + "/" + file.substring(0, file.lastIndexOf('.')) + ".o";
+					String cmd[] = {"rm", "-fv", ofile};
 					r.exec(cmd);
+				} catch (JSONException e) {
+					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

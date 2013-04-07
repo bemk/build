@@ -20,14 +20,14 @@
 
 package eu.orionos.build;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 public class Config {
 	private static JSONObject conf;
@@ -42,16 +42,23 @@ public class Config {
 		return instance;
 	}
 
-	public static Config getInstance(String conf) throws FileNotFoundException, IOException, ParseException
+	public static Config getInstance(String conf) throws FileNotFoundException, IOException, JSONException
 	{
 		if (instance == null)
 			instance = new Config(conf);
 		return instance;
 	}
 
-	private Config(String conf) throws FileNotFoundException, IOException, ParseException
+	private Config(String conf) throws FileNotFoundException, IOException, JSONException
 	{
-		Config.conf = (JSONObject)(new JSONParser()).parse(new FileReader(new File(conf)));
+		BufferedReader reader = new BufferedReader(new FileReader(new File(conf)));
+		StringBuilder stringBuilder = new StringBuilder();
+		String line;
+		while ((line = reader.readLine()) != null) {
+			stringBuilder.append(line);
+			stringBuilder.append('\n');
+		}
+		Config.conf = new JSONObject(stringBuilder.toString());
 	}
 
 	public void configure()
