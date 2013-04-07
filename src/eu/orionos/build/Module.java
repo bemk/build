@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -14,6 +15,7 @@ import org.json.simple.parser.ParseException;
 public class Module {
 	private ArrayList<Module> subModules = new ArrayList<Module>();
 	private String cwd;
+	private String name;
 	private Module parent;
 	private JSONObject module;
 
@@ -65,6 +67,15 @@ public class Module {
 		this.cwd = f.getAbsolutePath();
 		int len = this.cwd.lastIndexOf('/');
 		this.cwd = this.cwd.substring(0, len);
+
+		if (module.containsKey("name"))
+			this.name = (String)module.get("name");
+		else
+		{
+			System.err.println("Module in " + cwd + "referenced by " + path + " does not have a name field!");
+			System.err.println("Modules have to have a name field!");
+			System.exit(1);
+		}
 
 		/* Read global stuff into local variables for easier access */
 		if (module.containsKey(Syntax.GLOBAL_COMPILER))
@@ -158,6 +169,45 @@ public class Module {
 			return getGlobalCompiler();
 		return modCompiler;
 	}
+	@SuppressWarnings("rawtypes")
+	private String getDynCompilerFlags()
+	{
+		String a = "";
+		Config c = Config.getInstance();
+
+		if (dynCompilerFlags != null)
+		{
+			Iterator i = dynCompilerFlags.iterator();
+			while (i.hasNext())
+			{
+				JSONObject o = (JSONObject) i.next();
+				String key = (String) o.get(Syntax.CONFIG_GLOBAL_KEY);
+				if (c.getDefined(key))
+				{
+					if (!a.isEmpty())
+						a += " ";
+					a += (String)o.get(Syntax.CONFIG_GLOBAL_FLAGS);
+				}
+			}
+		}
+		if (dynModCompilerFlags != null)
+		{
+			Iterator i = dynModCompilerFlags.iterator();
+			while (i.hasNext())
+			{
+				JSONObject o = (JSONObject) i.next();
+				String key = (String) o.get(Syntax.CONFIG_GLOBAL_KEY);
+				if (c.getModuleDefined(this.name, key))
+				{
+					if (!a.isEmpty())
+						a += " ";
+					a += (String)o.get(Syntax.CONFIG_GLOBAL_FLAGS);
+				}
+			}
+		}
+
+		return a;
+	}
 	protected String getCompilerFlags()
 	{
 		String a = "";
@@ -166,7 +216,19 @@ public class Module {
 
 		a += getGlobalCompilerFlags();
 		if (modCompilerFlags != null)
-			a += " " + modCompilerFlags;
+		{
+			if (!a.isEmpty())
+				a += " ";
+			a += modCompilerFlags;
+		}
+
+		String dyn = getDynCompilerFlags();
+		if (!dyn.isEmpty())
+		{
+			if (a.isEmpty())
+				a += " ";
+			a += dyn;
+		}
 
 		return a;
 	}
@@ -177,6 +239,45 @@ public class Module {
 			return getGlobalArchiver();
 		return modArchiver;
 	}
+	@SuppressWarnings("rawtypes")
+	private String getDynArchiverFlags()
+	{
+		String a = "";
+		Config c = Config.getInstance();
+
+		if (dynArchiverFlags != null)
+		{
+			Iterator i = dynArchiverFlags.iterator();
+			while (i.hasNext())
+			{
+				JSONObject o = (JSONObject) i.next();
+				String key = (String) o.get(Syntax.CONFIG_GLOBAL_KEY);
+				if (c.getDefined(key))
+				{
+					if (!a.isEmpty())
+						a += " ";
+					a += (String)o.get(Syntax.CONFIG_GLOBAL_FLAGS);
+				}
+			}
+		}
+		if (dynModArchiverFlags != null)
+		{
+			Iterator i = dynModArchiverFlags.iterator();
+			while (i.hasNext())
+			{
+				JSONObject o = (JSONObject) i.next();
+				String key = (String) o.get(Syntax.CONFIG_GLOBAL_KEY);
+				if (c.getModuleDefined(this.name, key))
+				{
+					if (!a.isEmpty())
+						a += " ";
+					a += (String)o.get(Syntax.CONFIG_GLOBAL_FLAGS);
+				}
+			}
+		}
+
+		return a;
+	}
 	protected String getArchiverFlags()
 	{
 		String a = "";
@@ -185,7 +286,19 @@ public class Module {
 		a += getGlobalArchiverFlags();
 
 		if (modArchiverFlags != null)
-			a += " " + modArchiverFlags;
+		{
+			if (a.isEmpty())
+				a += " ";
+			a += modArchiverFlags;
+		}
+
+		String dyn = getDynArchiverFlags();
+		if (!dyn.isEmpty())
+		{
+			if (a.isEmpty())
+				a += " ";
+			a += dyn;
+		}
 
 		return a;
 	}
@@ -196,6 +309,45 @@ public class Module {
 			return getGlobalLinker();
 		return modLinker;
 	}
+	@SuppressWarnings("rawtypes")
+	private String getDynLinkerFlags()
+	{
+		String a = "";
+		Config c = Config.getInstance();
+
+		if (dynLinkerFlags != null)
+		{
+			Iterator i = dynLinkerFlags.iterator();
+			while (i.hasNext())
+			{
+				JSONObject o = (JSONObject) i.next();
+				String key = (String) o.get(Syntax.CONFIG_GLOBAL_KEY);
+				if (c.getDefined(key))
+				{
+					if (!a.isEmpty())
+						a += " ";
+					a += (String)o.get(Syntax.CONFIG_GLOBAL_FLAGS);
+				}
+			}
+		}
+		if (dynModLinkerFlags != null)
+		{
+			Iterator i = dynModLinkerFlags.iterator();
+			while (i.hasNext())
+			{
+				JSONObject o = (JSONObject) i.next();
+				String key = (String) o.get(Syntax.CONFIG_GLOBAL_KEY);
+				if (c.getModuleDefined(this.name, key))
+				{
+					if (!a.isEmpty())
+						a += " ";
+					a += (String)o.get(Syntax.CONFIG_GLOBAL_FLAGS);
+				}
+			}
+		}
+
+		return a;
+	}
 	protected String getLinkerFlags()
 	{
 		String a = "";
@@ -204,7 +356,19 @@ public class Module {
 		a += getGlobalLinkerFlags();
 
 		if (modLinkerFlags != null)
-			a += " " + modLinkerFlags;
+		{
+			if (a.isEmpty())
+				a += " ";
+			a += modLinkerFlags;
+		}
+
+		String dyn = getDynLinkerFlags();
+		if (!dyn.isEmpty())
+		{
+			if (a.isEmpty())
+				a += " ";
+			a += dyn;
+		}
 
 		return a;
 	}

@@ -13,9 +13,9 @@
 "archiver-flags" : "",
 
 "Comment" : "Project wide dynamic flags",
-"dcompiler-flags" : [{"key" : "alpha", "flags", "-D ALHPA"}],
-"dlinker-flags" : [{"key" : "alpha", "flags", "-D ALPHA"}],
-"darchiver-flags" : [{"key" : "alpha", "flags", ""],
+"dcompiler-flags" : [{"key" : "alpha", "flags" : "-D ALHPA"}],
+"dlinker-flags" : [{"key" : "alpha", "flags" : "-D ALPHA"}],
+"darchiver-flags" : [{"key" : "alpha", "flags" : ""],
 
 "Comment" : "Dependencies",
 "depend" : [{"path": "test/new.build"}],
@@ -32,9 +32,9 @@
 "marchiver-flags" : "",
 
 "Comment" : "Module wide dynamic flags",
-"mdcompiler-flags" : [{"key" : "beta", "flags", "-D BETA"}],
-"mdlinker-flags" : [{"key" : "beta", "flags", "-D BETA"}],
-"mdarchiver-flags" : [{"key" : "beta", "flags", ""],
+"mdcompiler-flags" : [{"key" : "beta", "flags" : "-D BETA"}],
+"mdlinker-flags" : [{"key" : "beta", "flags" : "-D BETA"}],
+"mdarchiver-flags" : [{"key" : "beta", "flags" : ""],
 
 "Comment" : "Source/object references",
 "source-files" : ["main.c", "test.c"],

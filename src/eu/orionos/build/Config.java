@@ -88,7 +88,7 @@ public class Config {
 
 	public JSONObject get(String key)
 	{
-		if (conf != null)
+		if (conf.containsKey(key))
 			return (JSONObject)conf.get(key);
 		return null;
 	}
@@ -101,12 +101,29 @@ public class Config {
 		return this.clean;
 	}
 
-	public boolean getKey(String key)
+	public boolean getDefined(String key)
 	{
 		if (!conf.containsKey(Syntax.GLOBAL_DEFS))
 			return false;
 
 		JSONArray a = (JSONArray) conf.get(Syntax.GLOBAL_DEFS);
+		@SuppressWarnings("rawtypes")
+		Iterator i = a.iterator();
+
+		while (i.hasNext())
+		{
+			String s = (String) i.next();
+			if (s.equals(key))
+				return true;
+		}
+		return false;
+	}
+	public boolean getModuleDefined(String module, String key)
+	{
+		if (!conf.containsKey(module))
+			return false;
+
+		JSONArray a = (JSONArray) conf.get(module);
 		@SuppressWarnings("rawtypes")
 		Iterator i = a.iterator();
 
