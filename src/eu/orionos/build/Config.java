@@ -32,13 +32,17 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class Config {
-	private static JSONObject conf;
+	private JSONObject conf;
 	private static Config instance;
 	private boolean silent = false;
 	private boolean verbose = false;
 	private String buildFile = "main.build";
 	private boolean clean = false;
 	
+	private void setConfigFile(String conf) throws FileNotFoundException, IOException, ParseException
+	{
+		this.conf = (JSONObject)(new JSONParser()).parse(new FileReader(new File(conf)));
+	}
 	public static Config getInstance()
 	{
 		return instance;
@@ -53,18 +57,12 @@ public class Config {
 	
 	public void override(String conf) throws FileNotFoundException, IOException, ParseException
 	{
-		instance = new Config(conf);
-
-		instance.verbose(this.verbose);
-		instance.silent(this.silent);
-		instance.buildFile(this.buildFile);
-		if (this.clean)
-			instance.setClean();
+		this.setConfigFile(conf);
 	}
 
 	private Config(String conf) throws FileNotFoundException, IOException, ParseException
 	{
-		Config.conf = (JSONObject)(new JSONParser()).parse(new FileReader(new File(conf)));
+		this.setConfigFile(conf);
 	}
 
 	public void configure()
