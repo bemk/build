@@ -28,7 +28,7 @@ public class Syntax {
 	public static final String DYN_MOD_ARCHIVER_FLAGS = "mdarchiver-flags";
 
 	public static final String DEP = "depend";
-	public static final String DYN_DEP = "dynamic-depend";
+	public static final String DYN_DEP = "ddepend";
 
 	public static final String SOURCE = "source-files";
 	public static final String LINKED = "linked-file";

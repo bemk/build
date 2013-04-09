@@ -40,6 +40,7 @@ public class Options {
 		options.add(new OptionSilent());
 		options.add(new OptionVerbose());
 		options.add(new OptionClean());
+		options.add(new OptionConfig());
 
 		for (; i < args.length; i++)
 		{

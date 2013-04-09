@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import org.json.simple.JSONArray;
@@ -14,6 +15,7 @@ import org.json.simple.parser.ParseException;
 
 public class Module {
 	private ArrayList<Module> subModules = new ArrayList<Module>();
+	private HashMap<String, Module> dynamicModules = new HashMap<String, Module>();
 	private String cwd;
 	private String name;
 	private Module parent;
@@ -48,6 +50,7 @@ public class Module {
 		this(path, null);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Module(String path, Module parent) throws FileNotFoundException, IOException, ParseException
 	{
 		/* Get some verbosity out of our system */
@@ -120,6 +123,27 @@ public class Module {
 			this.dynModCompilerFlags = (JSONArray)module.get(Syntax.DYN_MOD_COMPILER_FLAGS);
 		if (module.containsKey(Syntax.DYN_MOD_LINKER_FLAGS))
 			this.dynModLinkerFlags = (JSONArray)module.get(Syntax.DYN_MOD_LINKER_FLAGS);
+		
+		/* Get all the dependencies, dynamic or not */
+		if (module.containsKey(Syntax.DEP))
+		{
+			JSONArray array = (JSONArray) module.get(Syntax.DEP);
+			Iterator i = array.iterator();
+			while (i.hasNext())
+			{
+				String s = (String) i.next();
+				this.subModules.add(new Module(s));
+			}
+		}
+		if (module.containsKey(Syntax.DYN_DEP))
+		{
+			JSONArray array = (JSONArray) module.get(Syntax.DYN_DEP);
+			Iterator i = array.iterator();
+			while (i.hasNext())
+			{
+				
+			}
+		}
 	}
 
 	protected String getGlobalArchiver()

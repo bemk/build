@@ -19,7 +19,7 @@
 
 "Comment" : "Dependencies",
 "depend" : [{"path": "test/new.build"}],
-"dynamic-depend" : [{"key" : "alpha", "path" : "test/alpha.build"}],
+"ddepend" : [{"key" : "alpha", "path" : "test/alpha.build"}],
 
 "Comment" : "Module wide compiler options",
 "mcompiler" : "clang",

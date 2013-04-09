@@ -31,15 +31,14 @@ import eu.orionos.build.option.Options;
 public class Build {
 	
 	private BuildUnit units;
-	private Config cfg;
 
 	public Build(String path, String args[])
 	{
 		try {
-			this.cfg = Config.getInstance(".config");
+			Config.getInstance(".config");
 			new Options(args);
 
-			this.units = new BuildUnit(cfg.buildFile());
+			this.units = new BuildUnit(Config.getInstance().buildFile());
 
 			units.compile();
 		} catch (FileNotFoundException e) {

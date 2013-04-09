@@ -50,6 +50,17 @@ public class Config {
 			instance = new Config(conf);
 		return instance;
 	}
+	
+	public void override(String conf) throws FileNotFoundException, IOException, ParseException
+	{
+		instance = new Config(conf);
+
+		instance.verbose(this.verbose);
+		instance.silent(this.silent);
+		instance.buildFile(this.buildFile);
+		if (this.clean)
+			instance.setClean();
+	}
 
 	private Config(String conf) throws FileNotFoundException, IOException, ParseException
 	{

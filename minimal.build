@@ -1,0 +1,8 @@
+{
+"name" : "test",
+"depend" : [{"path": "test/new.build"}],
+"mcompiler-flags" : "-Iinclude",
+"source-files" : ["main.c", "test.c"],
+"archived-file : "main.a",
+"link" : false
+}
