@@ -14,8 +14,14 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class Module {
+	private HashMap<String, CompileUnit> toRun = new HashMap<String, CompileUnit>();
+	private HashMap<String, CompileUnit> run = new HashMap<String, CompileUnit>();
+
 	private ArrayList<Module> subModules = new ArrayList<Module>();
 	private HashMap<String, Module> dynamicModules = new HashMap<String, Module>();
+	private ArrayList<String> sourceFiles;
+	private String linkedFile;
+	private String archivedFile;
 	private String cwd;
 	private String name;
 	private Module parent;
@@ -398,15 +404,41 @@ public class Module {
 		return a;
 	}
 
-	public void compile()
+	private String getOFile(String inFile)
 	{
+		String a = "";
+
+		return a;
 	}
 
-	public void compress()
+	public int compile()
 	{
+		if (Config.getInstance().getClean())
+			return this.clean();
+		return -1;
 	}
 
-	public void link()
+	public int compress()
 	{
+		return -1;
+	}
+
+	public int link()
+	{
+		return -1;
+	}
+
+	public int clean()
+	{
+		return -1;
+	}
+
+	public void mark(CompileUnit unit)
+	{
+		if (toRun.containsKey(unit.getCommand()))
+		{
+			toRun.remove(unit.getCommand());
+			run.put(unit.getCommand(), unit);
+		}
 	}
 }

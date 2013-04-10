@@ -20,8 +20,12 @@
 
 package eu.orionos.build.option;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import org.json.simple.parser.ParseException;
 
 import eu.orionos.build.Config;
 
@@ -29,7 +33,7 @@ public class Options {
 
 	private ArrayList<Option> options = new ArrayList<Option>();
 
-	public Options(String args[])
+	public Options(String args[]) throws FileNotFoundException, IOException, ParseException
 	{
 		int i = 0;
 		if (args.length == 0)

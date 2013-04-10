@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import eu.orionos.build.CompileUnit;
+
 public class CommandKernel {
 	private static CommandKernel instance;
 	
 	private ArrayList<CommandRunner> runners = new ArrayList<CommandRunner>();
-	private Queue<CommandSet> sets = new ConcurrentLinkedQueue<CommandSet>();
+	private Queue<CompileUnit> sets = new ConcurrentLinkedQueue<CompileUnit>();
 	
 	public static CommandKernel getInstance()
 	{
@@ -25,12 +27,12 @@ public class CommandKernel {
 		}
 	}
 	
-	public CommandSet getCommand()
+	public CompileUnit getCommand()
 	{
 		return sets.poll();
 	}
 	
-	public void runCommandSet(CommandSet set)
+	public void runCommandSet(CompileUnit set)
 	{
 		sets.offer(set);
 	}

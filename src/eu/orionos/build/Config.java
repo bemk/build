@@ -37,21 +37,40 @@ public class Config {
 	private boolean silent = false;
 	private boolean verbose = false;
 	private String buildFile = "main.build";
+	private String configFile = null;
 	private boolean clean = false;
-	
+	private boolean configured = false;
+
 	private void setConfigFile(String conf) throws FileNotFoundException, IOException, ParseException
 	{
-		this.conf = (JSONObject)(new JSONParser()).parse(new FileReader(new File(conf)));
+		this.configFile = conf;
+		File f = new File(configFile);
+		if (!f.exists())
+		{
+			return;
+		}
+		try {
+			this.conf = (JSONObject) new JSONParser().parse(new FileReader(f));
+		} catch (ParseException e) {
+			System.err.println("File " + configFile + " can't be parsed!");
+			this.conf = null;
+			this.configFile = null;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	public static Config getInstance()
 	{
+		if (instance == null)
+			instance = new Config();
 		return instance;
 	}
 
 	public static Config getInstance(String conf) throws FileNotFoundException, IOException, ParseException
 	{
 		if (instance == null)
-			instance = new Config(conf);
+			instance = new Config();
+		instance.setConfigFile(conf);
 		return instance;
 	}
 	
@@ -60,9 +79,8 @@ public class Config {
 		this.setConfigFile(conf);
 	}
 
-	private Config(String conf) throws FileNotFoundException, IOException, ParseException
+	private Config()
 	{
-		this.setConfigFile(conf);
 	}
 
 	public void configure()
@@ -143,5 +161,20 @@ public class Config {
 				return true;
 		}
 		return false;
+	}
+
+	public void configured(boolean configured)
+	{
+		this.configured = configured;
+	}
+	public boolean configured()
+	{
+		return this.configured;
+	}
+	public boolean hasConf()
+	{
+		if (this.conf == null)
+			return false;
+		return true;
 	}
 }

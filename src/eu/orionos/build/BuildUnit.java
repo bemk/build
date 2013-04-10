@@ -461,7 +461,6 @@ public class BuildUnit {
 				writeStream(p.getInputStream(), System.out);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return SUCCESS;

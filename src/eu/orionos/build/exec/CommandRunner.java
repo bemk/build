@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 
+import eu.orionos.build.CompileUnit;
 import eu.orionos.build.Config;
 
 public class CommandRunner extends Thread {
@@ -27,38 +28,32 @@ public class CommandRunner extends Thread {
 		}
 	}
 
-	private void writeCmd(String cmd[])
+	private void writeCmd(String cmd)
 	{
-		if (!Config.getInstance().silent())
+		if (!Config.getInstance().silent() && Config.getInstance().verbose())
 		{
-			for (String s : cmd)
-			{
-				System.out.print(s + " ");
-			}
-			System.out.println("");
+			System.out.println(cmd);
 		}
 	}
-	
+
 	@Override
 	public void run()
 	{
 		super.run();
 		while (true)
 		{
-			CommandSet c = CommandKernel.getInstance().getCommand();
-			Command cmd;
+			CompileUnit c = CommandKernel.getInstance().getCommand();
 			if (c != null)
 			{
 				try {
-					while ((cmd = c.getCmd()) != null)
-					{
-						Runtime r = Runtime.getRuntime();
-						Process p = r.exec(cmd.command());
+					writeCmd(c.getCommand());
+					Runtime r = Runtime.getRuntime();
+					Process p = r.exec(c.getCommand());
 
-						writeCmd(cmd.command());
-						writeStream(p.getErrorStream(), System.err);
-						writeStream(p.getInputStream(), System.out);
-					}
+					writeStream(p.getErrorStream(), System.err);
+					writeStream(p.getInputStream(), System.out);
+
+					c.markComplete();
 				}
 				catch (IOException e)
 				{

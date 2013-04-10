@@ -35,8 +35,21 @@ public class Build {
 	public Build(String path, String args[])
 	{
 		try {
-			Config.getInstance(".config");
+			Config.getInstance();
 			new Options(args);
+			if (Config.getInstance().hasConf() == false)
+			{
+				Config.getInstance().override(".config");
+				if (Config.getInstance().hasConf() == false)
+				{
+					System.err.println("No usable config files found!");
+					System.exit(1);
+				}
+			}
+			if (!Config.getInstance().configured())
+			{
+				/* \TODO: Present a nice little menu for configuring options */
+			}
 
 			this.units = new BuildUnit(Config.getInstance().buildFile());
 
