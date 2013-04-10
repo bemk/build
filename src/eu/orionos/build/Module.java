@@ -131,8 +131,8 @@ public class Module {
 			Iterator i = array.iterator();
 			while (i.hasNext())
 			{
-				String s = (String) i.next();
-				this.subModules.add(new Module(s));
+				JSONObject o = (JSONObject) i.next();
+				subModules.add(new Module((String) o.get(Syntax.DEP_PATH)));
 			}
 		}
 		if (module.containsKey(Syntax.DYN_DEP))
@@ -141,7 +141,8 @@ public class Module {
 			Iterator i = array.iterator();
 			while (i.hasNext())
 			{
-				
+				JSONObject o = (JSONObject) i.next();
+				dynamicModules.put((String) o.get(Syntax.DYN_DEP_KEY), new Module((String) o.get(Syntax.DEP_PATH)));
 			}
 		}
 	}
