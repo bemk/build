@@ -37,6 +37,7 @@ public class Syntax {
 	public static final String ARCHIVED = "archived-file";
 
 	public static final String LINK = "link";
+	public static final String ARCHIVE = "archive";
 
 	public static final String CONFIG_GLOBAL_KEY = "key";
 	public static final String CONFIG_GLOBAL_FLAGS = "flags";

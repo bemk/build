@@ -32,7 +32,7 @@ public class CommandKernel {
 		return sets.poll();
 	}
 	
-	public void runCommandSet(CompileUnit set)
+	public void runCommand(CompileUnit set)
 	{
 		sets.offer(set);
 	}
