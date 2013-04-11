@@ -24,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import org.json.simple.parser.ParseException;
 
+import eu.orionos.build.exec.CommandKernel;
 import eu.orionos.build.option.Options;
 
 public class Build {
@@ -51,6 +52,7 @@ public class Build {
 
 			this.modules = new Module(Config.getInstance().buildFile());
 			modules.build();
+			CommandKernel.getInstance().stopThreads();
 		} catch (FileNotFoundException e) {
 			System.err.println(e.getMessage());
 		} catch (IOException e) {

@@ -1,7 +1,7 @@
 {
-"name" : "test",
+"name" : "minimal",
 "mcompiler-flags" : "-Iinclude",
-"source-files" : [ "main.c", "test.c" ],
+"source-files" : [ "minimal.c" ],
 "archived-file" : "main.a",
 "link" : false,
 "archive" : true

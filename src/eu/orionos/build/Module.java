@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -16,8 +17,8 @@ import org.json.simple.parser.ParseException;
 import eu.orionos.build.exec.CommandKernel;
 
 public class Module {
-	private HashMap<String, CompileUnit> toRun = new HashMap<String, CompileUnit>();
-	private HashMap<String, CompileUnit> run = new HashMap<String, CompileUnit>();
+	private ConcurrentHashMap<String, CompileUnit> toRun;
+	private ConcurrentHashMap<String, CompileUnit> ran;
 
 	private ArrayList<Module> subModules = new ArrayList<Module>();
 	private HashMap<String, Module> dynamicModules = new HashMap<String, Module>();
@@ -56,6 +57,10 @@ public class Module {
 	private JSONArray dynModCompilerFlags;
 	private JSONArray dynModLinkerFlags;
 
+	public String getName()
+	{
+		return this.name;
+	}
 	public Module(String path) throws FileNotFoundException, IOException, ParseException
 	{
 		this(path, null);
@@ -90,6 +95,11 @@ public class Module {
 			System.err.println("Module in " + cwd + "referenced by " + path + " does not have a name field!");
 			System.err.println("Modules have to have a name field!");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
+		}
+		if (Config.getInstance().RegisterModule(this) == false)
+		{
+			System.err.println("Module with name: " + this.name + " conflicts with another module of the same name");
+			System.exit(ErrorCode.NAME_CONFLICT);
 		}
 
 		/* Read global stuff into local variables for easier access */
@@ -499,11 +509,15 @@ public class Module {
 	{
 		String a = "";
 
+		a += Config.getInstance().getBuildDir() + "/" + this.name + "-" + inFile + ".o";
+
 		return a;
 	}
 
 	public void build() throws InterruptedException
 	{
+		ran = new ConcurrentHashMap<String, CompileUnit>(Config.getInstance().threads()+1);
+		toRun = new ConcurrentHashMap<String, CompileUnit>(Config.getInstance().threads());
 		Iterator<Module> i = subModules.iterator();
 		while (i.hasNext())
 			i.next().build();
@@ -513,9 +527,9 @@ public class Module {
 
 		while (!toRun.isEmpty()){
 			Thread.sleep(50);
-			//System.err.println("Came back from yield");
 		}
 
+		/*
 		if (this.toArchive)
 		{
 			if (this.compress() != 0)
@@ -526,6 +540,12 @@ public class Module {
 			if (this.link() != 0)
 				System.exit(ErrorCode.LINK_FAILED);
 		}
+		*/
+	}
+
+	private String sFileLocation(String sFile)
+	{
+		return this.cwd + "/" + sFile;
 	}
 
 	public int compile()
@@ -536,8 +556,9 @@ public class Module {
 		Iterator<String> i = sourceFiles.iterator();
 		while (i.hasNext())
 		{
-			String sFile = i.next();
-			String oFile = getOFile(sFile);
+			String sFileName = i.next();
+			String sFile = sFileLocation(sFileName);
+			String oFile = getOFile(sFileName);
 			String compiler = getCompiler();
 			String compilerFlags = getCompilerFlags();
 
@@ -547,11 +568,10 @@ public class Module {
 				System.exit(ErrorCode.PARSE_FAILED);
 			}
 
-			String cmd = compiler + " -c " + sFile + " -o " + oFile + " " + compilerFlags;
+			String cmd[] = {compiler, "-c", sFile, "-o", oFile, compilerFlags};
 			CompileUnit c = new CompileUnit(this, cmd, oFile);
-			toRun.put(cmd, c);
-			//CommandKernel.getInstance().runCommand(c);
-			System.out.println("Running cmd: " + cmd);
+			toRun.put(c.key(), c);
+			CommandKernel.getInstance().runCommand(c);
 		}
 
 		return 0;
@@ -574,10 +594,10 @@ public class Module {
 
 	public void mark(CompileUnit unit)
 	{
-		if (toRun.containsKey(unit.getCommand()))
+		if (toRun.containsKey(unit.key()))
 		{
-			toRun.remove(unit.getCommand());
-			run.put(unit.getCommand(), unit);
+			toRun.remove(unit.key());
+			ran.put(unit.key(), unit);
 		}
 	}
 }

@@ -1,7 +1,7 @@
 {
-"name" : "test",
+"name" : "alpha",
 "mcompiler-flags" : "-Iinclude",
-"source-files" : [ "main.c", "test.c" ],
+"source-files" : [ "alpha.c" ],
 "archived-file" : "main.a",
 "link" : false,
 "archive" : true

@@ -3,9 +3,9 @@
 "name" : "test",
 
 "Comment" : "Project wide compiler options",
-"compiler" : "clang",
-"linker" : "clang",
-"archiver" : "ar",
+"compiler" : "echo",
+"linker" : "echo",
+"archiver" : "echo",
 
 "Comment" : "Project wide compiler flags",
 "compiler-flags" : "-c",
@@ -22,9 +22,9 @@
 "ddepend" : [{"key" : "alpha", "path" : "alpha.build"}],
 
 "Comment" : "Module wide compiler options",
-"mcompiler" : "clang",
-"mlinker" : "clang",
-"marchiver" : "ar",
+"mcompiler" : "echo",
+"mlinker" : "echo",
+"marchiver" : "echo",
 
 "Comment" : "Module wide compiler flags",
 "mcompiler-flags" : "-Iinclude",

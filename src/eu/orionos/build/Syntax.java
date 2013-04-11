@@ -41,4 +41,5 @@ public class Syntax {
 
 	public static final String CONFIG_GLOBAL_KEY = "key";
 	public static final String CONFIG_GLOBAL_FLAGS = "flags";
+	public static final String CONFIG_BUILD_DIR = "build-dir";
 }

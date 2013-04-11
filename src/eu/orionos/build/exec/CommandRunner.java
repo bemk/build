@@ -8,13 +8,21 @@ import java.io.PrintStream;
 
 import eu.orionos.build.CompileUnit;
 import eu.orionos.build.Config;
+import eu.orionos.build.ErrorCode;
 
 public class CommandRunner extends Thread {
+	private boolean runnable = true;
+
 	public CommandRunner()
 	{
 		super();
 	}
-	
+
+	public void haltThread()
+	{
+		this.runnable = false;
+	}
+
 	private void writeStream(InputStream p, PrintStream out) throws IOException
 	{
 		if (Config.getInstance().verbose() && !Config.getInstance().silent())
@@ -28,11 +36,15 @@ public class CommandRunner extends Thread {
 		}
 	}
 
-	private void writeCmd(String cmd)
+	private void writeCmd(String[] cmd)
 	{
 		if (!Config.getInstance().silent() && Config.getInstance().verbose())
 		{
-			System.out.println(cmd);
+			for (int i = 0; i < cmd.length; i++)
+			{
+				System.out.print(cmd[i] + " ");
+			}
+			System.out.println("");
 		}
 	}
 
@@ -40,7 +52,7 @@ public class CommandRunner extends Thread {
 	public void run()
 	{
 		super.run();
-		while (true)
+		while (runnable)
 		{
 			CompileUnit c = CommandKernel.getInstance().getCommand();
 			if (c != null)
@@ -53,10 +65,25 @@ public class CommandRunner extends Thread {
 					writeStream(p.getErrorStream(), System.err);
 					writeStream(p.getInputStream(), System.out);
 
+					if (p.waitFor() != 0)
+					{
+						System.err.println("Could not compute!");
+						r.halt(ErrorCode.INSTRUCTION_FAILED);
+					}
+
 					c.markComplete();
 				}
 				catch (IOException e)
 				{
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			} else
+			{
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}

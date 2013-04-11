@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import org.json.simple.JSONArray;
@@ -40,6 +41,9 @@ public class Config {
 	private String configFile = null;
 	private boolean clean = false;
 	private boolean configured = false;
+	private File buildDir = null;
+	private HashMap<String, Module> modules = new HashMap<String, Module>();
+	private int threads = 4;
 
 	private void setConfigFile(String conf) throws FileNotFoundException, IOException, ParseException
 	{
@@ -176,5 +180,35 @@ public class Config {
 		if (this.conf == null)
 			return false;
 		return true;
+	}
+	public boolean RegisterModule(Module m)
+	{
+		if (modules.containsKey(m.getName()))
+			return false;
+		
+		modules.put(m.getName(), m);
+		return true;
+	}
+	public String getBuildDir()
+	{
+		if (buildDir == null)
+		{
+			String s = (String) conf.get(Syntax.CONFIG_BUILD_DIR);
+			buildDir = new File(s);
+		}
+		if (!buildDir.exists())
+		{
+			buildDir.mkdir();
+		}
+		if (!buildDir.isDirectory())
+		{
+			System.err.println("The build directory specified is not a directory!");
+			System.exit(ErrorCode.FILE_NOT_FOUND);
+		}
+		return buildDir.getAbsolutePath();
+	}
+	public int threads()
+	{
+		return this.threads;
 	}
 }
