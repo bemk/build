@@ -555,19 +555,6 @@ public class Module {
 		while (!toRun.isEmpty()){
 			Thread.sleep(50);
 		}
-
-		/*
-		if (this.toArchive)
-		{
-			if (this.compress() != 0)
-				System.exit(ErrorCode.ARCHIVE_FAILED);
-		}
-		if (this.toLink)
-		{
-			if (this.link() != 0)
-				System.exit(ErrorCode.LINK_FAILED);
-		}
-		*/
 	}
 
 	private String sFileLocation(String sFile)
@@ -606,17 +593,20 @@ public class Module {
 
 	public int compress()
 	{
-		return -1;
+		System.out.println("Compressing");
+		return 0;
 	}
 
 	public int link()
 	{
-		return -1;
+		System.out.println("Linking");
+		return 0;
 	}
 
 	public int clean()
 	{
-		return -1;
+		System.out.println("Cleaning");
+		return 0;
 	}
 
 	public void mark(CompileUnit unit)
@@ -625,6 +615,19 @@ public class Module {
 		{
 			toRun.remove(unit.key());
 			ran.put(unit.key(), unit);
+		}
+		if (toRun.isEmpty())
+		{
+			if (this.toArchive)
+			{
+				if (this.compress() != 0)
+					System.exit(ErrorCode.ARCHIVE_FAILED);
+			}
+			if (this.toLink)
+			{
+				if (this.link() != 0)
+					System.exit(ErrorCode.LINK_FAILED);
+			}
 		}
 	}
 }

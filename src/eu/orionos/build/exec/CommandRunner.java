@@ -79,13 +79,11 @@ public class CommandRunner extends Thread {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-			} else
-			{
-				try {
-					Thread.sleep(50);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+			}
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 	}

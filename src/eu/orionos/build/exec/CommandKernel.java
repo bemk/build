@@ -11,7 +11,7 @@ public class CommandKernel {
 	private static CommandKernel instance;
 	
 	private ArrayList<CommandRunner> runners = new ArrayList<CommandRunner>();
-	private Queue<CompileUnit> sets = new ConcurrentLinkedQueue<CompileUnit>();
+	private Queue<CompileUnit> commands = new ConcurrentLinkedQueue<CompileUnit>();
 	
 	public static CommandKernel getInstance()
 	{
@@ -38,6 +38,14 @@ public class CommandKernel {
 	}
 	public void stopThreads()
 	{
+		while(!commands.isEmpty())
+		{
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+		}
 		for (CommandRunner r : runners)
 		{
 			try {
@@ -51,11 +59,11 @@ public class CommandKernel {
 
 	public CompileUnit getCommand()
 	{
-		return sets.poll();
+		return commands.poll();
 	}
 	
 	public void runCommand(CompileUnit set)
 	{
-		sets.offer(set);
+		commands.offer(set);
 	}
 }
