@@ -15,11 +15,11 @@
 "Comment" : "Project wide dynamic flags",
 "dcompiler-flags" : [{"key" : "alpha", "flags" : "-D ALHPA"}],
 "dlinker-flags" : [{"key" : "alpha", "flags" : "-D ALPHA"}],
-"darchiver-flags" : [{"key" : "alpha", "flags" : ""],
+"darchiver-flags" : [{"key" : "alpha", "flags" : ""}],
 
 "Comment" : "Dependencies",
-"depend" : [{"path": "test/new.build"}],
-"ddepend" : [{"key" : "alpha", "path" : "test/alpha.build"}],
+"depend" : [{"path": "minimal.build"}],
+"ddepend" : [{"key" : "alpha", "path" : "alpha.build"}],
 
 "Comment" : "Module wide compiler options",
 "mcompiler" : "clang",
@@ -34,13 +34,14 @@
 "Comment" : "Module wide dynamic flags",
 "mdcompiler-flags" : [{"key" : "beta", "flags" : "-D BETA"}],
 "mdlinker-flags" : [{"key" : "beta", "flags" : "-D BETA"}],
-"mdarchiver-flags" : [{"key" : "beta", "flags" : ""],
+"mdarchiver-flags" : [{"key" : "beta", "flags" : ""}],
 
 "Comment" : "Source/object references",
 "source-files" : ["main.c", "test.c"],
 "linked-file" : "main.bin",
-"archived-file : "main.a",
+"archived-file" : "main.a",
 
-"Comment" : "Define whether or not this module should get linked",
-"link" : true
+"Comment" : "Define whether or not this module should get linked and or archived",
+"link" : true,
+"archive" : false
 }
