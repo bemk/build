@@ -211,4 +211,8 @@ public class Config {
 	{
 		return this.threads;
 	}
+	public void threads(int threads)
+	{
+		this.threads = threads;
+	}
 }

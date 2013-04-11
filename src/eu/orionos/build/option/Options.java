@@ -45,6 +45,7 @@ public class Options {
 		options.add(new OptionVerbose());
 		options.add(new OptionClean());
 		options.add(new OptionConfig());
+		options.add(new OptionTask());
 
 		for (; i < args.length; i++)
 		{

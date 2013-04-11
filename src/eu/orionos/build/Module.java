@@ -509,6 +509,7 @@ public class Module {
 	{
 		String a = "";
 
+		inFile = inFile.substring(0, inFile.lastIndexOf("."));
 		a += Config.getInstance().getBuildDir() + "/" + this.name + "-" + inFile + ".o";
 
 		return a;
