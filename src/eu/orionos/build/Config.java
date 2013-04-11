@@ -181,6 +181,14 @@ public class Config {
 			return false;
 		return true;
 	}
+	public JSONArray getGlobalFlags()
+	{
+		return (JSONArray) conf.get(Syntax.GLOBAL_DEFS);
+	}
+	public JSONArray getModuleFlags(String key)
+	{
+		return (JSONArray) conf.get(key);
+	}
 	public boolean RegisterModule(Module m)
 	{
 		if (modules.containsKey(m.getName()))

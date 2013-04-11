@@ -515,6 +515,19 @@ public class Module {
 		return a;
 	}
 
+	private void buildSubModules(Iterator<String>i) throws InterruptedException
+	{
+		while (i.hasNext())
+		{
+			String flag = i.next();
+			if (dynamicModules.containsKey(flag))
+			{
+				dynamicModules.get(flag).build();
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
 	public void build() throws InterruptedException
 	{
 		ran = new ConcurrentHashMap<String, CompileUnit>(Config.getInstance().threads()+1);
@@ -522,6 +535,19 @@ public class Module {
 		Iterator<Module> i = subModules.iterator();
 		while (i.hasNext())
 			i.next().build();
+
+		JSONArray flags = Config.getInstance().getGlobalFlags();
+		if (flags != null)
+		{
+			Iterator<String> j = flags.iterator();
+			buildSubModules(j);
+		}
+		flags = Config.getInstance().getModuleFlags(name);
+		if (flags != null)
+		{
+			Iterator<String>j = flags.iterator();
+			buildSubModules(j);
+		}
 
 		if (this.compile() != 0)
 			System.exit(ErrorCode.COMPILE_FAILED);
