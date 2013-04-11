@@ -17,6 +17,7 @@ import org.json.simple.parser.ParseException;
 import eu.orionos.build.exec.CommandKernel;
 
 public class Module {
+	private boolean objectsReady = false;
 	private ConcurrentHashMap<String, CompileUnit> toRun;
 	private ConcurrentHashMap<String, CompileUnit> ran;
 
@@ -609,6 +610,11 @@ public class Module {
 		return 0;
 	}
 
+	public ArrayList<String> getObjectFiles()
+	{
+		return null;
+	}
+
 	public void mark(CompileUnit unit)
 	{
 		if (toRun.containsKey(unit.key()))
@@ -618,16 +624,7 @@ public class Module {
 		}
 		if (toRun.isEmpty())
 		{
-			if (this.toArchive)
-			{
-				if (this.compress() != 0)
-					System.exit(ErrorCode.ARCHIVE_FAILED);
-			}
-			if (this.toLink)
-			{
-				if (this.link() != 0)
-					System.exit(ErrorCode.LINK_FAILED);
-			}
+			CommandKernel.getInstance().signalDone(name);
 		}
 	}
 }

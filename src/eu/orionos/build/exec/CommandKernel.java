@@ -2,6 +2,7 @@ package eu.orionos.build.exec;
 
 import java.util.ArrayList;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import eu.orionos.build.CompileUnit;
@@ -12,6 +13,7 @@ public class CommandKernel {
 	
 	private ArrayList<CommandRunner> runners = new ArrayList<CommandRunner>();
 	private Queue<CompileUnit> commands = new ConcurrentLinkedQueue<CompileUnit>();
+	private ConcurrentHashMap<String, CompileUnit> waiting;
 	
 	public static CommandKernel getInstance()
 	{
@@ -24,6 +26,7 @@ public class CommandKernel {
 	}
 	private CommandKernel()
 	{
+		waiting = new ConcurrentHashMap<>(Config.getInstance().threads()+1);
 		for (int i = 0; i < Config.getInstance().threads(); i++)
 		{
 			runners.add(new CommandRunner());
@@ -38,10 +41,10 @@ public class CommandKernel {
 	}
 	public void stopThreads()
 	{
-		while(!commands.isEmpty())
+		while(!commands.isEmpty() && !waiting.isEmpty())
 		{
 			try {
-				Thread.sleep(50);
+				Thread.sleep(250);
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
@@ -65,5 +68,19 @@ public class CommandKernel {
 	public void runCommand(CompileUnit set)
 	{
 		commands.offer(set);
+	}
+
+	public void runWaitingCommand(CompileUnit cmd)
+	{
+		waiting.put(cmd.getModule().getName(), cmd);
+	}
+
+	public void signalDone(String module)
+	{
+		while (waiting.containsKey(module))
+		{
+			commands.add(waiting.get(module));
+			waiting.remove(module);
+		}
 	}
 }

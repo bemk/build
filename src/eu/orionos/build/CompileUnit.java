@@ -23,9 +23,14 @@ public class CompileUnit {
 		if (!Config.getInstance().silent())
 			System.out.println("[ OK ] " + object);
 	}
-	
+
 	public String key()
 	{
 		return module.getName() + object;
+	}
+
+	public Module getModule()
+	{
+		return module;
 	}
 }
