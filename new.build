@@ -3,9 +3,9 @@
 "name" : "test",
 
 "Comment" : "Project wide compiler options",
-"compiler" : "echo",
-"linker" : "echo",
-"archiver" : "echo",
+"compiler" : "clang",
+"linker" : "clang",
+"archiver" : "ar",
 
 "Comment" : "Project wide compiler flags",
 "compiler-flags" : "-c",
@@ -13,18 +13,18 @@
 "archiver-flags" : "",
 
 "Comment" : "Project wide dynamic flags",
-"dcompiler-flags" : [{"key" : "alpha", "flags" : "-D ALHPA"}],
+"dcompiler-flags" : [{"key" : "alpha", "flags" : "-D ALPHA"}],
 "dlinker-flags" : [{"key" : "alpha", "flags" : "-D ALPHA"}],
 "darchiver-flags" : [{"key" : "alpha", "flags" : ""}],
 
 "Comment" : "Dependencies",
-"depend" : [{"path": "minimal.build"}],
-"ddepend" : [{"key" : "alpha", "path" : "alpha.build"}],
+"depend" : [{"path": "src/test/minimal.build"}],
+"ddepend" : [{"key" : "alpha", "path" : "src/test/alpha.build"}],
 
 "Comment" : "Module wide compiler options",
-"mcompiler" : "echo",
-"mlinker" : "echo",
-"marchiver" : "echo",
+"mcompiler" : "clang",
+"mlinker" : "clang",
+"marchiver" : "ar",
 
 "Comment" : "Module wide compiler flags",
 "mcompiler-flags" : "-Iinclude",
@@ -37,7 +37,7 @@
 "mdarchiver-flags" : [{"key" : "beta", "flags" : ""}],
 
 "Comment" : "Source/object references",
-"source-files" : ["main.c", "test.c"],
+"source-files" : ["src/test/test.c"],
 "linked-file" : "main.bin",
 "archived-file" : "main.a",
 

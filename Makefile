@@ -4,4 +4,4 @@ all:
 
 .PHONY: clean
 clean:
-	@java -jar build.jar -vc --config new.config new.build $(FLAGS)
+	@java -jar build.jar -c --config new.config new.build $(FLAGS)

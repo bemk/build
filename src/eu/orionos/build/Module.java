@@ -17,7 +17,6 @@ import org.json.simple.parser.ParseException;
 import eu.orionos.build.exec.CommandKernel;
 
 public class Module {
-	private boolean objectsReady = false;
 	private ConcurrentHashMap<String, CompileUnit> toRun;
 	private ConcurrentHashMap<String, CompileUnit> ran;
 
@@ -515,6 +514,9 @@ public class Module {
 		String a = "";
 
 		inFile = inFile.substring(0, inFile.lastIndexOf("."));
+		inFile = inFile.replace('\\', '_');
+		inFile = inFile.replace('/', '-');
+
 		a += Config.getInstance().getBuildDir() + "/" + this.name + "-" + inFile + ".o";
 
 		return a;
@@ -532,26 +534,48 @@ public class Module {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public void build() throws InterruptedException
+	private void addDynamicDeps(ArrayList<Module> dependencies, Iterator<String> i)
 	{
-		ran = new ConcurrentHashMap<String, CompileUnit>(Config.getInstance().threads()+1);
-		toRun = new ConcurrentHashMap<String, CompileUnit>(Config.getInstance().threads());
-		Iterator<Module> i = subModules.iterator();
 		while (i.hasNext())
-			i.next().build();
+		{
+			String flag = i.next();
+			if (dynamicModules.containsKey(flag))
+			{
+				Module m = dynamicModules.get(flag);
+				if (!dependencies.contains(dynamicModules.get(m)))
+				{
+					dependencies.add(m);
+				}
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private ArrayList<Module> calculateDependencies()
+	{
+		ArrayList<Module> dependencies = new ArrayList<Module>(subModules);
 
 		JSONArray flags = Config.getInstance().getGlobalFlags();
 		if (flags != null)
 		{
-			Iterator<String> j = flags.iterator();
-			buildSubModules(j);
+			Iterator<String> i = flags.iterator();
+			addDynamicDeps(dependencies, i);
 		}
-		flags = Config.getInstance().getModuleFlags(name);
-		if (flags != null)
+
+		return dependencies;
+	}
+
+	public void build() throws InterruptedException
+	{
+		ran = new ConcurrentHashMap<String, CompileUnit>(Config.getInstance().threads()+1);
+		toRun = new ConcurrentHashMap<String, CompileUnit>(Config.getInstance().threads());
+
+		ArrayList<Module> deps = calculateDependencies();
+		Iterator<Module> i = deps.iterator();
+		while (i.hasNext())
 		{
-			Iterator<String>j = flags.iterator();
-			buildSubModules(j);
+			Module m = i.next();
+			m.build();
 		}
 
 		if (this.compile() != 0)
@@ -612,19 +636,42 @@ public class Module {
 
 	public int clean()
 	{
-		System.out.println("Cleaning");
+		Iterator<String> i = sourceFiles.iterator();
+		while (i.hasNext())
+		{
+			String sFile = i.next();
+			String obj = getOFile(sFile);
+			String cmd[] = {"rm", "-fv", obj};
+			
+			CompileUnit u = new CompileUnit(this, cmd, obj);
+			toRun.put(u.key(), u);
+			CommandKernel.getInstance().runCommand(u);
+		}
+
 		return 0;
 	}
 
+	private ArrayList<String> getCompilerObjects()
+	{
+		return null;
+	}
 	public ArrayList<String> getObjectFiles()
 	{
-		/* \TODO: Generate a list of output files */
+		ArrayList<String> ret = new ArrayList<String>();
 		/*
 		 * These output files can be the object files put out by the compiler.
 		 * If a linker is set however, it is chosen as the only output files.
 		 * If an archiver is set, its output is chosen over both linker and object files.
 		 */
-		return null;
+
+		if (this.toArchive)
+			ret.add(this.archivedFile);
+		else if (this.toLink)
+			ret.add(this.linkedFile);
+		else
+			ret.addAll(getCompilerObjects());
+
+		return ret;
 	}
 
 	public void mark(CompileUnit unit)
@@ -638,10 +685,5 @@ public class Module {
 		{
 			CommandKernel.getInstance().signalDone(name);
 		}
-	}
-
-	public boolean getFinished()
-	{
-		return false;
 	}
 }

@@ -33,4 +33,9 @@ public class CompileUnit {
 	{
 		return module;
 	}
+
+	public String getObject()
+	{
+		return this.object;
+	}
 }
