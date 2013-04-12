@@ -12,8 +12,8 @@ public class CommandKernel {
 	private static CommandKernel instance;
 	
 	private ArrayList<CommandRunner> runners = new ArrayList<CommandRunner>();
-	private Queue<CompileUnit> commands = new ConcurrentLinkedQueue<CompileUnit>();
-	private ConcurrentHashMap<String, CompileUnit> waiting;
+	private Queue<CompileUnit> compileCommands = new ConcurrentLinkedQueue<CompileUnit>();
+	private ConcurrentHashMap<String, CompileUnit> archiveCommands;
 	
 	public static CommandKernel getInstance()
 	{
@@ -26,7 +26,7 @@ public class CommandKernel {
 	}
 	private CommandKernel()
 	{
-		waiting = new ConcurrentHashMap<>(Config.getInstance().threads()+1);
+		archiveCommands = new ConcurrentHashMap<>(Config.getInstance().threads()+1);
 		for (int i = 0; i < Config.getInstance().threads(); i++)
 		{
 			runners.add(new CommandRunner());
@@ -41,7 +41,7 @@ public class CommandKernel {
 	}
 	public void stopThreads()
 	{
-		while(!commands.isEmpty() && !waiting.isEmpty())
+		while(!compileCommands.isEmpty() && !archiveCommands.isEmpty())
 		{
 			try {
 				Thread.sleep(250);
@@ -62,25 +62,25 @@ public class CommandKernel {
 
 	public CompileUnit getCommand()
 	{
-		return commands.poll();
+		return compileCommands.poll();
 	}
 	
-	public void runCommand(CompileUnit cmd)
+	public void runCompileCommand(CompileUnit cmd)
 	{
-		commands.offer(cmd);
+		compileCommands.offer(cmd);
 	}
 
 	public void runWaitingCommand(CompileUnit cmd)
 	{
-		waiting.put(cmd.getModule().getName(), cmd);
+		archiveCommands.put(cmd.getModule().getName(), cmd);
 	}
 
-	public void signalDone(String module)
+	public void signalNextPhase(String module)
 	{
-		while (waiting.containsKey(module))
+		while (archiveCommands.containsKey(module))
 		{
-			commands.add(waiting.get(module));
-			waiting.remove(module);
+			compileCommands.add(archiveCommands.get(module));
+			archiveCommands.remove(module);
 		}
 	}
 }

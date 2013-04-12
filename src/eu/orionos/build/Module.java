@@ -30,6 +30,8 @@ public class Module {
 	private Module parent;
 	private JSONObject module;
 
+	private CompilePhase phase = CompilePhase.COMPILING;
+
 	private boolean toLink = false;
 	private boolean toArchive = false;
 
@@ -522,18 +524,6 @@ public class Module {
 		return a;
 	}
 
-	private void buildSubModules(Iterator<String>i) throws InterruptedException
-	{
-		while (i.hasNext())
-		{
-			String flag = i.next();
-			if (dynamicModules.containsKey(flag))
-			{
-				dynamicModules.get(flag).build();
-			}
-		}
-	}
-
 	private void addDynamicDeps(ArrayList<Module> dependencies, Iterator<String> i)
 	{
 		while (i.hasNext())
@@ -614,7 +604,7 @@ public class Module {
 			String cmd[] = {compiler, "-c", sFile, "-o", oFile, compilerFlags};
 			CompileUnit c = new CompileUnit(this, cmd, oFile);
 			toRun.put(c.key(), c);
-			CommandKernel.getInstance().runCommand(c);
+			CommandKernel.getInstance().runCompileCommand(c);
 		}
 
 		return 0;
@@ -645,7 +635,7 @@ public class Module {
 			
 			CompileUnit u = new CompileUnit(this, cmd, obj);
 			toRun.put(u.key(), u);
-			CommandKernel.getInstance().runCommand(u);
+			CommandKernel.getInstance().runCompileCommand(u);
 		}
 
 		return 0;
@@ -683,7 +673,31 @@ public class Module {
 		}
 		if (toRun.isEmpty())
 		{
-			CommandKernel.getInstance().signalDone(name);
+			switch (phase)
+			{
+			case COMPILING:
+				if (toArchive)
+				{
+					phase = CompilePhase.ARCHIVING;
+					this.compress();
+				}
+				else
+				{
+					phase = CompilePhase.LINKING;
+					this.link();
+				}
+				break;
+			case ARCHIVING:
+				phase = CompilePhase.LINKING;
+				this.link();
+			case LINKING:
+				/* And we're done! */
+				break;
+			default:
+				/* Not sure how we'll ever get here ... */
+				break;
+			}
+			CommandKernel.getInstance().signalNextPhase(name);
 		}
 	}
 }
