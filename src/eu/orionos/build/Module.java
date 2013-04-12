@@ -86,7 +86,11 @@ public class Module {
 		module = (JSONObject) new JSONParser().parse(new FileReader(f));
 		/* Get some paths right */
 		this.cwd = f.getAbsolutePath();
-		int len = this.cwd.lastIndexOf('/');
+		int len = 0;
+		if (System.getProperty("os.name").toLowerCase().contains("win"))
+			len = this.cwd.lastIndexOf('\\');
+		else
+			len = this.cwd.lastIndexOf('/');
 		this.cwd = this.cwd.substring(0, len);
 
 		if (module.containsKey("name"))
@@ -595,12 +599,14 @@ public class Module {
 	public int compress()
 	{
 		System.out.println("Compressing");
+		/* \TODO: prepare the archiving command */
 		return 0;
 	}
 
 	public int link()
 	{
 		System.out.println("Linking");
+		/* \TODO: prepare the linking command */
 		return 0;
 	}
 
@@ -612,6 +618,12 @@ public class Module {
 
 	public ArrayList<String> getObjectFiles()
 	{
+		/* \TODO: Generate a list of output files */
+		/*
+		 * These output files can be the object files put out by the compiler.
+		 * If a linker is set however, it is chosen as the only output files.
+		 * If an archiver is set, its output is chosen over both linker and object files.
+		 */
 		return null;
 	}
 
@@ -626,5 +638,10 @@ public class Module {
 		{
 			CommandKernel.getInstance().signalDone(name);
 		}
+	}
+
+	public boolean getFinished()
+	{
+		return false;
 	}
 }

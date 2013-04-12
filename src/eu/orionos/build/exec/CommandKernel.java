@@ -34,8 +34,10 @@ public class CommandKernel {
 	}
 	private void startThreads()
 	{
+		int i = 0;
 		for (CommandRunner r: runners)
 		{
+			System.err.println("Starting thread: " + (++i));
 			r.start();
 		}
 	}
@@ -44,6 +46,7 @@ public class CommandKernel {
 		while(!commands.isEmpty() && !waiting.isEmpty())
 		{
 			try {
+				System.err.println("Waiting for empty queue");
 				Thread.sleep(250);
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
