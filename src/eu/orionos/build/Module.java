@@ -201,9 +201,11 @@ public class Module {
 		if (module.containsKey(Syntax.DYN_MOD_LINKER_FLAGS))
 			this.dynModLinkerFlags = (JSONArray)module.get(Syntax.DYN_MOD_LINKER_FLAGS);
 
+		/* Find all source files for this module */
 		if (module.containsKey(Syntax.SOURCE))
 			this.sourceFiles.addAll(((JSONArray)module.get(Syntax.SOURCE)));
 
+		/* Determine whether or not we should link */
 		if (module.containsKey(Syntax.LINK))
 		{
 			this.toLink = (boolean) module.get(Syntax.LINK);
@@ -213,6 +215,7 @@ public class Module {
 			System.err.println("Module " + name + " Did not specify linking");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
+		/* And determine the same for archiving */
 		if (module.containsKey(Syntax.ARCHIVE))
 		{
 			this.toArchive = (boolean) module.get(Syntax.ARCHIVE);
@@ -221,6 +224,28 @@ public class Module {
 		{
 			System.err.println("Module " + name + " did not specify archiving");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
+		}
+		/* Determine the linked output file */
+		if (module.containsKey(Syntax.LINKED))
+		{
+			this.linkedFile = (String) module.get(Syntax.LINKED);
+		}
+		else if (this.toLink)
+		{
+			System.err.println("Module " + name + " is to link, but no output file specified");
+			System.err.println("Specify: \"" + Syntax.LINKED + "\" : \"<outputfile>\"");
+			System.exit(ErrorCode.PARSE_FAILED);
+		}
+		/* Determine the archived output file */
+		if (module.containsKey(Syntax.ARCHIVED))
+		{
+			this.archivedFile = (String) module.get(Syntax.ARCHIVED);
+		}
+		else if (this.toArchive)
+		{
+			System.err.println("Module " + name + " is to be archived, but no output file specified");
+			System.err.println("Specify: \"" + Syntax.ARCHIVED + "\" : \"<outputfile>\"");
+			System.exit(ErrorCode.PARSE_FAILED);
 		}
 		
 		/* Get all the dependencies, dynamic or not */
@@ -246,6 +271,9 @@ public class Module {
 		}
 	}
 
+	/* These functions retrieve the global values only. These are helper
+	 * functions and should only be called by the functions that determine the
+	 * actual values */
 	protected String getGlobalArchiver()
 	{
 		if (parent != null && this.globalArchiver == null)
@@ -302,6 +330,7 @@ public class Module {
 		return a;
 	}
 
+	/* And get the actual strings to instert into the commands */
 	protected String getCompiler()
 	{
 		if (modCompiler == null)
@@ -512,6 +541,7 @@ public class Module {
 		return a;
 	}
 
+	/* Turn an input file name into the name of a unique output file */
 	private String getOFile(String inFile)
 	{
 		String a = "";
@@ -525,6 +555,7 @@ public class Module {
 		return a;
 	}
 
+	/* helper function for determining the actual dependencies */
 	private void addDynamicDeps(ArrayList<Module> dependencies, Iterator<String> i)
 	{
 		while (i.hasNext())
@@ -541,6 +572,7 @@ public class Module {
 		}
 	}
 
+	/* Use this to calculate the dependencies to wait for, and to make build */
 	@SuppressWarnings("unchecked")
 	private ArrayList<Module> calculateDependencies()
 	{
@@ -556,6 +588,7 @@ public class Module {
 		return dependencies;
 	}
 
+	/* Initialise build phase, make all dependencies compile, and then do the same */
 	public void build() throws InterruptedException
 	{
 		CommandKernel.getInstance().registerModule(this);
@@ -576,11 +609,13 @@ public class Module {
 			System.exit(ErrorCode.COMPILE_FAILED);
 	}
 
+	/* get the absolute location of a file */
 	private String sFileLocation(String sFile)
 	{
 		return this.cwd + "/" + sFile;
 	}
 
+	/* Does this need more explanation? */
 	public int compile()
 	{
 		if (Config.getInstance().getClean())
@@ -610,6 +645,7 @@ public class Module {
 		return 0;
 	}
 
+	/* Generally this should call the ar command */
 	public int compress()
 	{
 		/*
@@ -626,12 +662,9 @@ public class Module {
 		return 0;
 	}
 
+	/* Also speaks for itself */
 	public int link()
 	{
-		ArrayList<Module> deps = calculateDependencies();
-		/* Wait for all the dependencies to finish compiling, archiving and linking */
-
-
 		/* TODO: Make the command actually make sense */
 		String cmd[] = {"echo", "linking"};
 		CompileUnit c = new CompileUnit(this, cmd, "linkTest");
@@ -641,6 +674,7 @@ public class Module {
 		return 0;
 	}
 
+	/* Doesn't need much more explanation */
 	public int clean()
 	{
 		this.phase = CompilePhase.CLEANING;
@@ -659,6 +693,7 @@ public class Module {
 		return 0;
 	}
 
+	/*
 	private ArrayList<String> getCompilerObjects()
 	{
 		return null;
@@ -670,7 +705,7 @@ public class Module {
 		 * These output files can be the object files put out by the compiler.
 		 * If a linker is set however, it is chosen as the only output files.
 		 * If an archiver is set, its output is chosen over both linker and object files.
-		 */
+		 *//*
 
 		if (this.toArchive)
 			ret.add(this.archivedFile);
@@ -681,7 +716,9 @@ public class Module {
 
 		return ret;
 	}
+	*/
 
+	/* Mark a dependency as completed */
 	public void markDone(Module m)
 	{
 		if (waiting.containsKey(m.getName()))
@@ -691,6 +728,7 @@ public class Module {
 		}
 	}
 
+	/* Make an attempt at moving on to the next build phase */
 	private void switchPhases()
 	{
 		if (toRun.isEmpty())
@@ -751,6 +789,7 @@ public class Module {
 		}
 	}
 
+	/* Is to run each time a compile unit is done */
 	public void markCompileUnitDone(CompileUnit unit)
 	{
 		if (toRun.containsKey(unit.key()))
@@ -761,6 +800,7 @@ public class Module {
 		switchPhases();
 	}
 
+	/* Allows parent objects to check whether we're done or not */
 	public boolean getDone()
 	{
 		return waiting.isEmpty();
