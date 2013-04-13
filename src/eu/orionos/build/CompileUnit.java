@@ -19,7 +19,7 @@ public class CompileUnit {
 
 	public void markComplete()
 	{
-		module.mark(this);
+		module.markCompileUnitDone(this);
 		if (!Config.getInstance().silent())
 			System.out.println("[ OK ] " + object);
 	}

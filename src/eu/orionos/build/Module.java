@@ -19,6 +19,7 @@ import eu.orionos.build.exec.CommandKernel;
 public class Module {
 	private ConcurrentHashMap<String, CompileUnit> toRun;
 	private ConcurrentHashMap<String, CompileUnit> ran;
+	private ConcurrentHashMap<String, Module> waiting;
 
 	private ArrayList<Module> subModules = new ArrayList<Module>();
 	private HashMap<String, Module> dynamicModules = new HashMap<String, Module>();
@@ -557,23 +558,22 @@ public class Module {
 
 	public void build() throws InterruptedException
 	{
+		CommandKernel.getInstance().registerModule(this);
 		ran = new ConcurrentHashMap<String, CompileUnit>(Config.getInstance().threads()+1);
-		toRun = new ConcurrentHashMap<String, CompileUnit>(Config.getInstance().threads());
+		toRun = new ConcurrentHashMap<String, CompileUnit>(Config.getInstance().threads()+1);
+		waiting = new ConcurrentHashMap<String, Module>(Config.getInstance().threads()+1);
 
 		ArrayList<Module> deps = calculateDependencies();
 		Iterator<Module> i = deps.iterator();
 		while (i.hasNext())
 		{
 			Module m = i.next();
+			waiting.put(m.getName(), m);
 			m.build();
 		}
 
 		if (this.compile() != 0)
 			System.exit(ErrorCode.COMPILE_FAILED);
-
-		while (!toRun.isEmpty()){
-			Thread.sleep(50);
-		}
 	}
 
 	private String sFileLocation(String sFile)
@@ -604,7 +604,7 @@ public class Module {
 			String cmd[] = {compiler, "-c", sFile, "-o", oFile, compilerFlags};
 			CompileUnit c = new CompileUnit(this, cmd, oFile);
 			toRun.put(c.key(), c);
-			CommandKernel.getInstance().runCompileCommand(c);
+			CommandKernel.getInstance().runCommand(c);
 		}
 
 		return 0;
@@ -612,20 +612,38 @@ public class Module {
 
 	public int compress()
 	{
-		System.out.println("Compressing");
-		/* \TODO: prepare the archiving command */
+		/*
+		 * We don't need to care about other modules finishing their build process.
+		 * We just need to get the archiving done.
+		 */
+
+		/* TODO: Make the command actually make sense */
+		String cmd[] = {"echo", "compressing"};
+		CompileUnit c = new CompileUnit(this, cmd, "arTest");
+		toRun.put(c.key(), c);
+		CommandKernel.getInstance().runCommand(c);
+
 		return 0;
 	}
 
 	public int link()
 	{
-		System.out.println("Linking");
-		/* \TODO: prepare the linking command */
+		ArrayList<Module> deps = calculateDependencies();
+		/* Wait for all the dependencies to finish compiling, archiving and linking */
+
+
+		/* TODO: Make the command actually make sense */
+		String cmd[] = {"echo", "linking"};
+		CompileUnit c = new CompileUnit(this, cmd, "linkTest");
+		toRun.put(c.key(), c);
+		CommandKernel.getInstance().runCommand(c);
+
 		return 0;
 	}
 
 	public int clean()
 	{
+		this.phase = CompilePhase.CLEANING;
 		Iterator<String> i = sourceFiles.iterator();
 		while (i.hasNext())
 		{
@@ -635,7 +653,7 @@ public class Module {
 			
 			CompileUnit u = new CompileUnit(this, cmd, obj);
 			toRun.put(u.key(), u);
-			CommandKernel.getInstance().runCompileCommand(u);
+			CommandKernel.getInstance().runCommand(u);
 		}
 
 		return 0;
@@ -664,13 +682,17 @@ public class Module {
 		return ret;
 	}
 
-	public void mark(CompileUnit unit)
+	public void markDone(Module m)
 	{
-		if (toRun.containsKey(unit.key()))
+		if (waiting.containsKey(m.getName()))
 		{
-			toRun.remove(unit.key());
-			ran.put(unit.key(), unit);
+			waiting.remove(m.name);
+			switchPhases();
 		}
+	}
+
+	private void switchPhases()
+	{
 		if (toRun.isEmpty())
 		{
 			switch (phase)
@@ -683,21 +705,64 @@ public class Module {
 				}
 				else
 				{
-					phase = CompilePhase.LINKING;
-					this.link();
+					phase = CompilePhase.WAITING_FOR_DEPS;
+					switchPhases();
 				}
 				break;
 			case ARCHIVING:
-				phase = CompilePhase.LINKING;
-				this.link();
+				phase = CompilePhase.WAITING_FOR_DEPS;
+				switchPhases();
+			case WAITING_FOR_DEPS:
+				if (waiting.isEmpty())
+				{
+					if (toLink)
+					{
+						phase = CompilePhase.LINKING;
+						this.link();
+					}
+					else
+					{
+						phase = CompilePhase.DONE;
+						this.switchPhases();
+					}
+				}
+				break;
 			case LINKING:
 				/* And we're done! */
+				CommandKernel.getInstance().unregisterModule(this);
+				phase = CompilePhase.DONE;
+				switchPhases();
+				break;
+			case DONE:
+				CommandKernel.getInstance().unregisterModule(this);
+				if (parent != null)
+					parent.markDone(this);
+				break;
+			case CLEANING:
+				phase = CompilePhase.DONE;
+				switchPhases();
 				break;
 			default:
-				/* Not sure how we'll ever get here ... */
+				/* Not sure how we'll ever get here, but having a default option
+				 * is considered good practice ...
+				 */
 				break;
 			}
-			CommandKernel.getInstance().signalNextPhase(name);
 		}
+	}
+
+	public void markCompileUnitDone(CompileUnit unit)
+	{
+		if (toRun.containsKey(unit.key()))
+		{
+			toRun.remove(unit.key());
+			ran.put(unit.key(), unit);
+		}
+		switchPhases();
+	}
+
+	public boolean getDone()
+	{
+		return waiting.isEmpty();
 	}
 }

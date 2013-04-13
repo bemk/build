@@ -7,13 +7,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import eu.orionos.build.CompileUnit;
 import eu.orionos.build.Config;
+import eu.orionos.build.Module;
 
 public class CommandKernel {
 	private static CommandKernel instance;
 	
 	private ArrayList<CommandRunner> runners = new ArrayList<CommandRunner>();
 	private Queue<CompileUnit> compileCommands = new ConcurrentLinkedQueue<CompileUnit>();
-	private ConcurrentHashMap<String, CompileUnit> archiveCommands;
+	private ConcurrentHashMap<String, Module> modules;
 	
 	public static CommandKernel getInstance()
 	{
@@ -24,14 +25,16 @@ public class CommandKernel {
 		}
 		return instance;
 	}
+
 	private CommandKernel()
 	{
-		archiveCommands = new ConcurrentHashMap<>(Config.getInstance().threads()+1);
+		modules = new ConcurrentHashMap<>(Config.getInstance().threads()+1);
 		for (int i = 0; i < Config.getInstance().threads(); i++)
 		{
 			runners.add(new CommandRunner());
 		}
 	}
+
 	private void startThreads()
 	{
 		for (CommandRunner r : runners)
@@ -39,9 +42,10 @@ public class CommandKernel {
 			r.start();
 		}
 	}
+
 	public void stopThreads()
 	{
-		while(!compileCommands.isEmpty() && !archiveCommands.isEmpty())
+		while(!modules.isEmpty())
 		{
 			try {
 				Thread.sleep(250);
@@ -65,22 +69,30 @@ public class CommandKernel {
 		return compileCommands.poll();
 	}
 	
-	public void runCompileCommand(CompileUnit cmd)
+	public void runCommand(CompileUnit cmd)
 	{
 		compileCommands.offer(cmd);
 	}
 
-	public void runWaitingCommand(CompileUnit cmd)
+
+	public void registerModule(Module m)
 	{
-		archiveCommands.put(cmd.getModule().getName(), cmd);
+		if (!modules.containsKey(m.getName()))
+		{
+			modules.put(m.getName(), m);
+		}
 	}
 
-	public void signalNextPhase(String module)
+	public void unregisterModule(Module m)
 	{
-		while (archiveCommands.containsKey(module))
+		if (modules.containsKey(m.getName()))
 		{
-			compileCommands.add(archiveCommands.get(module));
-			archiveCommands.remove(module);
+			modules.remove(m.getName());
 		}
+	}
+
+	public boolean getModule(Module m)
+	{
+		return modules.containsKey(m.getName());
 	}
 }

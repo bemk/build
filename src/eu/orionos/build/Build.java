@@ -52,6 +52,8 @@ public class Build {
 
 			this.modules = new Module(Config.getInstance().buildFile());
 			modules.build();
+			while (!modules.getDone())
+				Thread.sleep(250);
 			CommandKernel.getInstance().stopThreads();
 		} catch (FileNotFoundException e) {
 			System.err.println(e.getMessage());
