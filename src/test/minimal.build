@@ -2,7 +2,7 @@
 "name" : "minimal",
 "mcompiler-flags" : "-Iinclude",
 "source-files" : [ "minimal.c" ],
-"archived-file" : "main.a",
+"archived-file" : "minimal.a",
 "link" : false,
 "archive" : true
 }

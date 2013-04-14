@@ -10,7 +10,7 @@
 "Comment" : "Project wide compiler flags",
 "compiler-flags" : "-c",
 "linker-flags" : "",
-"archiver-flags" : "",
+"archiver-flags" : "rs",
 
 "Comment" : "Project wide dynamic flags",
 "dcompiler-flags" : [{"key" : "alpha", "flags" : "-D ALPHA"}],

@@ -24,6 +24,7 @@ public class Module {
 	private ArrayList<Module> subModules = new ArrayList<Module>();
 	private HashMap<String, Module> dynamicModules = new HashMap<String, Module>();
 	private ArrayList<String> sourceFiles = new ArrayList<String>();
+	private ArrayList<String> objectFiles = new ArrayList<String>();
 	private String linkedFile;
 	private String archivedFile;
 	private String cwd;
@@ -297,11 +298,11 @@ public class Module {
 	{
 		String a = "";
 		if (parent != null)
-			a = parent.getGlobalCompilerFlags();
-		if (!a.isEmpty() && globalCompilerFlags != null)
-			a += " " + globalCompilerFlags;
-		else
-			a += globalCompilerFlags;
+			a = parent.getGlobalArchiverFlags();
+		if (!a.isEmpty() && globalArchiverFlags != null)
+			a += " " + globalArchiverFlags;
+		else if (globalArchiverFlags != null)
+			a += globalArchiverFlags;
 
 		return a;
 	}
@@ -555,6 +556,16 @@ public class Module {
 		return a;
 	}
 
+	private String getAFile()
+	{
+		return Config.getInstance().getBuildDir() + "/" + archivedFile;
+	}
+
+	private String getLFile()
+	{
+		return Config.getInstance().getBuildDir() + "/" + linkedFile;
+	}
+
 	/* helper function for determining the actual dependencies */
 	private void addDynamicDeps(ArrayList<Module> dependencies, Iterator<String> i)
 	{
@@ -615,6 +626,13 @@ public class Module {
 		return this.cwd + "/" + sFile;
 	}
 
+	private void sendCommand(String cmd[], String object)
+	{
+		CompileUnit c = new CompileUnit(this, cmd, object);
+		toRun.put(c.key(), c);
+		CommandKernel.getInstance().runCommand(c);
+	}
+
 	/* Does this need more explanation? */
 	public int compile()
 	{
@@ -627,6 +645,7 @@ public class Module {
 			String sFileName = i.next();
 			String sFile = sFileLocation(sFileName);
 			String oFile = getOFile(sFileName);
+			objectFiles.add(oFile);
 			String compiler = getCompiler();
 			String compilerFlags = getCompilerFlags();
 
@@ -637,9 +656,7 @@ public class Module {
 			}
 
 			String cmd[] = {compiler, "-c", sFile, "-o", oFile, compilerFlags};
-			CompileUnit c = new CompileUnit(this, cmd, oFile);
-			toRun.put(c.key(), c);
-			CommandKernel.getInstance().runCommand(c);
+			sendCommand(cmd, oFile);
 		}
 
 		return 0;
@@ -654,10 +671,15 @@ public class Module {
 		 */
 
 		/* TODO: Make the command actually make sense */
-		String cmd[] = {"echo", "compressing"};
-		CompileUnit c = new CompileUnit(this, cmd, "arTest");
-		toRun.put(c.key(), c);
-		CommandKernel.getInstance().runCommand(c);
+		ArrayList<String> dynamicCommand = new ArrayList<String>();
+		dynamicCommand.add(getArchiver());
+		dynamicCommand.add(getArchiverFlags());
+		dynamicCommand.add(getAFile());
+		dynamicCommand.addAll(objectFiles);
+
+		String cmd[] = dynamicCommand.toArray(new String[dynamicCommand.size()]);
+
+		sendCommand(cmd, getAFile());
 
 		return 0;
 	}
@@ -667,9 +689,7 @@ public class Module {
 	{
 		/* TODO: Make the command actually make sense */
 		String cmd[] = {"echo", "linking"};
-		CompileUnit c = new CompileUnit(this, cmd, "linkTest");
-		toRun.put(c.key(), c);
-		CommandKernel.getInstance().runCommand(c);
+		sendCommand(cmd, "linkTest");
 
 		return 0;
 	}
@@ -686,37 +706,48 @@ public class Module {
 			String cmd[] = {"rm", "-fv", obj};
 			
 			CompileUnit u = new CompileUnit(this, cmd, obj);
-			toRun.put(u.key(), u);
-			CommandKernel.getInstance().runCommand(u);
+			sendCommand(cmd, obj);
 		}
+		String clean[] = {"rm", "-fv", getAFile()};
+		sendCommand(clean, getAFile());
 
 		return 0;
 	}
 
-	/*
-	private ArrayList<String> getCompilerObjects()
+	/* Add the submodules output to our own output */
+	private ArrayList<String> getObjFiles()
 	{
-		return null;
+		ArrayList<String> objs = new ArrayList<String>(objectFiles);
+		ArrayList<Module> deps = calculateDependencies();
+
+		Iterator<Module> i = deps.iterator();
+		while (i.hasNext())
+		{
+			Module m = i.next();
+			objs.addAll(m.getOutputFiles());
+		}
+
+		return objs;
 	}
-	public ArrayList<String> getObjectFiles()
+	/* Retrieve the output of this module */
+	public ArrayList<String> getOutputFiles()
 	{
 		ArrayList<String> ret = new ArrayList<String>();
 		/*
 		 * These output files can be the object files put out by the compiler.
 		 * If a linker is set however, it is chosen as the only output files.
 		 * If an archiver is set, its output is chosen over both linker and object files.
-		 *//*
+		 */
 
 		if (this.toArchive)
 			ret.add(this.archivedFile);
 		else if (this.toLink)
 			ret.add(this.linkedFile);
 		else
-			ret.addAll(getCompilerObjects());
+			ret = getObjFiles();
 
 		return ret;
 	}
-	*/
 
 	/* Mark a dependency as completed */
 	public void markDone(Module m)
