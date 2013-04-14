@@ -195,8 +195,8 @@ public class Module {
 		/* Get all the modular data in place */
 		if (module.containsKey(Syntax.MOD_COMPILER))
 			this.modCompiler = (String)module.get(Syntax.MOD_COMPILER);
-		if (module.containsKey(Syntax.MOD_ARCHIVER_FLAGS))
-			this.modArchiverFlags = (String)module.get(Syntax.MOD_ARCHIVER_FLAGS);
+		if (module.containsKey(Syntax.MOD_COMPILER_FLAGS))
+			this.modCompilerFlags = (String)module.get(Syntax.MOD_COMPILER_FLAGS);
 		if (module.containsKey(Syntax.MOD_ARCHIVER))
 			this.modArchiver = (String)module.get(Syntax.MOD_ARCHIVER);
 		if (module.containsKey(Syntax.MOD_ARCHIVER_FLAGS))
@@ -397,7 +397,7 @@ public class Module {
 
 		return a;
 	}
-	protected String getCompilerFlags()
+	protected String[] getCompilerFlags()
 	{
 		String a = "";
 		if (getGlobalCompilerFlags() == null)
@@ -419,7 +419,7 @@ public class Module {
 			a += dyn;
 		}
 
-		return a;
+		return a.split(" ");
 	}
 
 	protected String getArchiver()
@@ -467,7 +467,7 @@ public class Module {
 
 		return a;
 	}
-	protected String getArchiverFlags()
+	protected String[] getArchiverFlags()
 	{
 		String a = "";
 		if (getGlobalArchiverFlags() == null)
@@ -476,7 +476,7 @@ public class Module {
 
 		if (modArchiverFlags != null)
 		{
-			if (a.isEmpty())
+			if (!a.isEmpty())
 				a += " ";
 			a += modArchiverFlags;
 		}
@@ -484,12 +484,12 @@ public class Module {
 		String dyn = getDynArchiverFlags();
 		if (!dyn.isEmpty())
 		{
-			if (a.isEmpty())
+			if (!a.isEmpty())
 				a += " ";
 			a += dyn;
 		}
 
-		return a;
+		return a.split(" ");
 	}
 
 	protected String getLinker()
@@ -537,7 +537,7 @@ public class Module {
 
 		return a;
 	}
-	protected String getLinkerFlags()
+	protected String[] getLinkerFlags()
 	{
 		String a = "";
 		if (getGlobalLinkerFlags() == null)
@@ -546,7 +546,7 @@ public class Module {
 
 		if (modLinkerFlags != null)
 		{
-			if (a.isEmpty())
+			if (!a.isEmpty())
 				a += " ";
 			a += modLinkerFlags;
 		}
@@ -554,12 +554,12 @@ public class Module {
 		String dyn = getDynLinkerFlags();
 		if (!dyn.isEmpty())
 		{
-			if (a.isEmpty())
+			if (!a.isEmpty())
 				a += " ";
 			a += dyn;
 		}
 
-		return a;
+		return a.split(" ");
 	}
 
 	/* Turn an input file name into the name of a unique output file */
@@ -667,7 +667,7 @@ public class Module {
 			String oFile = getOFile(sFileName);
 			objectFiles.add(oFile);
 			String compiler = getCompiler();
-			String compilerFlags = getCompilerFlags();
+			String[] compilerFlags = getCompilerFlags();
 
 			if (compiler == null || compilerFlags == null)
 			{
@@ -675,7 +675,16 @@ public class Module {
 				System.exit(ErrorCode.PARSE_FAILED);
 			}
 
-			String cmd[] = {compiler, "-c", sFile, "-o", oFile, compilerFlags};
+			ArrayList<String> command = new ArrayList<String>();
+			command.add(compiler);
+			command.add("-c");
+			command.add(sFile);
+			command.add("-o");
+			command.add(oFile);
+			for (String s : compilerFlags)
+				command.add(s);
+			
+			String cmd[] = command.toArray(new String[command.size()]);
 			sendCommand(cmd, oFile);
 		}
 
@@ -692,7 +701,8 @@ public class Module {
 
 		ArrayList<String> dynamicCommand = new ArrayList<String>();
 		dynamicCommand.add(getArchiver());
-		dynamicCommand.add(getArchiverFlags());
+		for (String s : getArchiverFlags())
+			dynamicCommand.add(s);
 		dynamicCommand.add(getAFile());
 		dynamicCommand.addAll(objectFiles);
 
@@ -706,15 +716,15 @@ public class Module {
 	/* Also speaks for itself */
 	public int link()
 	{
-		/* TODO: Make the command actually make sense */
 		ArrayList<String> dynamicCommand = new ArrayList<String>();
 		dynamicCommand.add(getLinker());
-		dynamicCommand.add(getLinkerFlags());
+		for (String s : getLinkerFlags())
+			dynamicCommand.add(s);
 		dynamicCommand.add("-o");
-		dynamicCommand.add(linkedFile);
+		dynamicCommand.add(getLFile());
 		dynamicCommand.addAll(getLinkableFiles());
 		String cmd[] = dynamicCommand.toArray(new String[dynamicCommand.size()]);
-		sendCommand(cmd, "linkedFile");
+		sendCommand(cmd, getLFile());
 
 		return 0;
 	}
@@ -750,7 +760,22 @@ public class Module {
 	public ArrayList<String> getLinkableFiles()
 	{
 		/* TODO: generate a list of all files to be linked */
-		return new ArrayList<String>();
+		ArrayList<String> ret = new ArrayList<String>();
+		ArrayList<Module> deps = calculateDependencies();
+		if (this.toArchive)
+		{
+			ret.add(getAFile());
+		}
+		else
+		{
+			ret.addAll(sourceFiles);
+		}
+		for (Module m : deps)
+		{
+			ret.addAll(m.getLinkableFiles());
+		}
+
+		return ret;
 	}
 
 	/* Mark a dependency as completed */

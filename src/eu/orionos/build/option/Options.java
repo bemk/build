@@ -46,6 +46,7 @@ public class Options {
 		options.add(new OptionClean());
 		options.add(new OptionConfig());
 		options.add(new OptionTask());
+		options.add(new OptionGenModule());
 
 		for (; i < args.length; i++)
 		{

@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main (int argc, char** argv)
+int alpha()
 {
-	printf("Just testing the build system!\n");
+	printf("Test alpha\n");
 	return EXIT_SUCCESS;
 }

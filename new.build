@@ -8,7 +8,7 @@
 "archiver" : "ar",
 
 "Comment" : "Project wide compiler flags",
-"compiler-flags" : "-c",
+"compiler-flags" : "",
 "linker-flags" : "",
 "archiver-flags" : "rs",
 
