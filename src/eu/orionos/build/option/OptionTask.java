@@ -43,7 +43,13 @@ public class OptionTask extends Option {
 			Random r = new Random(new Date().getTime());
 			int tasks = r.nextInt(15) + 1;
 			Config.getInstance().threads(tasks);
-			System.out.println("Running with " + tasks +" worker threads");
+			System.out.println("Running with " + tasks + " worker threads");
+			return;
+		}
+		if (this.operand.equals("cores"))
+		{
+			int cores = Runtime.getRuntime().availableProcessors();
+			System.out.println("Running with " + cores + " worker treads");
 			return;
 		}
 		try {

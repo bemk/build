@@ -690,7 +690,6 @@ public class Module {
 		 * We just need to get the archiving done.
 		 */
 
-		/* TODO: Make the command actually make sense */
 		ArrayList<String> dynamicCommand = new ArrayList<String>();
 		dynamicCommand.add(getArchiver());
 		dynamicCommand.add(getArchiverFlags());
@@ -708,8 +707,14 @@ public class Module {
 	public int link()
 	{
 		/* TODO: Make the command actually make sense */
-		String cmd[] = {"echo", "linking"};
-		sendCommand(cmd, "linkTest");
+		ArrayList<String> dynamicCommand = new ArrayList<String>();
+		dynamicCommand.add(getLinker());
+		dynamicCommand.add(getLinkerFlags());
+		dynamicCommand.add("-o");
+		dynamicCommand.add(linkedFile);
+		dynamicCommand.addAll(getLinkableFiles());
+		String cmd[] = dynamicCommand.toArray(new String[dynamicCommand.size()]);
+		sendCommand(cmd, "linkedFile");
 
 		return 0;
 	}
@@ -727,45 +732,25 @@ public class Module {
 			
 			sendCommand(cmd, obj);
 		}
-		String clean[] = {"rm", "-fv", getAFile()};
-		sendCommand(clean, getAFile());
+		if (this.toArchive)
+		{
+			String archive[] = {"rm", "-fv", getAFile()};
+			sendCommand(archive, getAFile());
+		}
+		if (this.toLink)
+		{
+			String linked[] = {"rm", "-fv", getLFile()};
+			sendCommand(linked, getLFile());
+		}
 
 		return 0;
 	}
 
-	/* Add the submodules output to our own output */
-	private ArrayList<String> getObjFiles()
+	/* Generate a list of output files to be fed into the linker */
+	public ArrayList<String> getLinkableFiles()
 	{
-		ArrayList<String> objs = new ArrayList<String>(objectFiles);
-		ArrayList<Module> deps = calculateDependencies();
-
-		Iterator<Module> i = deps.iterator();
-		while (i.hasNext())
-		{
-			Module m = i.next();
-			objs.addAll(m.getOutputFiles());
-		}
-
-		return objs;
-	}
-	/* Retrieve the output of this module */
-	public ArrayList<String> getOutputFiles()
-	{
-		ArrayList<String> ret = new ArrayList<String>();
-		/*
-		 * These output files can be the object files put out by the compiler.
-		 * If a linker is set however, it is chosen as the only output files.
-		 * If an archiver is set, its output is chosen over both linker and object files.
-		 */
-
-		if (this.toArchive)
-			ret.add(this.archivedFile);
-		else if (this.toLink)
-			ret.add(this.linkedFile);
-		else
-			ret = getObjFiles();
-
-		return ret;
+		/* TODO: generate a list of all files to be linked */
+		return new ArrayList<String>();
 	}
 
 	/* Mark a dependency as completed */

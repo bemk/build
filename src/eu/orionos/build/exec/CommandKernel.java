@@ -57,9 +57,13 @@ public class CommandKernel {
 
 	private void startThreads()
 	{
+		int i = 0;
 		for (CommandRunner r : runners)
 		{
 			r.start();
+			if (i%16 == 0 && i != 0)
+				System.err.println("Starting worker thread: " + i);
+			i++;
 		}
 	}
 

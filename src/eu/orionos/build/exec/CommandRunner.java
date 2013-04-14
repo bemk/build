@@ -99,10 +99,12 @@ public class CommandRunner extends Thread {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+				Thread.yield();
 			}
 			try {
-				Thread.sleep(1);
+				Thread.sleep(10);
 			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
