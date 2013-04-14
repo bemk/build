@@ -229,7 +229,7 @@ public class Module {
 		/* Determine whether or not we should link */
 		if (module.containsKey(Syntax.LINK))
 		{
-			this.toLink = (boolean) module.get(Syntax.LINK);
+			this.toLink = (Boolean) module.get(Syntax.LINK);
 		}
 		else
 		{
@@ -239,7 +239,7 @@ public class Module {
 		/* And determine the same for archiving */
 		if (module.containsKey(Syntax.ARCHIVE))
 		{
-			this.toArchive = (boolean) module.get(Syntax.ARCHIVE);
+			this.toArchive = (Boolean) module.get(Syntax.ARCHIVE);
 		}
 		else
 		{

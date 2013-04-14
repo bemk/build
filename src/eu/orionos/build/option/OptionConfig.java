@@ -39,7 +39,9 @@ public class OptionConfig extends Option {
 	public void option() {
 		try {
 			eu.orionos.build.Config.getInstance().override(this.operand);
-		} catch (IOException | ParseException e) {
+		} catch (IOException e) {
+			System.err.println("Something went wrong in switching config files!");
+		} catch (ParseException e) {
 			System.err.println("Something went wrong in switching config files!");
 		}
 	}

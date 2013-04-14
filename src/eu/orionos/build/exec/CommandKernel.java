@@ -48,7 +48,7 @@ public class CommandKernel {
 
 	private CommandKernel()
 	{
-		modules = new ConcurrentHashMap<>(Config.getInstance().threads()+1);
+		modules = new ConcurrentHashMap<String, Module>(Config.getInstance().threads()+1);
 		for (int i = 0; i < Config.getInstance().threads(); i++)
 		{
 			runners.add(new CommandRunner());
