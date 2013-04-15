@@ -29,7 +29,7 @@ import java.util.HashMap;
 
 public class Config {
 	private JSONObject conf;
-	private static Config instance;
+	private static final Config instance = new Config();
 	private boolean silent = false;
 	private boolean verbose = false;
 	private String buildFile = "main.build";
@@ -56,6 +56,7 @@ public class Config {
 				stringBuilder.append(line);
 				stringBuilder.append('\n');
 			}
+			reader.close();
 			this.conf = new JSONObject(stringBuilder.toString());
 		} catch (JSONException e) {
 			System.err.println("File " + configFile + " can't be parsed!");
@@ -67,15 +68,11 @@ public class Config {
 	}
 	public static Config getInstance()
 	{
-		if (instance == null)
-			instance = new Config();
 		return instance;
 	}
 
 	public static Config getInstance(String conf) throws FileNotFoundException, IOException, JSONException
 	{
-		if (instance == null)
-			instance = new Config();
 		instance.setConfigFile(conf);
 		return instance;
 	}

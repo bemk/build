@@ -108,6 +108,7 @@ public class Module {
 			stringBuilder.append(line);
 			stringBuilder.append('\n');
 		}
+		reader.close();
 		module = new JSONObject(stringBuilder.toString());
 		/* Get some paths right */
 		this.cwd = f.getAbsolutePath();
@@ -319,7 +320,7 @@ public class Module {
 			return getGlobalCompiler();
 		return modCompiler;
 	}
-	@SuppressWarnings("rawtypes")
+
 	private String getDynCompilerFlags()
 	{
 		String a = "";
@@ -393,7 +394,7 @@ public class Module {
 			return getGlobalArchiver();
 		return modArchiver;
 	}
-	@SuppressWarnings("rawtypes")
+
 	private String getDynArchiverFlags()
 	{
 		String a = "";
@@ -467,7 +468,6 @@ public class Module {
 			return getGlobalLinker();
 		return modLinker;
 	}
-	@SuppressWarnings("rawtypes")
 	private String getDynLinkerFlags()
 	{
 		String a = "";
@@ -577,7 +577,6 @@ public class Module {
 	}
 
 	/* Use this to calculate the dependencies to wait for, and to make build */
-	@SuppressWarnings("unchecked")
 	private ArrayList<Module> calculateDependencies()
 	{
 		ArrayList<Module> dependencies = new ArrayList<Module>(subModules);
