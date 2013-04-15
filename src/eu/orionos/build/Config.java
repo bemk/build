@@ -147,7 +147,6 @@ public class Config {
 	{
 		if (!conf.has(module))
 			return false;
-
 		JSONArray a = conf.getJSONArray(module);
 		for (int i = 0; i < a.length(); i++) {
 			if (key.equals(a.get(i)))
@@ -172,11 +171,11 @@ public class Config {
 	}
 	public JSONArray getGlobalFlags()
 	{
-		return (JSONArray) conf.get(Syntax.GLOBAL_DEFS);
+		return conf.optJSONArray(Syntax.GLOBAL_DEFS);
 	}
 	public JSONArray getModuleFlags(String key)
 	{
-		return (JSONArray) conf.get(key);
+		return conf.optJSONArray(key);
 	}
 	public boolean RegisterModule(Module m)
 	{

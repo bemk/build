@@ -20,15 +20,11 @@
 
 package eu.orionos.build.exec;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-
 import eu.orionos.build.CompileUnit;
 import eu.orionos.build.Config;
 import eu.orionos.build.ErrorCode;
+
+import java.io.*;
 
 public class CommandRunner extends Thread {
 	private boolean runnable = true;
@@ -87,6 +83,11 @@ public class CommandRunner extends Thread {
 
 					if (p.waitFor() != 0)
 					{
+						final String[] array = c.getCommand();
+						for (int i = 0; i < array.length; i++) {
+							System.err.print(array[i]);
+							System.err.print(' ');
+						}
 						System.err.println("Could not compute!");
 						r.halt(ErrorCode.INSTRUCTION_FAILED);
 					}
