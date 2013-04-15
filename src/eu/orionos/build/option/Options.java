@@ -28,6 +28,7 @@ import java.util.Iterator;
 import org.json.simple.parser.ParseException;
 
 import eu.orionos.build.Config;
+import eu.orionos.build.ErrorCode;
 
 public class Options {
 
@@ -62,8 +63,13 @@ public class Options {
 						Option op = o.next();
 						if (a == op.getShort())
 						{
-							if (op.operands())
+							if (op.operands() && i+1 < args.length)
 								op.operand(args[++i]);
+							else if (op.operands())
+							{
+								System.err.println("Option " + a + " expects an argument");
+								System.exit(ErrorCode.OPTION_UNSPECIFIED);
+							}
 							op.option();
 							if (op.operands())
 								break nextarg;
@@ -80,8 +86,13 @@ public class Options {
 					String l = "--" + op.getLong();
 					if (args[i].equals(l))
 					{
-						if (op.operands())
+						if (op.operands() && i + 1 < args.length)
 							op.operand(args[++i]);
+						else if (op.operands())
+						{
+							System.err.println("Option " + args[i] + " expects an operand");
+							System.exit(ErrorCode.OPTION_UNSPECIFIED);
+						}
 						op.option();
 						break;
 					}
