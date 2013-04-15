@@ -20,16 +20,20 @@
 
 package eu.orionos.build.option;
 
+import eu.orionos.build.Config;
+import eu.orionos.build.ErrorCode;
+import org.json.JSONException;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import eu.orionos.build.Config;
 
 public class Options {
 
 	private ArrayList<Option> options = new ArrayList<Option>();
 
-	public Options(String args[])
+	public Options(String args[]) throws FileNotFoundException, IOException, JSONException
 	{
 		int i = 0;
 		if (args.length == 0)
@@ -40,6 +44,9 @@ public class Options {
 		options.add(new OptionSilent());
 		options.add(new OptionVerbose());
 		options.add(new OptionClean());
+		options.add(new OptionConfig());
+		options.add(new OptionTask());
+		options.add(new OptionGenModule());
 
 		for (; i < args.length; i++)
 		{
@@ -55,8 +62,13 @@ public class Options {
 						Option op = o.next();
 						if (a == op.getShort())
 						{
-							if (op.operands())
+							if (op.operands() && i+1 < args.length)
 								op.operand(args[++i]);
+							else if (op.operands())
+							{
+								System.err.println("Option " + a + " expects an argument");
+								System.exit(ErrorCode.OPTION_UNSPECIFIED);
+							}
 							op.option();
 							if (op.operands())
 								break nextarg;
@@ -73,8 +85,13 @@ public class Options {
 					String l = "--" + op.getLong();
 					if (args[i].equals(l))
 					{
-						if (op.operands())
+						if (op.operands() && i + 1 < args.length)
 							op.operand(args[++i]);
+						else if (op.operands())
+						{
+							System.err.println("Option " + args[i] + " expects an operand");
+							System.exit(ErrorCode.OPTION_UNSPECIFIED);
+						}
 						op.option();
 						break;
 					}

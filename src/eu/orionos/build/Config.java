@@ -20,45 +20,73 @@
 
 package eu.orionos.build;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.util.HashMap;
 
 public class Config {
-	private static JSONObject conf;
+	private JSONObject conf;
 	private static Config instance;
 	private boolean silent = false;
 	private boolean verbose = false;
 	private String buildFile = "main.build";
+	private String configFile = null;
 	private boolean clean = false;
-	
+	private boolean configured = false;
+	private File buildDir = null;
+	private HashMap<String, Module> modules = new HashMap<String, Module>();
+	private int threads = 4;
+
+	private void setConfigFile(String conf) throws FileNotFoundException, IOException, JSONException
+	{
+		this.configFile = conf;
+		File f = new File(configFile);
+		if (!f.exists())
+		{
+			return;
+		}
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(f));
+			StringBuilder stringBuilder = new StringBuilder();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				stringBuilder.append(line);
+				stringBuilder.append('\n');
+			}
+			this.conf = new JSONObject(stringBuilder.toString());
+		} catch (JSONException e) {
+			System.err.println("File " + configFile + " can't be parsed!");
+			this.conf = null;
+			this.configFile = null;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	public static Config getInstance()
 	{
+		if (instance == null)
+			instance = new Config();
 		return instance;
 	}
 
 	public static Config getInstance(String conf) throws FileNotFoundException, IOException, JSONException
 	{
 		if (instance == null)
-			instance = new Config(conf);
+			instance = new Config();
+		instance.setConfigFile(conf);
 		return instance;
 	}
-
-	private Config(String conf) throws FileNotFoundException, IOException, JSONException
+	
+	public void override(String conf) throws FileNotFoundException, IOException, JSONException
 	{
-		BufferedReader reader = new BufferedReader(new FileReader(new File(conf)));
-		StringBuilder stringBuilder = new StringBuilder();
-		String line;
-		while ((line = reader.readLine()) != null) {
-			stringBuilder.append(line);
-			stringBuilder.append('\n');
-		}
-		Config.conf = new JSONObject(stringBuilder.toString());
+		this.setConfigFile(conf);
+	}
+
+	private Config()
+	{
 	}
 
 	public void configure()
@@ -93,9 +121,7 @@ public class Config {
 
 	public JSONObject get(String key)
 	{
-		if (conf != null)
-			return (JSONObject)conf.get(key);
-		return null;
+		return conf.optJSONObject(key);
 	}
 	public void setClean()
 	{
@@ -104,5 +130,86 @@ public class Config {
 	public boolean getClean()
 	{
 		return this.clean;
+	}
+
+	public boolean getDefined(String key)
+	{
+		if (!conf.has(Syntax.GLOBAL_DEFS))
+			return false;
+		JSONArray a = conf.getJSONArray(Syntax.GLOBAL_DEFS);
+		for (int i = 0; i < a.length(); i++) {
+			if (key.equals(a.get(i)))
+				return true;
+		}
+		return false;
+	}
+	public boolean getModuleDefined(String module, String key)
+	{
+		if (!conf.has(module))
+			return false;
+
+		JSONArray a = conf.getJSONArray(module);
+		for (int i = 0; i < a.length(); i++) {
+			if (key.equals(a.get(i)))
+				return true;
+		}
+		return false;
+	}
+
+	public void configured(boolean configured)
+	{
+		this.configured = configured;
+	}
+	public boolean configured()
+	{
+		return this.configured;
+	}
+	public boolean hasConf()
+	{
+		if (this.conf == null)
+			return false;
+		return true;
+	}
+	public JSONArray getGlobalFlags()
+	{
+		return (JSONArray) conf.get(Syntax.GLOBAL_DEFS);
+	}
+	public JSONArray getModuleFlags(String key)
+	{
+		return (JSONArray) conf.get(key);
+	}
+	public boolean RegisterModule(Module m)
+	{
+		if (modules.containsKey(m.getName()))
+			return false;
+		
+		modules.put(m.getName(), m);
+		return true;
+	}
+	public String getBuildDir()
+	{
+		if (buildDir == null)
+		{
+			String s = (String) conf.get(Syntax.CONFIG_BUILD_DIR);
+			buildDir = new File(s);
+		}
+		if (!buildDir.exists())
+		{
+			buildDir.mkdir();
+		}
+		if (!buildDir.isDirectory())
+		{
+			System.err.println("The build directory specified is not a directory!");
+			System.exit(ErrorCode.FILE_NOT_FOUND);
+		}
+		return buildDir.getAbsolutePath();
+	}
+	public int threads()
+	{
+		return this.threads;
+	}
+	public void threads(int threads)
+	{
+		this.threads = threads;
 	}
 }

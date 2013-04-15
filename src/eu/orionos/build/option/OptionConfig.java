@@ -18,24 +18,37 @@
     A version of the licence can also be found at http://gnu.org/licences/
 */
 
-package eu.orionos.build.exception;
+package eu.orionos.build.option;
 
-public class DisabledException extends Exception {
+import org.json.JSONException;
 
-	private String msg;
+import java.io.IOException;
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
+public class OptionConfig extends Option {
 
-	public DisabledException(String msg) {
-		this.msg = msg;
+	public OptionConfig(char c, String s, boolean operands) {
+		super(c, s, operands);
 	}
 
-	public String getMsg()
+	public OptionConfig()
 	{
-		return this.msg;
+		this('\0', "config", true);
+	}
+
+	@Override
+	public void option() {
+		try {
+			eu.orionos.build.Config.getInstance().override(this.operand);
+		} catch (IOException e) {
+			System.err.println("Something went wrong in switching config files!");
+		} catch (JSONException e) {
+			System.err.println("Something went wrong in switching config files!");
+		}
+	}
+
+	@Override
+	public String help() {
+		return "   | --config [config file]\t Select an alternative config file";
 	}
 
 }

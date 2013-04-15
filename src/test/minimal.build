@@ -1,0 +1,8 @@
+{
+"name" : "minimal",
+"mcompiler-flags" : "-Iinclude",
+"source-files" : [ "minimal.c" ],
+"archived-file" : "minimal.a",
+"link" : false,
+"archive" : true
+}

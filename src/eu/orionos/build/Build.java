@@ -20,40 +20,48 @@
 
 package eu.orionos.build;
 
-import eu.orionos.build.exception.DisabledException;
-import eu.orionos.build.exception.FailedException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import eu.orionos.build.exec.CommandKernel;
 import eu.orionos.build.option.Options;
 import org.json.JSONException;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 public class Build {
 	
-	private BuildUnit units;
-	private Config cfg;
+	private Module modules;
 
 	public Build(String path, String args[])
 	{
 		try {
-			this.cfg = Config.getInstance(".config");
+			Config.getInstance();
 			new Options(args);
+			if (Config.getInstance().hasConf() == false)
+			{
+				Config.getInstance().override(".config");
+				if (Config.getInstance().hasConf() == false)
+				{
+					System.err.println("No usable config files found!");
+					System.exit(1);
+				}
+			}
+			if (!Config.getInstance().configured())
+			{
+				/* \TODO: Present a nice little menu for configuring options */
+			}
 
-			this.units = new BuildUnit(cfg.buildFile());
-
-			units.compile();
+			this.modules = new Module(Config.getInstance().buildFile());
+			modules.build();
+			while (!modules.getDone())
+				Thread.sleep(250);
+			CommandKernel.getInstance().stopThreads();
 		} catch (FileNotFoundException e) {
 			System.err.println(e.getMessage());
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (JSONException e) {
 			e.printStackTrace();
-		} catch (DisabledException e) {
-			System.err.println("Trying to compile disabled module: " + e.getMsg());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		} catch (FailedException e) {
-			System.err.println("Error in handling file: " + e.getMsg());
 		}
 	}
 	

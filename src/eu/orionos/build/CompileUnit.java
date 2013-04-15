@@ -13,15 +13,49 @@
 
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to the Free Software Foundation, Inc.,
-    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
 
-#include "test.h"
-#include <stdio.h>
+package eu.orionos.build;
 
-void printTest()
-{
-	printf("Hello moon!\n");
+public class CompileUnit {
+	private String command[];
+	private Module module;
+	private String object;
+
+	public CompileUnit(Module module, String command[], String object)
+	{
+		this.module = module;
+		this.command = command;
+		this.object = object;
+	}
+
+	public String[] getCommand()
+	{
+		return this.command;
+	}
+
+	public void markComplete()
+	{
+		module.markCompileUnitDone(this);
+		if (!Config.getInstance().silent())
+			System.out.println("[ OK ] " + object);
+	}
+
+	public String key()
+	{
+		return module.getName() + object;
+	}
+
+	public Module getModule()
+	{
+		return module;
+	}
+
+	public String getObject()
+	{
+		return this.object;
+	}
 }

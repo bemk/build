@@ -13,14 +13,13 @@
 
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to the Free Software Foundation, Inc.,
-    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
 
-#ifndef TEST_H
-#define TEST_H
+package eu.orionos.build;
 
-void printTest();
-
-#endif
+public enum CompilePhase {
+	COMPILING, ARCHIVING, LINKING, WAITING_FOR_DEPS, DONE, CLEANING
+}

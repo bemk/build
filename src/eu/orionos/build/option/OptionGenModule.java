@@ -17,25 +17,29 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
+package eu.orionos.build.option;
 
-package eu.orionos.build.exception;
+import eu.orionos.build.ErrorCode;
 
-public class FailedException extends Exception {
+public class OptionGenModule extends Option{
 
-	private String msg;
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 3275320329877934820L;
-
-	public FailedException(String msg)
+	public OptionGenModule(char c, String s, boolean operands) {
+		super(c, s, operands);
+	}
+	public OptionGenModule()
 	{
-		this.msg = msg;
+		this('\0', "gen-module", true);
 	}
 
-	public String getMsg()
-	{
-		return msg;
+	@Override
+	public void option() {
+		System.err.println("Module generating not yet implemented!");
+		System.exit(ErrorCode.OPTION_UNSPECIFIED);
+	}
+
+	@Override
+	public String help() {
+		return "   | --gen-module\tGenerate a module file";
 	}
 
 }
