@@ -20,20 +20,16 @@
 
 package eu.orionos.build;
 
+import eu.orionos.build.exec.CommandKernel;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
-import java.io.*;
-import java.util.ArrayList;
-import eu.orionos.build.exec.CommandKernel;
 
 public class Module {
 	private ConcurrentHashMap<String, CompileUnit> toRun;
@@ -136,32 +132,46 @@ public class Module {
 		}
 
 		/* Read global stuff into local variables for easier access */
-		try {
-			this.globalCompiler = module.getString(Syntax.GLOBAL_COMPILER);
-			this.globalCompilerFlags = module.getString(Syntax.GLOBAL_COMPILER_FLAGS);
-			this.globalLinker = module.getString(Syntax.GLOBAL_LINKER);
-			this.globalLinkerFlags = module.getString(Syntax.GLOBAL_LINKER_FLAGS);
-			this.globalArchiver = module.getString(Syntax.GLOBAL_ARCHIVER);
-			this.globalArchiverFlags = module.getString(Syntax.GLOBAL_ARCHIVER_FLAGS);
-		} catch (JSONException e) {
+		this.globalCompiler = module.optString(Syntax.GLOBAL_COMPILER, null);
+		if (this.getGlobalCompiler() == null) {
 			System.err.println("A global compiler has to be set in the main build file");
-			if (this.globalCompiler == null)
-				System.err.println("Specify: \"" + Syntax.GLOBAL_COMPILER + "\" : \"<compiler>\"");
-			else if (this.globalCompilerFlags == null)
-				System.err.println("Specify: \"" + Syntax.GLOBAL_COMPILER_FLAGS + "\" : \"<compiler flags>\"");
-			else if (this.globalLinker == null)
-				System.err.println("Specify: \"" + Syntax.GLOBAL_LINKER+ "\" : \"<linker>\"");
-			else if (this.globalLinkerFlags == null)
-				System.err.println("Specify: \"" + Syntax.GLOBAL_LINKER_FLAGS +  "\" : \"<linker flags>\"");
-			else if (this.globalArchiver == null)
-				System.err.println("Specify: \"" + Syntax.GLOBAL_ARCHIVER + "\" : \"<archiver>\"");
-			else if (this.globalArchiverFlags == null)
-				System.err.println("Specify: \"" + Syntax.GLOBAL_ARCHIVER_FLAGS + "\" : \"<archiver flags>\"");
+			System.err.println("Specify: \"" + Syntax.GLOBAL_COMPILER + "\" : \"<compiler>\"");
+			System.exit(ErrorCode.OPTION_UNSPECIFIED);
+		}
+		this.globalCompilerFlags = module.optString(Syntax.GLOBAL_COMPILER_FLAGS, null);
+		if (this.getGlobalCompilerFlags() == null) {
+			System.err.println("Global compiler options must be set in the main build file");
+			System.err.println("Specify: \"" + Syntax.GLOBAL_COMPILER_FLAGS + "\" : \"<compiler flags>\"");
+			System.exit(ErrorCode.OPTION_UNSPECIFIED);
+		}
+		this.globalLinker = module.optString(Syntax.GLOBAL_LINKER, null);
+		if (this.getGlobalLinker() == null) {
+			System.err.println("A Global linker must be set in the main build file");
+			System.err.println("Specify: \"" + Syntax.GLOBAL_LINKER+ "\" : \"<linker>\"");
+			System.exit(ErrorCode.OPTION_UNSPECIFIED);
+		}
+		this.globalLinkerFlags = module.optString(Syntax.GLOBAL_LINKER_FLAGS, null);
+		if (this.getGlobalLinkerFlags() == null) {
+			System.err.println("Global Linker options must be set in the main build file");
+			System.err.println("Specify: \"" + Syntax.GLOBAL_LINKER_FLAGS +  "\" : \"<linker flags>\"");
+			System.exit(ErrorCode.OPTION_UNSPECIFIED);
+		}
+		this.globalArchiver = module.optString(Syntax.GLOBAL_ARCHIVER, null);
+		if (this.getGlobalArchiver() == null) {
+			System.err.println("A global archiver must be set in the main build file");
+			System.err.println("Specify: \"" + Syntax.GLOBAL_ARCHIVER + "\" : \"<archiver>\"");
+			System.exit(ErrorCode.OPTION_UNSPECIFIED);
+		}
+		this.globalArchiverFlags = module.optString(Syntax.GLOBAL_ARCHIVER_FLAGS, null);
+		if (this.getGlobalArchiverFlags() == null) {
+			System.err.println("Global archiver flags must be set in the main build file");
+			System.err.println("Specify: \"" + Syntax.GLOBAL_ARCHIVER_FLAGS + "\" : \"<archiver flags>\"");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
 
 		/* Get all the modular data in place */
 		this.modCompiler = module.optString(Syntax.MOD_COMPILER, null);
+		this.modCompilerFlags = module.optString(Syntax.MOD_COMPILER_FLAGS, null);
 		this.modArchiverFlags = module.optString(Syntax.MOD_ARCHIVER_FLAGS, null);
 		this.modArchiver = module.optString(Syntax.MOD_ARCHIVER, null);
 		this.modArchiverFlags = module.optString(Syntax.MOD_ARCHIVER_FLAGS, null);
@@ -210,7 +220,7 @@ public class Module {
 		}
 		if (this.toArchive) {
 			try {
-				this.archivedFile = (String) module.getString(Syntax.ARCHIVED);
+				this.archivedFile = module.getString(Syntax.ARCHIVED);
 			} catch (JSONException e) {
 				System.err.println("Module " + name + " is to be archived, but no output file specified");
 				System.err.println("Specify: \"" + Syntax.ARCHIVED + "\" : \"<outputfile>\"");
@@ -222,9 +232,12 @@ public class Module {
 		JSONArray array = module.optJSONArray(Syntax.DEP);
 		if (array != null) {
 			for (int i = 0; i < array.length(); i++) {
-				final String dep = array.optString(i, null);
-				if (dep != null)
-					subModules.add(new Module(dep ,this));
+				try {
+					final JSONObject o = array.getJSONObject(i);
+					subModules.add(new Module(o.getString(Syntax.DEP_PATH), this));
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		array = module.optJSONArray(Syntax.DYN_DEP);
