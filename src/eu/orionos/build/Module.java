@@ -106,7 +106,9 @@ public class Module {
 			System.err.println("Module at " +  path +  " can not be found");
 			System.exit(ErrorCode.FILE_NOT_FOUND);
 		}
-		module = (JSONObject) new JSONParser().parse(new FileReader(f));
+		FileReader fr = new FileReader(f);
+		module = (JSONObject) new JSONParser().parse(fr);
+		fr.close();
 		/* Get some paths right */
 		this.cwd = f.getAbsolutePath();
 		int len = 0;

@@ -54,7 +54,9 @@ public class Config {
 			return;
 		}
 		try {
-			this.conf = (JSONObject) new JSONParser().parse(new FileReader(f));
+			FileReader fr = new FileReader(f);
+			this.conf = (JSONObject) new JSONParser().parse(fr);
+			fr.close();
 		} catch (ParseException e) {
 			System.err.println("File " + configFile + " can't be parsed!");
 			this.conf = null;
