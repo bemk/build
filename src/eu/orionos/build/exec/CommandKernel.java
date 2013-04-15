@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import eu.orionos.build.CompileUnit;
 import eu.orionos.build.Config;
@@ -34,6 +35,7 @@ public class CommandKernel {
 	private static CommandKernel instance;
 	
 	private ArrayList<CommandRunner> runners = new ArrayList<CommandRunner>();
+	private AtomicInteger killedThreads = new AtomicInteger(0);
 	private Queue<CompileUnit> compileCommands = new ConcurrentLinkedQueue<CompileUnit>();
 	private ConcurrentHashMap<String, Module> modules;
 	
@@ -86,10 +88,14 @@ public class CommandKernel {
 		}
 		for (CommandRunner r : runners)
 		{
+			r.haltThread();
+		}
+		while (this.killedThreads.get() < this.runners.size())
+		{
 			try {
-				r.haltThread();
-				r.join();
+				Thread.sleep(250);
 			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -120,6 +126,10 @@ public class CommandKernel {
 		{
 			modules.remove(m.getName());
 		}
+	}
+	public void unregisterTask(CommandRunner r)
+	{
+		killedThreads.incrementAndGet();
 	}
 
 	public boolean getModule(Module m)

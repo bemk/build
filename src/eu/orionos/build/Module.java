@@ -768,7 +768,12 @@ public class Module {
 		}
 		else
 		{
-			ret.addAll(sourceFiles);
+			Iterator<String> i = sourceFiles.iterator();
+			while (i.hasNext())
+			{
+				String s = i.next();
+				ret.add(getOFile(s));
+			}
 		}
 		for (Module m : deps)
 		{

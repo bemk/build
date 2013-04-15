@@ -4,5 +4,5 @@
 "source-files" : [ "minimal.c" ],
 "archived-file" : "minimal.a",
 "link" : false,
-"archive" : true
+"archive" : false
 }

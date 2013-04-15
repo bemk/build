@@ -108,5 +108,6 @@ public class CommandRunner extends Thread {
 				e.printStackTrace();
 			}
 		}
+		CommandKernel.getInstance().unregisterTask(this);
 	}
 }
