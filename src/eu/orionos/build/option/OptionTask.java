@@ -56,6 +56,16 @@ public class OptionTask extends Option {
 		int tasks = Integer.parseInt(this.operand);
 		if (tasks == 0)
 			tasks = 1;
+		if (tasks > 40)
+		{
+			System.out.println("Are you certain you want to run " + tasks + " worker threads?(y/N)");
+			String ret = System.console().readLine().toLowerCase();
+			if (!(ret.equals("y") || ret.equals("yes")))
+			{
+				System.out.println("Setting the number of tasks to 40");
+				tasks = 40;
+			}
+		}
 		Config.getInstance().threads(tasks);
 		} catch (NumberFormatException e)
 		{

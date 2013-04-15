@@ -30,4 +30,5 @@ public class ErrorCode {
 	public static final int FILE_NOT_FOUND = 6;
 	public static final int NAME_CONFLICT = 7;
 	public static final int INSTRUCTION_FAILED = 8;
+	public static final int GENERIC = 9;
 }

@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import eu.orionos.build.CompileUnit;
 import eu.orionos.build.Config;
+import eu.orionos.build.ErrorCode;
 import eu.orionos.build.Module;
 
 public class CommandKernel {
@@ -60,7 +61,13 @@ public class CommandKernel {
 		int i = 0;
 		for (CommandRunner r : runners)
 		{
+			try {
 			r.start();
+			} catch (OutOfMemoryError e) {
+				System.err.println("Too many threads drained the memory resources.");
+				System.err.println("Thread count: " + i);
+				Runtime.getRuntime().halt(ErrorCode.GENERIC);
+			}
 			if (i%16 == 0 && i != 0)
 				System.err.println("Starting worker thread: " + i);
 			i++;
