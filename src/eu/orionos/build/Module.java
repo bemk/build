@@ -20,21 +20,16 @@
 
 package eu.orionos.build;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import eu.orionos.build.exec.CommandKernel;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import eu.orionos.build.exec.CommandKernel;
 
 public class Module {
 	private ConcurrentHashMap<String, CompileUnit> toRun;
@@ -81,17 +76,17 @@ public class Module {
 	private JSONArray dynModCompilerFlags;
 	private JSONArray dynModLinkerFlags;
 
-	public String getName()
-	{
-		return this.name;
-	}
-	public Module(String path) throws FileNotFoundException, IOException, ParseException
+	public Module(String path) throws FileNotFoundException, IOException, JSONException
 	{
 		this(path, null);
 	}
 
-	@SuppressWarnings("unchecked")
-	public Module(String path, Module parent) throws FileNotFoundException, IOException, ParseException
+	public String getName()
+	{
+		return this.name;
+	}
+
+	public Module(String path, Module parent) throws FileNotFoundException, IOException, JSONException
 	{
 		/* Get some verbosity out of our system */
 		if (Config.getInstance().verbose())
@@ -106,7 +101,14 @@ public class Module {
 			System.err.println("Module at " +  path +  " can not be found");
 			System.exit(ErrorCode.FILE_NOT_FOUND);
 		}
-		module = (JSONObject) new JSONParser().parse(new FileReader(f));
+		BufferedReader reader = new BufferedReader(new FileReader(f));
+		StringBuilder stringBuilder = new StringBuilder();
+		String line;
+		while ((line = reader.readLine()) != null) {
+			stringBuilder.append(line);
+			stringBuilder.append('\n');
+		}
+		module = new JSONObject(stringBuilder.toString());
 		/* Get some paths right */
 		this.cwd = f.getAbsolutePath();
 		int len = 0;
@@ -116,10 +118,9 @@ public class Module {
 			len = this.cwd.lastIndexOf('/');
 		this.cwd = this.cwd.substring(0, len);
 
-		if (module.containsKey("name"))
-			this.name = (String)module.get("name");
-		else
-		{
+		try {
+			this.name = module.getString("name");
+		} catch (JSONException e) {
 			System.err.println("Module in " + cwd + "referenced by " + path + " does not have a name field!");
 			System.err.println("Modules have to have a name field!");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
@@ -131,163 +132,123 @@ public class Module {
 		}
 
 		/* Read global stuff into local variables for easier access */
-		if (module.containsKey(Syntax.GLOBAL_COMPILER))
-		{
-			this.globalCompiler = (String)module.get(Syntax.GLOBAL_COMPILER);
-		}
-		else if (this.getGlobalCompiler() == null)
-		{
+		this.globalCompiler = module.optString(Syntax.GLOBAL_COMPILER, null);
+		if (this.getGlobalCompiler() == null) {
 			System.err.println("A global compiler has to be set in the main build file");
 			System.err.println("Specify: \"" + Syntax.GLOBAL_COMPILER + "\" : \"<compiler>\"");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
-		if (module.containsKey(Syntax.GLOBAL_COMPILER_FLAGS))
-		{
-			this.globalCompilerFlags = (String)module.get(Syntax.GLOBAL_COMPILER_FLAGS);
-		}
-		else if (this.getGlobalCompilerFlags() == null)
-		{
+		this.globalCompilerFlags = module.optString(Syntax.GLOBAL_COMPILER_FLAGS, null);
+		if (this.getGlobalCompilerFlags() == null) {
 			System.err.println("Global compiler options must be set in the main build file");
 			System.err.println("Specify: \"" + Syntax.GLOBAL_COMPILER_FLAGS + "\" : \"<compiler flags>\"");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
-		if (module.containsKey(Syntax.GLOBAL_LINKER))
-		{
-			this.globalLinker = (String)module.get(Syntax.GLOBAL_LINKER);
-		}
-		else if (this.getGlobalLinker() == null)
-		{
+		this.globalLinker = module.optString(Syntax.GLOBAL_LINKER, null);
+		if (this.getGlobalLinker() == null) {
 			System.err.println("A Global linker must be set in the main build file");
 			System.err.println("Specify: \"" + Syntax.GLOBAL_LINKER+ "\" : \"<linker>\"");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
-		if (module.containsKey(Syntax.GLOBAL_LINKER_FLAGS))
-		{
-			this.globalLinkerFlags = (String)module.get(Syntax.GLOBAL_LINKER_FLAGS);
-		}
-		else if (this.getGlobalLinkerFlags() == null)
-		{
+		this.globalLinkerFlags = module.optString(Syntax.GLOBAL_LINKER_FLAGS, null);
+		if (this.getGlobalLinkerFlags() == null) {
 			System.err.println("Global Linker options must be set in the main build file");
 			System.err.println("Specify: \"" + Syntax.GLOBAL_LINKER_FLAGS +  "\" : \"<linker flags>\"");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
-		if (module.containsKey(Syntax.GLOBAL_ARCHIVER))
-		{
-			this.globalArchiver = (String)module.get(Syntax.GLOBAL_ARCHIVER);
-		}
-		else if (this.getGlobalArchiver() == null)
-		{
+		this.globalArchiver = module.optString(Syntax.GLOBAL_ARCHIVER, null);
+		if (this.getGlobalArchiver() == null) {
 			System.err.println("A global archiver must be set in the main build file");
 			System.err.println("Specify: \"" + Syntax.GLOBAL_ARCHIVER + "\" : \"<archiver>\"");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
-		if (module.containsKey(Syntax.GLOBAL_ARCHIVER_FLAGS))
-		{
-			this.globalArchiverFlags = (String)module.get(Syntax.GLOBAL_ARCHIVER_FLAGS);
-		}
-		else if (this.getGlobalArchiverFlags() == null)
-		{
+		this.globalArchiverFlags = module.optString(Syntax.GLOBAL_ARCHIVER_FLAGS, null);
+		if (this.getGlobalArchiverFlags() == null) {
 			System.err.println("Global archiver flags must be set in the main build file");
 			System.err.println("Specify: \"" + Syntax.GLOBAL_ARCHIVER_FLAGS + "\" : \"<archiver flags>\"");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
 
 		/* Get all the modular data in place */
-		if (module.containsKey(Syntax.MOD_COMPILER))
-			this.modCompiler = (String)module.get(Syntax.MOD_COMPILER);
-		if (module.containsKey(Syntax.MOD_COMPILER_FLAGS))
-			this.modCompilerFlags = (String)module.get(Syntax.MOD_COMPILER_FLAGS);
-		if (module.containsKey(Syntax.MOD_ARCHIVER))
-			this.modArchiver = (String)module.get(Syntax.MOD_ARCHIVER);
-		if (module.containsKey(Syntax.MOD_ARCHIVER_FLAGS))
-			this.modArchiverFlags = (String)module.get(Syntax.MOD_ARCHIVER_FLAGS);
-		if (module.containsKey(Syntax.MOD_LINKER))
-			this.modLinker = (String)module.get(Syntax.MOD_LINKER);
-		if (module.containsKey(Syntax.MOD_LINKER_FLAGS))
-			this.modLinkerFlags = (String)module.get(Syntax.MOD_LINKER_FLAGS);
+		this.modCompiler = module.optString(Syntax.MOD_COMPILER, null);
+		this.modCompilerFlags = module.optString(Syntax.MOD_COMPILER_FLAGS, null);
+		this.modArchiverFlags = module.optString(Syntax.MOD_ARCHIVER_FLAGS, null);
+		this.modArchiver = module.optString(Syntax.MOD_ARCHIVER, null);
+		this.modArchiverFlags = module.optString(Syntax.MOD_ARCHIVER_FLAGS, null);
+		this.modLinker = module.optString(Syntax.MOD_LINKER, null);
+		this.modLinkerFlags = module.optString(Syntax.MOD_LINKER_FLAGS, null);
 
 		/* The dynamic flags */
-		if (module.containsKey(Syntax.DYN_ARCHIVER_FLAGS))
-			this.dynArchiverFlags = (JSONArray)module.get(Syntax.DYN_ARCHIVER_FLAGS);
-		if (module.containsKey(Syntax.DYN_COMPILER_FLAGS))
-			this.dynCompilerFlags = (JSONArray)module.get(Syntax.DYN_COMPILER_FLAGS);
-		if (module.containsKey(Syntax.DYN_LINKER_FLAGS))
-			this.dynLinkerFlags = (JSONArray)module.get(Syntax.DYN_LINKER_FLAGS);
-
+		this.dynArchiverFlags = module.optJSONArray(Syntax.DYN_ARCHIVER_FLAGS);
+		this.dynCompilerFlags = module.optJSONArray(Syntax.DYN_COMPILER_FLAGS);
+		this.dynLinkerFlags = module.optJSONArray(Syntax.DYN_LINKER_FLAGS);
+		
 		/* And the dynamic module wide flags */
-		if (module.containsKey(Syntax.DYN_MOD_ARCHIVER_FLAGS))
-			this.dynModArchiverFlags = (JSONArray)module.get(Syntax.DYN_MOD_ARCHIVER_FLAGS);
-		if (module.containsKey(Syntax.DYN_MOD_COMPILER_FLAGS))
-			this.dynModCompilerFlags = (JSONArray)module.get(Syntax.DYN_MOD_COMPILER_FLAGS);
-		if (module.containsKey(Syntax.DYN_MOD_LINKER_FLAGS))
-			this.dynModLinkerFlags = (JSONArray)module.get(Syntax.DYN_MOD_LINKER_FLAGS);
-
+		this.dynModArchiverFlags = module.optJSONArray(Syntax.DYN_MOD_ARCHIVER_FLAGS);
+		this.dynModCompilerFlags = module.optJSONArray(Syntax.DYN_MOD_COMPILER_FLAGS);
+		this.dynModLinkerFlags = module.optJSONArray(Syntax.DYN_MOD_LINKER_FLAGS);
 		/* Find all source files for this module */
-		if (module.containsKey(Syntax.SOURCE))
-			this.sourceFiles.addAll(((JSONArray)module.get(Syntax.SOURCE)));
-
-		/* Determine whether or not we should link */
-		if (module.containsKey(Syntax.LINK))
-		{
-			this.toLink = (Boolean) module.get(Syntax.LINK);
+		JSONArray sources = module.optJSONArray(Syntax.SOURCE);
+		for (int i = 0; i < sources.length(); i++) {
+			final String source = sources.optString(i, null);
+			if (source != null)
+				this.sourceFiles.add(source);
 		}
-		else
-		{
+		/* Determine whether or not we should link */
+		try {
+			this.toLink = module.getBoolean(Syntax.LINK);
+		} catch (JSONException e) {
 			System.err.println("Module " + name + " Did not specify linking");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
 		/* And determine the same for archiving */
-		if (module.containsKey(Syntax.ARCHIVE))
-		{
-			this.toArchive = (Boolean) module.get(Syntax.ARCHIVE);
-		}
-		else
-		{
+		try {
+			this.toArchive = module.getBoolean(Syntax.ARCHIVE);
+		} catch (JSONException e) {
 			System.err.println("Module " + name + " did not specify archiving");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
 		/* Determine the linked output file */
-		if (module.containsKey(Syntax.LINKED))
-		{
-			this.linkedFile = (String) module.get(Syntax.LINKED);
+		if (this.toLink) {
+			try {
+				this.linkedFile = module.getString(Syntax.LINKED);
+			} catch (JSONException e) {
+				System.err.println("Module " + name + " is to link, but no output file specified");
+				System.err.println("Specify: \"" + Syntax.LINKED + "\" : \"<outputfile>\"");
+				System.exit(ErrorCode.PARSE_FAILED);
+			}
 		}
-		else if (this.toLink)
-		{
-			System.err.println("Module " + name + " is to link, but no output file specified");
-			System.err.println("Specify: \"" + Syntax.LINKED + "\" : \"<outputfile>\"");
-			System.exit(ErrorCode.PARSE_FAILED);
-		}
-		/* Determine the archived output file */
-		if (module.containsKey(Syntax.ARCHIVED))
-		{
-			this.archivedFile = (String) module.get(Syntax.ARCHIVED);
-		}
-		else if (this.toArchive)
-		{
-			System.err.println("Module " + name + " is to be archived, but no output file specified");
-			System.err.println("Specify: \"" + Syntax.ARCHIVED + "\" : \"<outputfile>\"");
-			System.exit(ErrorCode.PARSE_FAILED);
+		if (this.toArchive) {
+			try {
+				this.archivedFile = module.getString(Syntax.ARCHIVED);
+			} catch (JSONException e) {
+				System.err.println("Module " + name + " is to be archived, but no output file specified");
+				System.err.println("Specify: \"" + Syntax.ARCHIVED + "\" : \"<outputfile>\"");
+				System.exit(ErrorCode.PARSE_FAILED);
+			}
 		}
 		
 		/* Get all the dependencies, dynamic or not */
-		if (module.containsKey(Syntax.DEP))
-		{
-			JSONArray array = (JSONArray) module.get(Syntax.DEP);
-			Iterator<JSONObject> i = array.iterator();
-			while (i.hasNext())
-			{
-				JSONObject o = i.next();
-				subModules.add(new Module((String) o.get(Syntax.DEP_PATH), this));
+		JSONArray array = module.optJSONArray(Syntax.DEP);
+		if (array != null) {
+			for (int i = 0; i < array.length(); i++) {
+				try {
+					final JSONObject o = array.getJSONObject(i);
+					subModules.add(new Module(o.getString(Syntax.DEP_PATH), this));
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
 			}
 		}
-		if (module.containsKey(Syntax.DYN_DEP))
-		{
-			JSONArray array = (JSONArray) module.get(Syntax.DYN_DEP);
-			Iterator<JSONObject> i = array.iterator();
-			while (i.hasNext())
-			{
-				JSONObject o = (JSONObject) i.next();
-				dynamicModules.put((String) o.get(Syntax.DYN_DEP_KEY), new Module((String) o.get(Syntax.DEP_PATH), this));
+		array = module.optJSONArray(Syntax.DYN_DEP);
+		if (array != null) {
+			for (int i = 0; i < array.length(); i++) {
+				try {
+					JSONObject o = array.getJSONObject(i);
+					dynamicModules.put(o.getString(Syntax.DYN_DEP_KEY), new Module(o.getString(Syntax.DEP_PATH), this));
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -366,31 +327,35 @@ public class Module {
 
 		if (dynCompilerFlags != null)
 		{
-			Iterator i = dynCompilerFlags.iterator();
-			while (i.hasNext())
-			{
-				JSONObject o = (JSONObject) i.next();
-				String key = (String) o.get(Syntax.CONFIG_GLOBAL_KEY);
-				if (c.getDefined(key))
-				{
-					if (!a.isEmpty())
-						a += " ";
-					a += (String)o.get(Syntax.CONFIG_GLOBAL_FLAGS);
+			for (int i = 0; i < dynCompilerFlags.length(); i++) {
+				try {
+					final JSONObject o = dynCompilerFlags.getJSONObject(i);
+					final String key = o.getString(Syntax.CONFIG_GLOBAL_KEY);
+					if (c.getDefined(key) && o.has(Syntax.CONFIG_GLOBAL_KEY))
+					{
+						if (!a.isEmpty())
+							a += " ";
+						a += o.getString(Syntax.CONFIG_GLOBAL_FLAGS);
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
 				}
 			}
 		}
 		if (dynModCompilerFlags != null)
 		{
-			Iterator i = dynModCompilerFlags.iterator();
-			while (i.hasNext())
-			{
-				JSONObject o = (JSONObject) i.next();
-				String key = (String) o.get(Syntax.CONFIG_GLOBAL_KEY);
-				if (c.getModuleDefined(this.name, key))
-				{
-					if (!a.isEmpty())
-						a += " ";
-					a += (String)o.get(Syntax.CONFIG_GLOBAL_FLAGS);
+			for (int i = 0; i < dynModCompilerFlags.length(); i++) {
+				try {
+					final JSONObject o = dynModCompilerFlags.getJSONObject(i);
+					final String key = o.getString(Syntax.CONFIG_GLOBAL_KEY);
+					if (c.getModuleDefined(this.name, key) && o.has(Syntax.CONFIG_GLOBAL_FLAGS))
+					{
+						if (!a.isEmpty())
+							a += " ";
+						a += o.getString(Syntax.CONFIG_GLOBAL_FLAGS);
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
 				}
 			}
 		}
@@ -436,31 +401,35 @@ public class Module {
 
 		if (dynArchiverFlags != null)
 		{
-			Iterator i = dynArchiverFlags.iterator();
-			while (i.hasNext())
-			{
-				JSONObject o = (JSONObject) i.next();
-				String key = (String) o.get(Syntax.CONFIG_GLOBAL_KEY);
-				if (c.getDefined(key))
-				{
-					if (!a.isEmpty())
-						a += " ";
-					a += (String)o.get(Syntax.CONFIG_GLOBAL_FLAGS);
+			for (int i = 0; i < dynArchiverFlags.length(); i++) {
+				try {
+					final JSONObject o = dynArchiverFlags.getJSONObject(i);
+					final String key = o.getString(Syntax.CONFIG_GLOBAL_KEY);
+					if (c.getDefined(key) && o.has(Syntax.CONFIG_GLOBAL_FLAGS))
+					{
+						if (!a.isEmpty())
+							a += " ";
+						a += o.getString(Syntax.CONFIG_GLOBAL_FLAGS);
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
 				}
 			}
 		}
 		if (dynModArchiverFlags != null)
 		{
-			Iterator i = dynModArchiverFlags.iterator();
-			while (i.hasNext())
-			{
-				JSONObject o = (JSONObject) i.next();
-				String key = (String) o.get(Syntax.CONFIG_GLOBAL_KEY);
-				if (c.getModuleDefined(this.name, key))
-				{
-					if (!a.isEmpty())
-						a += " ";
-					a += (String)o.get(Syntax.CONFIG_GLOBAL_FLAGS);
+			for (int i = 0; i < dynModArchiverFlags.length(); i++) {
+				try {
+					final JSONObject o = dynModArchiverFlags.getJSONObject(i);
+					final String key = o.getString(Syntax.CONFIG_GLOBAL_KEY);
+					if (c.getModuleDefined(this.name, key) && o.has(Syntax.CONFIG_GLOBAL_FLAGS))
+					{
+						if (!a.isEmpty())
+							a += " ";
+						a += o.getString(Syntax.CONFIG_GLOBAL_FLAGS);
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
 				}
 			}
 		}
@@ -506,31 +475,35 @@ public class Module {
 
 		if (dynLinkerFlags != null)
 		{
-			Iterator i = dynLinkerFlags.iterator();
-			while (i.hasNext())
-			{
-				JSONObject o = (JSONObject) i.next();
-				String key = (String) o.get(Syntax.CONFIG_GLOBAL_KEY);
-				if (c.getDefined(key))
-				{
-					if (!a.isEmpty())
-						a += " ";
-					a += (String)o.get(Syntax.CONFIG_GLOBAL_FLAGS);
+			for (int i = 0; i < dynLinkerFlags.length(); i++) {
+				try {
+					final JSONObject o = dynLinkerFlags.getJSONObject(i);
+					final String key = o.getString(Syntax.CONFIG_GLOBAL_KEY);
+					if (c.getModuleDefined(this.name, key) && o.has(Syntax.CONFIG_GLOBAL_FLAGS))
+					{
+						if (!a.isEmpty())
+							a += " ";
+						a += o.getString(Syntax.CONFIG_GLOBAL_FLAGS);
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
 				}
 			}
 		}
 		if (dynModLinkerFlags != null)
 		{
-			Iterator i = dynModLinkerFlags.iterator();
-			while (i.hasNext())
-			{
-				JSONObject o = (JSONObject) i.next();
-				String key = (String) o.get(Syntax.CONFIG_GLOBAL_KEY);
-				if (c.getModuleDefined(this.name, key))
-				{
-					if (!a.isEmpty())
-						a += " ";
-					a += (String)o.get(Syntax.CONFIG_GLOBAL_FLAGS);
+			for (int i = 0; i < dynModLinkerFlags.length(); i++) {
+				try {
+					final JSONObject o = dynModLinkerFlags.getJSONObject(i);
+					final String key = o.getString(Syntax.CONFIG_GLOBAL_KEY);
+					if (c.getModuleDefined(this.name, key) && o.has(Syntax.CONFIG_GLOBAL_FLAGS))
+					{
+						if (!a.isEmpty())
+							a += " ";
+						a += o.getString(Syntax.CONFIG_GLOBAL_FLAGS);
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
 				}
 			}
 		}
@@ -587,18 +560,18 @@ public class Module {
 	}
 
 	/* helper function for determining the actual dependencies */
-	private void addDynamicDeps(ArrayList<Module> dependencies, Iterator<String> i)
+	private void addDynamicDeps(ArrayList<Module> dependencies, JSONArray array)
 	{
-		while (i.hasNext())
-		{
-			String flag = i.next();
-			if (dynamicModules.containsKey(flag))
-			{
-				Module m = dynamicModules.get(flag);
-				if (!dependencies.contains(dynamicModules.get(m)))
-				{
-					dependencies.add(m);
+		for (int i = 0; i < array.length(); i++) {
+			try {
+				final String flag = array.getString(i);
+				if (dynamicModules.containsKey(flag)) {
+					Module m = dynamicModules.get(flag);
+					if (!dependencies.contains(m))
+						dependencies.add(m);
 				}
+			} catch (JSONException e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -608,14 +581,9 @@ public class Module {
 	private ArrayList<Module> calculateDependencies()
 	{
 		ArrayList<Module> dependencies = new ArrayList<Module>(subModules);
-
 		JSONArray flags = Config.getInstance().getGlobalFlags();
 		if (flags != null)
-		{
-			Iterator<String> i = flags.iterator();
-			addDynamicDeps(dependencies, i);
-		}
-
+			addDynamicDeps(dependencies, flags);
 		return dependencies;
 	}
 
