@@ -106,7 +106,6 @@ public class Module {
 		String line;
 		while ((line = reader.readLine()) != null) {
 			stringBuilder.append(line);
-			stringBuilder.append('\n');
 		}
 		reader.close();
 		module = new JSONObject(stringBuilder.toString());
@@ -278,39 +277,39 @@ public class Module {
 	
 	protected String getGlobalArchiverFlags()
 	{
-		String a = "";
+		final StringBuilder builder = new StringBuilder();
 		if (parent != null)
-			a = parent.getGlobalArchiverFlags();
-		if (!a.isEmpty() && globalArchiverFlags != null)
-			a += " " + globalArchiverFlags;
-		else if (globalArchiverFlags != null)
-			a += globalArchiverFlags;
-
-		return a;
+			builder.append(parent.getGlobalArchiverFlags());
+		if (globalArchiverFlags != null) {
+			if (builder.length() > 0)
+				builder.append(' ');
+			builder.append(globalArchiverFlags);
+		}
+		return builder.toString();
 	}
 	protected String getGlobalCompilerFlags()
 	{
-		String a = "";
+		final StringBuilder builder = new StringBuilder();
 		if (parent != null)
-			a = parent.getGlobalCompilerFlags();
-		if (!a.isEmpty() && globalCompilerFlags != null)
-			a += " " + globalCompilerFlags;
-		else if (globalCompilerFlags != null)
-			a += globalCompilerFlags;
-
-		return a;
+			builder.append(parent.getGlobalCompilerFlags());
+		if (globalCompilerFlags != null) {
+			if (builder.length() > 0)
+				builder.append(' ');
+			builder.append(globalCompilerFlags);
+		}
+		return builder.toString();
 	}
 	protected String getGlobalLinkerFlags()
 	{
-		String a = "";
+		final StringBuilder builder = new StringBuilder();
 		if (parent != null)
-			a = parent.getGlobalLinkerFlags();
-		if (!a.isEmpty() && globalLinkerFlags != null)
-			a += " " + globalLinkerFlags;
-		else if (globalCompilerFlags != null)
-			a += globalLinkerFlags;
-
-		return a;
+			builder.append(parent.getGlobalLinkerFlags());
+		if (globalLinkerFlags != null) {
+			if (builder.length() > 0)
+				builder.append(' ');
+			builder.append(globalLinkerFlags);
+		}
+		return builder.toString();
 	}
 
 	/* And get the actual strings to instert into the commands */
@@ -323,7 +322,7 @@ public class Module {
 
 	private String getDynCompilerFlags()
 	{
-		String a = "";
+		final StringBuilder builder = new StringBuilder();
 		Config c = Config.getInstance();
 
 		if (dynCompilerFlags != null)
@@ -334,9 +333,9 @@ public class Module {
 					final String key = o.getString(Syntax.CONFIG_GLOBAL_KEY);
 					if (c.getDefined(key) && o.has(Syntax.CONFIG_GLOBAL_KEY))
 					{
-						if (!a.isEmpty())
-							a += " ";
-						a += o.getString(Syntax.CONFIG_GLOBAL_FLAGS);
+						if (builder.length() > 0)
+							builder.append(' ');
+						builder.append(o.getString(Syntax.CONFIG_GLOBAL_FLAGS));
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -351,41 +350,38 @@ public class Module {
 					final String key = o.getString(Syntax.CONFIG_GLOBAL_KEY);
 					if (c.getModuleDefined(this.name, key) && o.has(Syntax.CONFIG_GLOBAL_FLAGS))
 					{
-						if (!a.isEmpty())
-							a += " ";
-						a += o.getString(Syntax.CONFIG_GLOBAL_FLAGS);
+						if (builder.length() > 0)
+							builder.append(' ');
+						builder.append(o.getString(Syntax.CONFIG_GLOBAL_FLAGS));
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 			}
 		}
-
-		return a;
+		return builder.toString();
 	}
 	protected String[] getCompilerFlags()
 	{
-		String a = "";
-		if (getGlobalCompilerFlags() == null)
+		final String cflags = getGlobalCompilerFlags();
+		if (cflags == null)
 			return null;
-
-		a += getGlobalCompilerFlags();
+		final StringBuilder builder = new StringBuilder(cflags);
 		if (modCompilerFlags != null)
 		{
-			if (!a.isEmpty())
-				a += " ";
-			a += modCompilerFlags;
+			if (builder.length() > 0)
+				builder.append(' ');
+			builder.append(modCompilerFlags);
 		}
 
 		String dyn = getDynCompilerFlags();
 		if (!dyn.isEmpty())
 		{
-			if (!a.isEmpty())
-				a += " ";
-			a += dyn;
+			if (builder.length() > 0)
+				builder.append(' ');
+			builder.append(dyn);
 		}
-
-		return a.split(" ");
+		return builder.toString().split(" ");
 	}
 
 	protected String getArchiver()
@@ -397,7 +393,7 @@ public class Module {
 
 	private String getDynArchiverFlags()
 	{
-		String a = "";
+		final StringBuilder builder = new StringBuilder();
 		Config c = Config.getInstance();
 
 		if (dynArchiverFlags != null)
@@ -408,9 +404,9 @@ public class Module {
 					final String key = o.getString(Syntax.CONFIG_GLOBAL_KEY);
 					if (c.getDefined(key) && o.has(Syntax.CONFIG_GLOBAL_FLAGS))
 					{
-						if (!a.isEmpty())
-							a += " ";
-						a += o.getString(Syntax.CONFIG_GLOBAL_FLAGS);
+						if (builder.length() > 0)
+							builder.append(' ');
+						builder.append(o.getString(Syntax.CONFIG_GLOBAL_FLAGS));
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -425,41 +421,38 @@ public class Module {
 					final String key = o.getString(Syntax.CONFIG_GLOBAL_KEY);
 					if (c.getModuleDefined(this.name, key) && o.has(Syntax.CONFIG_GLOBAL_FLAGS))
 					{
-						if (!a.isEmpty())
-							a += " ";
-						a += o.getString(Syntax.CONFIG_GLOBAL_FLAGS);
+						if (builder.length() > 0)
+							builder.append(' ');
+						builder.append(o.getString(Syntax.CONFIG_GLOBAL_FLAGS));
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 			}
 		}
-
-		return a;
+		return builder.toString();
 	}
 	protected String[] getArchiverFlags()
 	{
-		String a = "";
-		if (getGlobalArchiverFlags() == null)
+		final String aflags = getGlobalArchiverFlags();
+		if (aflags == null)
 			return null;
-		a += getGlobalArchiverFlags();
-
+		final StringBuilder builder = new StringBuilder(aflags);
 		if (modArchiverFlags != null)
 		{
-			if (!a.isEmpty())
-				a += " ";
-			a += modArchiverFlags;
+			if (builder.length() > 0)
+				builder.append(' ');
+			builder.append(modArchiverFlags);
 		}
 
-		String dyn = getDynArchiverFlags();
+		final String dyn = getDynArchiverFlags();
 		if (!dyn.isEmpty())
 		{
-			if (!a.isEmpty())
-				a += " ";
-			a += dyn;
+			if (builder.length() > 0)
+				builder.append(' ');
+			builder.append(dyn);
 		}
-
-		return a.split(" ");
+		return builder.toString().split(" ");
 	}
 
 	protected String getLinker()
@@ -470,7 +463,7 @@ public class Module {
 	}
 	private String getDynLinkerFlags()
 	{
-		String a = "";
+		final StringBuilder builder = new StringBuilder();
 		Config c = Config.getInstance();
 
 		if (dynLinkerFlags != null)
@@ -481,9 +474,9 @@ public class Module {
 					final String key = o.getString(Syntax.CONFIG_GLOBAL_KEY);
 					if (c.getModuleDefined(this.name, key) && o.has(Syntax.CONFIG_GLOBAL_FLAGS))
 					{
-						if (!a.isEmpty())
-							a += " ";
-						a += o.getString(Syntax.CONFIG_GLOBAL_FLAGS);
+						if (builder.length() > 0)
+							builder.append(' ');
+						builder.append(o.getString(Syntax.CONFIG_GLOBAL_FLAGS));
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -498,55 +491,48 @@ public class Module {
 					final String key = o.getString(Syntax.CONFIG_GLOBAL_KEY);
 					if (c.getModuleDefined(this.name, key) && o.has(Syntax.CONFIG_GLOBAL_FLAGS))
 					{
-						if (!a.isEmpty())
-							a += " ";
-						a += o.getString(Syntax.CONFIG_GLOBAL_FLAGS);
+						if (builder.length() > 0)
+							builder.append(' ');
+						builder.append(o.getString(Syntax.CONFIG_GLOBAL_FLAGS));
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 			}
 		}
-
-		return a;
+		return builder.toString();
 	}
 	protected String[] getLinkerFlags()
 	{
-		String a = "";
-		if (getGlobalLinkerFlags() == null)
+		final String lflags = getGlobalLinkerFlags();
+		if (lflags == null)
 			return null;
-		a += getGlobalLinkerFlags();
-
+		final StringBuilder builder = new StringBuilder(lflags);
 		if (modLinkerFlags != null)
 		{
-			if (!a.isEmpty())
-				a += " ";
-			a += modLinkerFlags;
+			if (builder.length() > 0)
+				builder.append(' ');
+			builder.append(modLinkerFlags);
 		}
 
 		String dyn = getDynLinkerFlags();
 		if (!dyn.isEmpty())
 		{
-			if (!a.isEmpty())
-				a += " ";
-			a += dyn;
+			if (builder.length() > 0)
+				builder.append(' ');
+			builder.append(dyn);
 		}
-
-		return a.split(" ");
+		return builder.toString().split(" ");
 	}
 
 	/* Turn an input file name into the name of a unique output file */
 	private String getOFile(String inFile)
 	{
-		String a = "";
-
 		inFile = inFile.substring(0, inFile.lastIndexOf("."));
 		inFile = inFile.replace('\\', '_');
 		inFile = inFile.replace('/', '-');
 
-		a += Config.getInstance().getBuildDir() + "/" + this.name + "-" + inFile + ".o";
-
-		return a;
+		return Config.getInstance().getBuildDir() + "/" + this.name + "-" + inFile + ".o";
 	}
 
 	private String getAFile()
