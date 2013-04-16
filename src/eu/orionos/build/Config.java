@@ -20,21 +20,16 @@
 
 package eu.orionos.build;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import java.io.*;
+import java.util.HashMap;
 
 public class Config {
 	private JSONObject conf;
-	private static Config instance;
+	private static final Config instance = new Config();
 	private boolean silent = false;
 	private boolean verbose = false;
 	private String buildFile = "main.build";
@@ -45,7 +40,7 @@ public class Config {
 	private HashMap<String, Module> modules = new HashMap<String, Module>();
 	private int threads = 4;
 
-	private void setConfigFile(String conf) throws FileNotFoundException, IOException, ParseException
+	private void setConfigFile(String conf) throws FileNotFoundException, IOException, JSONException
 	{
 		this.configFile = conf;
 		File f = new File(configFile);
@@ -54,10 +49,16 @@ public class Config {
 			return;
 		}
 		try {
-			FileReader fr = new FileReader(f);
-			this.conf = (JSONObject) new JSONParser().parse(fr);
-			fr.close();
-		} catch (ParseException e) {
+			BufferedReader reader = new BufferedReader(new FileReader(f));
+			StringBuilder stringBuilder = new StringBuilder();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				stringBuilder.append(line);
+				stringBuilder.append('\n');
+			}
+			reader.close();
+			this.conf = new JSONObject(stringBuilder.toString());
+		} catch (JSONException e) {
 			System.err.println("File " + configFile + " can't be parsed!");
 			this.conf = null;
 			this.configFile = null;
@@ -67,20 +68,16 @@ public class Config {
 	}
 	public static Config getInstance()
 	{
-		if (instance == null)
-			instance = new Config();
 		return instance;
 	}
 
-	public static Config getInstance(String conf) throws FileNotFoundException, IOException, ParseException
+	public static Config getInstance(String conf) throws FileNotFoundException, IOException, JSONException
 	{
-		if (instance == null)
-			instance = new Config();
 		instance.setConfigFile(conf);
 		return instance;
 	}
 	
-	public void override(String conf) throws FileNotFoundException, IOException, ParseException
+	public void override(String conf) throws FileNotFoundException, IOException, JSONException
 	{
 		this.setConfigFile(conf);
 	}
@@ -121,9 +118,7 @@ public class Config {
 
 	public JSONObject get(String key)
 	{
-		if (conf.containsKey(key))
-			return (JSONObject)conf.get(key);
-		return null;
+		return conf.optJSONObject(key);
 	}
 	public void setClean()
 	{
@@ -136,34 +131,22 @@ public class Config {
 
 	public boolean getDefined(String key)
 	{
-		if (!conf.containsKey(Syntax.GLOBAL_DEFS))
+		if (!conf.has(Syntax.GLOBAL_DEFS))
 			return false;
-
-		JSONArray a = (JSONArray) conf.get(Syntax.GLOBAL_DEFS);
-		@SuppressWarnings("rawtypes")
-		Iterator i = a.iterator();
-
-		while (i.hasNext())
-		{
-			String s = (String) i.next();
-			if (s.equals(key))
+		JSONArray a = conf.getJSONArray(Syntax.GLOBAL_DEFS);
+		for (int i = 0; i < a.length(); i++) {
+			if (key.equals(a.get(i)))
 				return true;
 		}
 		return false;
 	}
 	public boolean getModuleDefined(String module, String key)
 	{
-		if (!conf.containsKey(module))
+		if (!conf.has(module))
 			return false;
-
-		JSONArray a = (JSONArray) conf.get(module);
-		@SuppressWarnings("rawtypes")
-		Iterator i = a.iterator();
-
-		while (i.hasNext())
-		{
-			String s = (String) i.next();
-			if (s.equals(key))
+		JSONArray a = conf.getJSONArray(module);
+		for (int i = 0; i < a.length(); i++) {
+			if (key.equals(a.get(i)))
 				return true;
 		}
 		return false;
@@ -185,11 +168,11 @@ public class Config {
 	}
 	public JSONArray getGlobalFlags()
 	{
-		return (JSONArray) conf.get(Syntax.GLOBAL_DEFS);
+		return conf.optJSONArray(Syntax.GLOBAL_DEFS);
 	}
 	public JSONArray getModuleFlags(String key)
 	{
-		return (JSONArray) conf.get(key);
+		return conf.optJSONArray(key);
 	}
 	public boolean RegisterModule(Module m)
 	{

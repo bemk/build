@@ -20,9 +20,9 @@
 
 package eu.orionos.build.option;
 
-import java.io.IOException;
+import org.json.JSONException;
 
-import org.json.simple.parser.ParseException;
+import java.io.IOException;
 
 public class OptionConfig extends Option {
 
@@ -41,7 +41,7 @@ public class OptionConfig extends Option {
 			eu.orionos.build.Config.getInstance().override(this.operand);
 		} catch (IOException e) {
 			System.err.println("Something went wrong in switching config files!");
-		} catch (ParseException e) {
+		} catch (JSONException e) {
 			System.err.println("Something went wrong in switching config files!");
 		}
 	}

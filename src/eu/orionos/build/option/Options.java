@@ -20,21 +20,20 @@
 
 package eu.orionos.build.option;
 
+import eu.orionos.build.Config;
+import eu.orionos.build.ErrorCode;
+import org.json.JSONException;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.json.simple.parser.ParseException;
-
-import eu.orionos.build.Config;
-import eu.orionos.build.ErrorCode;
-
 public class Options {
 
 	private ArrayList<Option> options = new ArrayList<Option>();
 
-	public Options(String args[]) throws FileNotFoundException, IOException, ParseException
+	public Options(String args[]) throws FileNotFoundException, IOException, JSONException
 	{
 		int i = 0;
 		if (args.length == 0)

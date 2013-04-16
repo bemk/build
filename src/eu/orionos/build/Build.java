@@ -20,12 +20,12 @@
 
 package eu.orionos.build;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import org.json.simple.parser.ParseException;
-
 import eu.orionos.build.exec.CommandKernel;
 import eu.orionos.build.option.Options;
+import org.json.JSONException;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class Build {
 	
@@ -59,7 +59,7 @@ public class Build {
 			System.err.println(e.getMessage());
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (ParseException e) {
+		} catch (JSONException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
