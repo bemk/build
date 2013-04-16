@@ -39,7 +39,7 @@ public class OptionGenModule extends Option{
 
 	@Override
 	public String help() {
-		return "   | --gen-module\tGenerate a module file";
+		return "   | --gen-module\n\t\t\tGenerate a module file";
 	}
 
 }

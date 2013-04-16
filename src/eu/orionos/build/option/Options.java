@@ -44,9 +44,11 @@ public class Options {
 		options.add(new OptionSilent());
 		options.add(new OptionVerbose());
 		options.add(new OptionClean());
+		options.add(new OptionConfigure());
 		options.add(new OptionConfig());
 		options.add(new OptionTask());
 		options.add(new OptionGenModule());
+		
 
 		for (; i < args.length; i++)
 		{
@@ -93,9 +95,11 @@ public class Options {
 							System.exit(ErrorCode.OPTION_UNSPECIFIED);
 						}
 						op.option();
-						break;
+						break nextarg;
 					}
 				}
+				System.err.println(args[i] + " Invalid option!");
+				new OptionHelp(this).option();
 			}
 			else if (args[i].endsWith(".build"))
 			{

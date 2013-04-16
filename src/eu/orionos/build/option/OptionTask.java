@@ -76,7 +76,11 @@ public class OptionTask extends Option {
 
 	@Override
 	public String help() {
-		return "-t | --tasks [n]\t Specify the number of tasks to use";
+		return "-t | --tasks [n]\n\t" +
+				"-t | --tasks [random | cores]\n\t\t\t" + 
+				"Specify the number of tasks to build with.\n\t\t\t" +
+				"Random selects a random number of threads between 1 and 16." +
+				"cores selects the number of cpu's available to build.";
 	}
 
 }

@@ -17,38 +17,31 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-
 package eu.orionos.build.option;
 
-import org.json.JSONException;
+import eu.orionos.build.ErrorCode;
 
-import java.io.IOException;
+public class OptionConfigure extends Option {
 
-public class OptionConfig extends Option {
-
-	public OptionConfig(char c, String s, boolean operands) {
+	public OptionConfigure(char c, String s, boolean operands) {
 		super(c, s, operands);
 	}
-
-	public OptionConfig()
+	
+	public OptionConfigure()
 	{
-		this('\0', "config", true);
+		this('C', "configure", false);
 	}
 
 	@Override
 	public void option() {
-		try {
-			eu.orionos.build.Config.getInstance().override(this.operand);
-		} catch (IOException e) {
-			System.err.println("Something went wrong in switching config files!");
-		} catch (JSONException e) {
-			System.err.println("Something went wrong in switching config files!");
-		}
+		System.err.println("Configuring is not yet implemented");
+		System.err.println("For now you manually have to edit the config file");
+		System.exit(ErrorCode.SUCCESS);
 	}
 
 	@Override
 	public String help() {
-		return "   | --config [config file]\n\t\t\tSelect an alternative config file";
+		return "-C | --configure\tGo through the config file editor";
 	}
 
 }
