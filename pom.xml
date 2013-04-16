@@ -33,6 +33,7 @@
           <archive>
             <manifest><mainClass>eu.orionos.build.Build</mainClass></manifest>
           </archive>
+          <finalName>build</finalName>
         </configuration>
       </plugin>
     </plugins>
