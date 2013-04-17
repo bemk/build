@@ -63,6 +63,12 @@ public class ModuleGenerator {
 		questions.add(new Question(Syntax.DYN_MOD_COMPILER_FLAGS, new AnswerArray<AnswerObject<AnswerString>>()));
 		questions.add(new Question(Syntax.DYN_MOD_LINKER_FLAGS, new AnswerArray<AnswerObject<AnswerString>>()));
 		questions.add(new Question(Syntax.DYN_MOD_ARCHIVER_FLAGS, new AnswerArray<AnswerObject<AnswerString>>()));
+
+		Question[] question = questions.toArray(new Question[questions.size()]);
+		for (Question q : question)
+		{
+			q.poseQuestion();
+		}
 	}
 
 	void requestData()

@@ -20,6 +20,7 @@
 package eu.orionos.build.option;
 
 import eu.orionos.build.ErrorCode;
+import eu.orionos.build.generator.ModuleGenerator;
 
 public class OptionGenModule extends Option{
 
@@ -33,8 +34,8 @@ public class OptionGenModule extends Option{
 
 	@Override
 	public void option() {
-		System.err.println("Module generating not yet implemented!");
-		System.exit(ErrorCode.OPTION_UNSPECIFIED);
+		new ModuleGenerator();
+		System.exit(ErrorCode.SUCCESS);
 	}
 
 	@Override

@@ -22,6 +22,7 @@ package eu.orionos.build.generator;
 public abstract class Answer {
 	public Answer()
 	{
-
 	}
+
+	public abstract void askForValue(Question q);
 }

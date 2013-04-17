@@ -19,36 +19,28 @@
 */
 package eu.orionos.build.generator;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Module {
-	private HashMap<String, Answer> fields = new HashMap<String, Answer>();
-
-	public Module()
+public class AnswerObjectTemplate {
+	private HashMap<String, Answer> object = new HashMap<String, Answer>();
+	public AnswerObjectTemplate()
 	{
-
 	}
 
-	public void setKey(String key, Answer value)
+	public void setKey(String key, Answer type)
 	{
-		if (fields.containsKey(key))
-		{
-			fields.remove(key);
-		}
-		fields.put(key, value);
+		object.put(key, type);
 	}
 
 	public Answer getKey(String key)
 	{
-		if (fields.containsKey(key))
-			return fields.get(key);
+		if (object.containsKey(key))
+			return object.get(key);
 		return null;
 	}
 
-	public void toJSON()
+	public HashMap<String, Answer> getObject()
 	{
-		ArrayList<String>k = new ArrayList<String>(fields.keySet());
-		ArrayList<Answer>a = new ArrayList<Answer>(fields.values());
+		return this.object;
 	}
 }

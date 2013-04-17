@@ -33,4 +33,10 @@ public class AnswerInteger extends Answer {
 	{
 		this.i = i;
 	}
+
+	@Override
+	public void askForValue(Question q) {
+		System.out.println("I can haz value for " + q.getKey() + "?");
+		System.console().readLine();
+	}
 }

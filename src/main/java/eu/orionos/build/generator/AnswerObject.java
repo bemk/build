@@ -23,8 +23,9 @@ import java.util.HashMap;
 
 public class AnswerObject<E extends Answer> extends Answer {
 	private HashMap<String, Answer> object;
-	public AnswerObject()
+	public AnswerObject(AnswerObjectTemplate template)
 	{
+		this.object = template.getObject();
 	}
 
 	public HashMap<String, Answer> get()
@@ -34,5 +35,11 @@ public class AnswerObject<E extends Answer> extends Answer {
 	public void set(HashMap<String, Answer> object)
 	{
 		this.object = object;
+	}
+
+	@Override
+	public void askForValue(Question q) {
+		System.out.println("I can haz value for " + q.getKey() + "?");
+		System.console().readLine();
 	}
 }

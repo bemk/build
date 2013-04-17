@@ -36,12 +36,13 @@ public class Question {
 		return this.key;
 	}
 
-	public void setAnswer()
-	{
-
-	}
 	public Answer getAnswer()
 	{
 		return this.answer;
+	}
+
+	public void poseQuestion()
+	{
+		answer.askForValue(this);
 	}
 }
