@@ -21,13 +21,16 @@ package eu.orionos.build.generator;
 
 public class AnswerString extends Answer {
 	private String s = new String();
-	public AnswerString (String s)
+	public AnswerString ()
 	{
-		this.s = s;
 	}
 
 	public String get()
 	{
 		return this.s;
+	}
+	public void set(String s)
+	{
+		this.s = s;
 	}
 }

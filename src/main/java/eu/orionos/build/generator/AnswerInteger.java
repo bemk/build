@@ -21,13 +21,16 @@ package eu.orionos.build.generator;
 
 public class AnswerInteger extends Answer {
 	private int i = 0;
-	public AnswerInteger(int i)
+	public AnswerInteger()
 	{
-		this.i = i;
 	}
 
 	public int get()
 	{
 		return i;
+	}
+	public void set(int i)
+	{
+		this.i = i;
 	}
 }

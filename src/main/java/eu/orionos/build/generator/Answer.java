@@ -19,7 +19,7 @@
 */
 package eu.orionos.build.generator;
 
-public class Answer {
+public abstract class Answer {
 	public Answer()
 	{
 

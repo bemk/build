@@ -21,13 +21,16 @@ package eu.orionos.build.generator;
 
 public class AnswerBoolean extends Answer {
 	private boolean b = false;
-	public AnswerBoolean(boolean b)
+	public AnswerBoolean()
 	{
-		this.b = b;
 	}
 
 	public boolean get()
 	{
 		return this.b;
+	}
+	public void set(boolean b)
+	{
+		this.b = b;
 	}
 }

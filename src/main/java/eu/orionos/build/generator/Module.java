@@ -22,27 +22,27 @@ package eu.orionos.build.generator;
 import java.util.HashMap;
 
 public class Module {
-	private HashMap<String, String> keys = new HashMap<String, String>();
+	private HashMap<String, Answer> fields = new HashMap<String, Answer>();
 
 	public Module()
 	{
 
 	}
 
-	public void setKey(String key, String value)
+	public void setKey(String key, Answer value)
 	{
-		if (keys.containsKey(key))
+		if (fields.containsKey(key))
 		{
-			keys.remove(key);
+			fields.remove(key);
 		}
-		keys.put(key, value);
+		fields.put(key, value);
 	}
 
-	public String getKey(String key)
+	public Answer getKey(String key)
 	{
-		if (keys.containsKey(key))
-			return keys.get(key);
-		return new String();
+		if (fields.containsKey(key))
+			return fields.get(key);
+		return null;
 	}
 
 	public void toJSON()

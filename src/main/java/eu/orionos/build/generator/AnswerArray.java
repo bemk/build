@@ -19,15 +19,24 @@
 */
 package eu.orionos.build.generator;
 
-public class AnswerArray extends Answer {
-	private Answer[] array;
-	public AnswerArray(Answer[] array)
+import java.util.ArrayList;
+
+public class AnswerArray<E extends Answer> extends Answer {
+	private ArrayList<Answer> array = new ArrayList<Answer>();
+	public AnswerArray()
 	{
-		this.array = array;
 	}
 	
 	public Answer[] get()
 	{
-		return array;
+		return array.toArray(new Answer[array.size()]);
+	}
+	public void addElement(E element)
+	{
+		array.add(element);
+	}
+	public void setElement(int idx, E element)
+	{
+		array.set(idx, element);
 	}
 }

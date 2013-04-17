@@ -21,15 +21,18 @@ package eu.orionos.build.generator;
 
 import java.util.HashMap;
 
-public class AnswerObject extends Answer {
+public class AnswerObject<E extends Answer> extends Answer {
 	private HashMap<String, Answer> object;
-	public AnswerObject(HashMap<String, Answer> object)
+	public AnswerObject()
 	{
-		this.object = object;
 	}
 
 	public HashMap<String, Answer> get()
 	{
 		return object;
+	}
+	public void set(HashMap<String, Answer> object)
+	{
+		this.object = object;
 	}
 }

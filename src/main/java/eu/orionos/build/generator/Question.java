@@ -21,11 +21,27 @@ package eu.orionos.build.generator;
 
 public class Question {
 	private String key;
-	private AnswerType type;
 	private Answer answer;
 
-	public Question()
+	public Question(String key, Answer answer)
+	{
+		if (key == null)
+			throw new IllegalArgumentException("Invalid key argument");
+		this.key = key;
+		this.answer = answer;
+	}
+
+	public String getKey()
+	{
+		return this.key;
+	}
+
+	public void setAnswer()
 	{
 
+	}
+	public Answer getAnswer()
+	{
+		return this.answer;
 	}
 }

@@ -19,11 +19,50 @@
 */
 package eu.orionos.build.generator;
 
+import java.util.ArrayList;
+
+import eu.orionos.build.Syntax;
+
 public class ModuleGenerator {
 
+	private ArrayList<Question> questions = new ArrayList<Question>();
 	public ModuleGenerator()
 	{
+		questions.add(new Question(Syntax.MODULE_NAME, new AnswerString()));
 
+		questions.add(new Question(Syntax.SOURCE, new AnswerArray<AnswerString>()));
+		questions.add(new Question(Syntax.LINKED, new AnswerString()));
+		questions.add(new Question(Syntax.ARCHIVED, new AnswerString()));
+
+		questions.add(new Question(Syntax.LINK, new AnswerBoolean()));
+		questions.add(new Question(Syntax.ARCHIVE, new AnswerBoolean()));
+
+		questions.add(new Question(Syntax.GLOBAL_COMPILER, new AnswerString()));
+		questions.add(new Question(Syntax.GLOBAL_LINKER, new AnswerString()));
+		questions.add(new Question(Syntax.GLOBAL_ARCHIVER, new AnswerString()));
+
+		questions.add(new Question(Syntax.GLOBAL_COMPILER_FLAGS, new AnswerString()));
+		questions.add(new Question(Syntax.GLOBAL_LINKER_FLAGS, new AnswerString()));
+		questions.add(new Question(Syntax.GLOBAL_ARCHIVER, new AnswerString()));
+
+		questions.add(new Question(Syntax.DYN_COMPILER_FLAGS, new AnswerArray<AnswerObject<AnswerString>>()));
+		questions.add(new Question(Syntax.DYN_LINKER_FLAGS, new AnswerArray<AnswerObject<AnswerString>>()));
+		questions.add(new Question(Syntax.DYN_ARCHIVER_FLAGS, new AnswerArray<AnswerObject<AnswerString>>()));
+
+		questions.add(new Question(Syntax.DEP, new AnswerArray<AnswerObject<AnswerString>>()));
+		questions.add(new Question(Syntax.DYN_DEP, new AnswerArray<AnswerObject<AnswerString>>()));
+
+		questions.add(new Question(Syntax.MOD_COMPILER, new AnswerString()));
+		questions.add(new Question(Syntax.MOD_LINKER, new AnswerString()));
+		questions.add(new Question(Syntax.MOD_ARCHIVER, new AnswerString()));
+
+		questions.add(new Question(Syntax.MOD_COMPILER_FLAGS, new AnswerArray<AnswerObject<AnswerString>>()));
+		questions.add(new Question(Syntax.MOD_LINKER_FLAGS, new AnswerArray<AnswerObject<AnswerString>>()));
+		questions.add(new Question(Syntax.MOD_ARCHIVER_FLAGS, new AnswerArray<AnswerObject<AnswerString>>()));
+
+		questions.add(new Question(Syntax.DYN_MOD_COMPILER_FLAGS, new AnswerArray<AnswerObject<AnswerString>>()));
+		questions.add(new Question(Syntax.DYN_MOD_LINKER_FLAGS, new AnswerArray<AnswerObject<AnswerString>>()));
+		questions.add(new Question(Syntax.DYN_MOD_ARCHIVER_FLAGS, new AnswerArray<AnswerObject<AnswerString>>()));
 	}
 
 	void requestData()
