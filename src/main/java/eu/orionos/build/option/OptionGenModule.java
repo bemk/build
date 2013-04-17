@@ -34,7 +34,7 @@ public class OptionGenModule extends Option{
 
 	@Override
 	public void option() {
-		new ModuleGenerator();
+		new ModuleGenerator(operand);
 		System.exit(ErrorCode.SUCCESS);
 	}
 
