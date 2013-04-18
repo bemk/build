@@ -24,14 +24,12 @@ import java.util.ArrayList;
 import eu.orionos.build.Syntax;
 
 public class Module {
-	private String path;
 	private String name;
 
 	private ArrayList<Field> fields = new ArrayList<Field>();
 
-	public Module(String path)
+	public Module()
 	{
-		this.path = path;
 		while (this.name == null || this.name.equals(""))
 		{
 			System.out.print("Specify the unique module id");

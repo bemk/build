@@ -19,11 +19,30 @@
 */
 package eu.orionos.build.generator;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import eu.orionos.build.ErrorCode;
+
 public class ModuleGenerator {
 	public ModuleGenerator(String path)
 	{
-		Module m = new Module(path);
+		Module m = new Module();
 		String s = m.getJSON();
-		System.out.print(s);
+
+		System.out.println("Generating module");
+
+		File f = new File(path);
+		FileWriter fw;
+		try {
+			fw = new FileWriter(f);
+			fw.write(s);
+			fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(ErrorCode.GENERIC);
+		}
+		System.out.println("[ OK ] " + path);
 	}
 }

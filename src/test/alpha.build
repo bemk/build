@@ -1,8 +1,8 @@
 {
 "name" : "alpha",
-"mcompiler-flags" : "-Iinclude",
 "source-files" : [ "alpha.c" ],
 "archived-file" : "alpha.a",
+"mcompiler-flags" : "-D ALPHA",
 "link" : false,
 "archive" : true
 }
