@@ -23,7 +23,7 @@ public class Dependencies extends Field {
 
 	@Override
 	public String toJSON() {
-		return null;
+		return "";
 	}
 
 }

@@ -21,6 +21,8 @@ package eu.orionos.build.generator;
 
 import java.util.ArrayList;
 
+import eu.orionos.build.Syntax;
+
 public class Module {
 	private String path;
 	private String name;
@@ -43,6 +45,20 @@ public class Module {
 
 	public String getJSON()
 	{
-		return "";
+		String json = "{\n";
+		json += "\"" + Syntax.MODULE_NAME + "\" : \"" + name + "\",\n";
+		Field[] f = fields.toArray(new Field[fields.size()]);
+		for (int i = 0; i < f.length; i++)
+		{
+			String tmp = f[i].toJSON();
+			if (!tmp.equals(""))
+			{
+				if (i != 0)
+					json += ",\n";
+				json += f[i].toJSON();
+			}
+		}
+		json += "\n}\n";
+		return json;
 	}
 }

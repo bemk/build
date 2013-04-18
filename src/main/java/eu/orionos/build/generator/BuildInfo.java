@@ -58,7 +58,6 @@ public class BuildInfo extends Field {
 				sFiles.add(s);
 		}
 		System.out.println("\tHigh level compile info done");
-		System.out.print(toJSON());
 	}
 
 	@Override
@@ -69,7 +68,7 @@ public class BuildInfo extends Field {
 		s += "\"" + Syntax.ARCHIVE + "\" : " + ((toArchive) ? "true" : "false") + ",\n";
 		if (toArchive)
 			s += "\"" + Syntax.ARCHIVED + "\" : \"" + aFile + "\",\n";
-		s += "\"" + Syntax.SOURCE + "\" + [";
+		s += "\"" + Syntax.SOURCE + "\" : [";
 		String a[] = sFiles.toArray(new String[sFiles.size()]);
 		for (int i = 0; i < sFiles.size(); i++)
 		{
@@ -77,7 +76,7 @@ public class BuildInfo extends Field {
 			if (i+1 < sFiles.size())
 				s+= ", ";
 		}
-		s += "],\n";
+		s += "]";
 
 		return s;
 	}

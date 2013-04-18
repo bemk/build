@@ -19,11 +19,56 @@
 */
 package eu.orionos.build.generator;
 
-public class Executables extends Field {
+import eu.orionos.build.Syntax;
 
+public class Executables extends Field {
+	private String global_compiler = "";
+	private String module_compiler = "";
+	private String global_linker = "";
+	private String module_linker = "";
+	private String global_archiver = "";
+	private String module_archiver = "";
+
+	public Executables()
+	{
+		System.out.print("Do you wish to set the global compiler fields?");
+		if (askBoolean())
+		{
+			System.out.print("Please set the compiler (leave blank to ignore field)");
+			global_compiler = askString();
+			System.out.print("Please set the linker (leave blank to ignore field)");
+			global_linker = askString();
+			System.out.print("Please set the archiver (leave blank to ignore field)");
+			global_archiver = askString();
+		}
+		System.out.print("Do you wish to override the compiler fields for this module?");
+		if (askBoolean())
+		{
+			System.out.print("Please set the module wide compiler (leave blank to ignore field)");
+			module_compiler = askString();
+			System.out.print("Please set the module wide linker (leave blank to ignore field)");
+			module_linker = askString();
+			System.out.print("Please set hte module wide archiver (leave blank to ignore field)");
+			module_archiver = askString();
+		}
+	}
 	@Override
 	public String toJSON() {
-		return null;
+		String json = "";
+		if (!global_compiler.equals(""))
+			json += "\"" + Syntax.GLOBAL_COMPILER + "\" : \"" + global_compiler + "\"";
+		if (!global_linker.equals(""))
+			json += ",\n\"" + Syntax.GLOBAL_LINKER + "\" : \"" + global_linker + "\"";
+		if (!global_archiver.equals(""))
+			json += ",\n\"" + Syntax.GLOBAL_ARCHIVER + "\" : \"" + global_archiver + "\"";
+		if (!module_compiler.equals(""))
+			json += ",\n\"" + Syntax.MOD_COMPILER + "\" : \"" + module_compiler + "\"";
+		if (!module_linker.equals(""))
+			json += ",\n\"" + Syntax.MOD_LINKER + "\" : \"" + module_linker + "\"";
+		if (!module_archiver.equals(""))
+			json += ",\n\"" + Syntax.MOD_ARCHIVER + "\" : \"" + module_archiver + "\"";
+
+		return json;
 	}
 
 }

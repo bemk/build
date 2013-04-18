@@ -24,5 +24,6 @@ public class ModuleGenerator {
 	{
 		Module m = new Module(path);
 		String s = m.getJSON();
+		System.out.print(s);
 	}
 }
