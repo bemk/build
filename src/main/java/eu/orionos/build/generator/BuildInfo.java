@@ -32,40 +32,38 @@ public class BuildInfo extends Field {
 
 	public BuildInfo()
 	{
-		System.out.println("\tHigh level compile info");
 		System.out.print("Do you wish to link this module?");
 		toLink = askBoolean();
 		if (toLink)
 		{
-			System.out.print("What should be the linker output file name?");
+			System.out.print("Give the name of the linked output file");
 			lFile = askString();
 		}
 		System.out.print("Should this module get archived?");
 		toArchive = askBoolean();
 		if (toArchive)
 		{
-			System.out.print("What should be the archiver output file name?");
+			System.out.print("Give the name of the archived output file");
 			aFile = askString();
 		}
 		while (true)
 		{
 			System.out.println("Give the name of the next source file");
-			System.out.print("leave blank for last source file");
+			System.out.print("Press enter with a blank line to continue to the next part");
 			String s = askString();
 			if (s.equals(""))
 				break;
 			else
 				sFiles.add(s);
 		}
-		System.out.println("\tHigh level compile info done");
 	}
 
 	@Override
 	public String toJSON() {
 		String s = "\"" + Syntax.LINK + "\" : " + ((toLink) ? "true" : "false") + ",\n";
+		s += "\"" + Syntax.ARCHIVE + "\" : " + ((toArchive) ? "true" : "false") + ",\n";
 		if (toLink)
 			s += "\"" + Syntax.LINKED + "\" : \"" + lFile + "\",\n";
-		s += "\"" + Syntax.ARCHIVE + "\" : " + ((toArchive) ? "true" : "false") + ",\n";
 		if (toArchive)
 			s += "\"" + Syntax.ARCHIVED + "\" : \"" + aFile + "\",\n";
 		s += "\"" + Syntax.SOURCE + "\" : [";

@@ -50,7 +50,6 @@ public class Syntax {
 	public static final String DEP = "depend";
 	public static final String DYN_DEP = "ddepend";
 	public static final String DEP_PATH = "path";
-	public static final String DYN_DEP_KEY = "key";
 
 	public static final String SOURCE = "source-files";
 	public static final String LINKED = "linked-file";

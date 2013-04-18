@@ -246,7 +246,7 @@ public class Module {
 			for (int i = 0; i < array.length(); i++) {
 				try {
 					JSONObject o = array.getJSONObject(i);
-					dynamicModules.put(o.getString(Syntax.DYN_DEP_KEY), new Module(o.getString(Syntax.DEP_PATH), this));
+					dynamicModules.put(o.getString(Syntax.CONFIG_GLOBAL_KEY), new Module(o.getString(Syntax.DEP_PATH), this));
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}

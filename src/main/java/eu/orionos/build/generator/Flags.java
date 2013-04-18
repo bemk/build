@@ -20,6 +20,9 @@
 package eu.orionos.build.generator;
 
 import java.util.HashMap;
+import java.util.Map;
+
+import eu.orionos.build.Syntax;
 
 public class Flags extends Field {
 	private String global_compiler_flags = "";
@@ -37,34 +40,112 @@ public class Flags extends Field {
 	private HashMap<String, String> dynamic_module_compiler_flags = new HashMap<String, String>();
 	private HashMap<String, String> dynamic_module_linker_flags = new HashMap<String, String>();
 	private HashMap<String, String> dynamic_module_archiver_flags = new HashMap<String, String>();
+	
+	private void setFlags(HashMap<String, String> map, String type)
+	{
+		while (true)
+		{
+			System.out.println("Set the key for the dymamic " + type + " flag");
+			System.out.println("Leave field blank and return to go to the next item");
+			String key = System.console().readLine();
+			if (key.equals(""))
+				break;
+			System.out.print("Set the flag for " + type + "-" + key);
+			String flag = System.console().readLine();
+			map.put(key, flag);
+		}
+	}
 
 	public Flags()
 	{
 		System.out.print("Do you want to add to the global flags?");
 		if (askBoolean())
 		{
-			System.out.println("You fool!");
+			System.out.print("Give global compiler flags");
+			global_compiler_flags = askString();
+			System.out.print("Give global linker flags");
+			global_linker_flags = askString();
+			System.out.print("Give global archiver flags");
+			global_archiver_flags = askString();
 		}
 		System.out.print("Do you want to add something to the module wide flags?");
 		if (askBoolean())
 		{
-			System.out.println("Haven't you learnt by now?");
+			System.out.print("Give module wide compiler flags");
+			module_compililer_flags = askString();
+			System.out.print("Give module wide linker flags");
+			module_linker_flags = askString();
+			System.out.print("Give module wide archiver flags");
+			module_archiver_flags = askString();
 		}
 		System.out.print("Do you want to add to the global flags conditionally?");
 		if (askBoolean())
 		{
-			System.out.println("My patience is starting to run out with you");
+			setFlags(dynamic_compiler_flags, "global compiler");
+			setFlags(dynamic_linker_flags, "global linker");
+			setFlags(dynamic_archiver_flags, "global archiver");
 		}
 		System.out.print("Do you want to add to the module flags conditionally?");
 		if (askBoolean())
 		{
-			System.out.println("Ok, that's it, no more questions for you from this part of the module");
+			setFlags(dynamic_module_compiler_flags, "module wide compiler");
+			setFlags(dynamic_module_linker_flags, "module wide linker");
+			setFlags(dynamic_module_archiver_flags, "module wide archiver");
 		}
+	}
+
+	private String parseMap(Map<String,String> map)
+	{
+		String ret = "";
+		boolean first = true;
+		for (Map.Entry<String, String> e : map.entrySet())
+		{
+			if (!first)
+				ret += ",";
+			else
+				first = true;
+			ret += "{\"" + Syntax.CONFIG_GLOBAL_KEY+ "\" : \"" + e.getKey() + "\",";
+			ret += "\"" + Syntax.CONFIG_GLOBAL_FLAGS + "\" : \"" + e.getValue() + "\"}";
+		}
+		return ret;
 	}
 
 	@Override
 	public String toJSON() {
-		return "";
+		String json = "";
+
+		json += "\"" + Syntax.GLOBAL_COMPILER_FLAGS + "\" : \"" + global_compiler_flags + "\"";
+		json += ",\n\"" + Syntax.GLOBAL_LINKER_FLAGS + "\" : \"" + global_linker_flags + "\"";
+		json += ",\n\"" + Syntax.GLOBAL_ARCHIVER_FLAGS + "\" : \"" + global_archiver_flags + "\"";
+
+		if (!module_compililer_flags.equals(""))
+			json += ",\"\n" + Syntax.MOD_COMPILER_FLAGS + "\" : \"" + module_compililer_flags + "\"";
+		if (!module_linker_flags.equals(""))
+			json += ",\n\"" + Syntax.MOD_LINKER_FLAGS + "\" : \"" + module_linker_flags + "\"";
+		if (!module_archiver_flags.equals(""))
+			json += ",\n\"" + Syntax.MOD_ARCHIVER_FLAGS + "\" : \"" + module_archiver_flags + "\"";
+
+		String dcf = parseMap(dynamic_compiler_flags);
+		String dlf = parseMap(dynamic_linker_flags);
+		String daf = parseMap(dynamic_archiver_flags);
+		if (!dcf.equals(""))
+			json += ",\n\"" + Syntax.DYN_COMPILER_FLAGS + "\" : [" + dcf + "]";
+		if (!dlf.equals(""))
+			json += ",\n\"" + Syntax.DYN_LINKER_FLAGS + "\" : [" + dlf + "]";
+		if (!daf.equals(""))
+			json += ",\n\"" + Syntax.DYN_ARCHIVER_FLAGS + "\" : [" + daf + "]";
+
+		String dmcf = parseMap(dynamic_module_compiler_flags);
+		String dmlf = parseMap(dynamic_module_linker_flags);
+		String dmaf = parseMap(dynamic_module_archiver_flags);
+		if (!dmcf.equals(""))
+			json += ",\n\"" + Syntax.DYN_MOD_COMPILER_FLAGS + "\" : [" + dmcf + "]";
+		if (!dmlf.equals(""))
+			json += ",\n\"" + Syntax.DYN_MOD_LINKER_FLAGS + "\" : [" + dmlf + "]";
+		if (!dmaf.equals(""))
+			json += ",\n\"" + Syntax.DYN_MOD_ARCHIVER_FLAGS + "\" : [" + dmaf + "]";
+
+		return json;
 	}
 
 }
