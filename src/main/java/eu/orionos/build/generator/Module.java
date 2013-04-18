@@ -19,10 +19,30 @@
 */
 package eu.orionos.build.generator;
 
-public class ModuleGenerator {
-	public ModuleGenerator(String path)
+import java.util.ArrayList;
+
+public class Module {
+	private String path;
+	private String name;
+
+	private ArrayList<Field> fields = new ArrayList<Field>();
+
+	public Module(String path)
 	{
-		Module m = new Module(path);
-		String s = m.getJSON();
+		this.path = path;
+		while (this.name == null || this.name.equals(""))
+		{
+			System.out.print("Specify the unique module id");
+			this.name = Field.askString();
+		}
+		fields.add(new BuildInfo());
+		fields.add(new Executables());
+		fields.add(new Flags());
+		fields.add(new Dependencies());
+	}
+
+	public String getJSON()
+	{
+		return "";
 	}
 }

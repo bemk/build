@@ -19,10 +19,40 @@
 */
 package eu.orionos.build.generator;
 
-public class ModuleGenerator {
-	public ModuleGenerator(String path)
+public abstract class Field {
+	public static boolean askBoolean()
 	{
-		Module m = new Module(path);
-		String s = m.getJSON();
+		while (true)
+		{
+			System.out.print("[y/N] ");
+			String s = System.console().readLine();
+			if (s.toLowerCase().equals("y") || s.toLowerCase().equals("yes"))
+				return true;
+			else if (s.toLowerCase().equals("n") || s.toLowerCase().equals("no") || s.equals(""))
+				return false;
+		}
 	}
+
+	public static int askInt()
+	{
+		while (true)
+		{
+			System.out.print("[0..9] ");
+			String s = System.console().readLine();
+			try {
+				int i = Integer.parseInt(s);
+				return i;
+			} catch (NumberFormatException e) {
+				System.out.println(s + " is an invalid number!");
+			}
+		}
+	}
+
+	public static String askString()
+	{
+		System.out.print(": ");
+		return System.console().readLine();
+	}
+
+	public abstract String toJSON();
 }

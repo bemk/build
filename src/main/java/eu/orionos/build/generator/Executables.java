@@ -19,10 +19,11 @@
 */
 package eu.orionos.build.generator;
 
-public class ModuleGenerator {
-	public ModuleGenerator(String path)
-	{
-		Module m = new Module(path);
-		String s = m.getJSON();
+public class Executables extends Field {
+
+	@Override
+	public String toJSON() {
+		return null;
 	}
+
 }
