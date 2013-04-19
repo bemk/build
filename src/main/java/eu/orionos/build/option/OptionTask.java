@@ -27,6 +27,7 @@ import eu.orionos.build.Config;
 import eu.orionos.build.ErrorCode;
 
 public class OptionTask extends Option {
+	private static final int max_factor = 8;
 
 	public OptionTask()
 	{
@@ -38,6 +39,7 @@ public class OptionTask extends Option {
 
 	@Override
 	public void option() {
+		int cores = Runtime.getRuntime().availableProcessors();
 		if (this.operand.equals("random"))
 		{
 			Random r = new Random(new Date().getTime());
@@ -48,25 +50,26 @@ public class OptionTask extends Option {
 		}
 		if (this.operand.equals("cores"))
 		{
-			int cores = Runtime.getRuntime().availableProcessors();
 			System.out.println("Running with " + cores + " worker treads");
+			Config.getInstance().threads(cores);
 			return;
 		}
 		try {
-		int tasks = Integer.parseInt(this.operand);
-		if (tasks == 0)
-			tasks = 1;
-		if (tasks > 40)
-		{
-			System.out.println("Are you certain you want to run " + tasks + " worker threads?(y/N)");
-			String ret = System.console().readLine().toLowerCase();
-			if (!(ret.equals("y") || ret.equals("yes")))
+			int tasks = Integer.parseInt(this.operand);
+			if (tasks == 0)
+				tasks = 1;
+			else if (tasks > cores * max_factor)
 			{
-				System.out.println("Setting the number of tasks to 40");
-				tasks = 40;
+				System.out.println("You are attempting to run " + max_factor + " times more threads than you have cores available");
+				System.out.println("Are you certain you don't want to scale down to " + (cores * max_factor) + " threads? (y/N)");
+				String ret = System.console().readLine().toLowerCase();
+				if (!(ret.equals("y") || ret.equals("yes")))
+				{
+					System.out.println("Setting the number of tasks to " + (cores * max_factor));
+					tasks = cores * max_factor;
+				}
 			}
-		}
-		Config.getInstance().threads(tasks);
+			Config.getInstance().threads(tasks);
 		} catch (NumberFormatException e)
 		{
 			System.err.println("Operand " + this.operand + " to -t or --tasks is not a valid number!");
