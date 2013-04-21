@@ -43,6 +43,7 @@ public class Options {
 
 		options.add(new OptionHelp(this));
 		options.add(new OptionHelp('u', "usage", this));
+		options.add(new OptionVersion());
 		options.add(new OptionSilent());
 		options.add(new OptionVerbose());
 		options.add(new OptionClean());
