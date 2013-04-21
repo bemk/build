@@ -71,9 +71,12 @@ public class CommandKernel {
 				System.err.println("Thread count: " + i);
 				Runtime.getRuntime().halt(ErrorCode.GENERIC);
 			}
-			if (i%16 == 0 && i != 0)
-				System.err.println("Starting worker thread: " + i);
-			i++;
+			if (Config.getInstance().verbose())
+			{
+				if (i%16 == 0 && i != 0)
+					System.err.println("Starting worker thread: " + i);
+				i++;
+			}
 		}
 	}
 
