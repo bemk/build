@@ -1,5 +1,7 @@
 /*  Build - Hopefully a simple build system
-    Copyright (C) 2013 - Bart Kuivenhoven
+    Copyright (C)
+        Bart Kuivenhoven   <bemkuivenhoven@gmail.com> - 2013
+        Toon Schoenmakers  <nighteyes1993@gmail.com>  - 2013
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
