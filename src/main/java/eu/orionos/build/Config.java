@@ -54,7 +54,6 @@ public class Config {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				stringBuilder.append(line);
-				stringBuilder.append('\n');
 			}
 			reader.close();
 			this.conf = new JSONObject(stringBuilder.toString());
