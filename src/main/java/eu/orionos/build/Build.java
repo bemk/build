@@ -52,7 +52,8 @@ public class Build {
 
 			this.modules = new Module(Config.getInstance().buildFile());
 			modules.build();
-			while (!modules.getDone())
+			/* Wait untill the commads have finished running & don't bother waiting if no commands were issued */
+			while (!modules.getDone() && CommandKernel.getInstance().getNoCommands() != 0)
 				Thread.sleep(250);
 			CommandKernel.getInstance().stopThreads();
 		} catch (FileNotFoundException e) {
