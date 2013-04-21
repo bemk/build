@@ -4,6 +4,8 @@
 *.classpath
 *.o
 *.a
+*.swp
+*~
 build.jar
 test.bin
 build.bin

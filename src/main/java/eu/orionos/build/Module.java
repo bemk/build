@@ -287,6 +287,13 @@ public class Module {
 				builder.append(' ');
 			builder.append(globalArchiverFlags);
 		}
+		String dyn = getDynArchiverFlags();
+		if (!dyn.isEmpty())
+		{
+			if (builder.length() > 0)
+				builder.append(' ');
+			builder.append(dyn);
+		}
 		return builder.toString();
 	}
 	protected String getGlobalCompilerFlags()
@@ -299,6 +306,13 @@ public class Module {
 				builder.append(' ');
 			builder.append(globalCompilerFlags);
 		}
+		String dyn = getDynCompilerFlags();
+		if (!dyn.isEmpty())
+		{
+			if (builder.length() > 0)
+				builder.append(' ');
+			builder.append(dyn);
+		}
 		return builder.toString();
 	}
 	protected String getGlobalLinkerFlags()
@@ -310,6 +324,13 @@ public class Module {
 			if (builder.length() > 0)
 				builder.append(' ');
 			builder.append(globalLinkerFlags);
+		}
+		String dyn = getDynLinkerFlags();
+		if (!dyn.isEmpty())
+		{
+			if (builder.length() > 0)
+				builder.append(' ');
+			builder.append(dyn);
 		}
 		return builder.toString();
 	}
@@ -344,6 +365,13 @@ public class Module {
 				}
 			}
 		}
+		return builder.toString();
+	}
+	private String getDynModCompilerFlags()
+	{
+		final StringBuilder builder = new StringBuilder();
+		Config c = Config.getInstance();
+
 		if (dynModCompilerFlags != null)
 		{
 			for (int i = 0; i < dynModCompilerFlags.length(); i++) {
@@ -376,7 +404,7 @@ public class Module {
 			builder.append(modCompilerFlags);
 		}
 
-		String dyn = getDynCompilerFlags();
+		String dyn = getDynModCompilerFlags();
 		if (!dyn.isEmpty())
 		{
 			if (builder.length() > 0)
@@ -415,6 +443,12 @@ public class Module {
 				}
 			}
 		}
+		return builder.toString();
+	}
+	private String getDynModArchiverFlags()
+	{
+		final StringBuilder builder = new StringBuilder();
+		Config c = Config.getInstance();
 		if (dynModArchiverFlags != null)
 		{
 			for (int i = 0; i < dynModArchiverFlags.length(); i++) {
@@ -447,7 +481,7 @@ public class Module {
 			builder.append(modArchiverFlags);
 		}
 
-		final String dyn = getDynArchiverFlags();
+		final String dyn = getDynModArchiverFlags();
 		if (!dyn.isEmpty())
 		{
 			if (builder.length() > 0)
@@ -485,6 +519,13 @@ public class Module {
 				}
 			}
 		}
+		return builder.toString();
+	}
+	private String getDynModLinkerFlags()
+	{
+		final StringBuilder builder = new StringBuilder();
+		Config c = Config.getInstance();
+
 		if (dynModLinkerFlags != null)
 		{
 			for (int i = 0; i < dynModLinkerFlags.length(); i++) {
@@ -517,7 +558,7 @@ public class Module {
 			builder.append(modLinkerFlags);
 		}
 
-		String dyn = getDynLinkerFlags();
+		String dyn = getDynModLinkerFlags();
 		if (!dyn.isEmpty())
 		{
 			if (builder.length() > 0)

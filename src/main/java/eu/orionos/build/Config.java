@@ -83,10 +83,6 @@ public class Config {
 		this.setConfigFile(conf);
 	}
 
-	private Config()
-	{
-	}
-
 	public void configure()
 	{
 		System.err.println("Configuration options should be set here!!!");
