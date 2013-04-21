@@ -234,9 +234,13 @@ public class Module {
 		JSONArray array = module.optJSONArray(Syntax.DEP);
 		if (array != null) {
 			for (int i = 0; i < array.length(); i++) {
+				final StringBuilder modPath = new StringBuilder();
 				try {
 					final JSONObject o = array.getJSONObject(i);
-					subModules.add(new Module(o.getString(Syntax.DEP_PATH), this));
+					modPath.append(cwd);
+					modPath.append('/');
+					modPath.append(o.getString(Syntax.DEP_PATH));
+					subModules.add(new Module(modPath.toString(), this));
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -245,9 +249,13 @@ public class Module {
 		array = module.optJSONArray(Syntax.DYN_DEP);
 		if (array != null) {
 			for (int i = 0; i < array.length(); i++) {
+				final StringBuilder modPath = new StringBuilder();
 				try {
 					JSONObject o = array.getJSONObject(i);
-					dynamicModules.put(o.getString(Syntax.CONFIG_GLOBAL_KEY), new Module(o.getString(Syntax.DEP_PATH), this));
+					modPath.append(cwd);
+					modPath.append('/');
+					modPath.append(o.getString(Syntax.DEP_PATH));
+					dynamicModules.put(o.getString(Syntax.CONFIG_GLOBAL_KEY), new Module(modPath.toString(), this));
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
