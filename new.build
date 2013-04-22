@@ -5,7 +5,7 @@
 "linker" : "clang",
 "archiver" : "ar",
 
-"compiler-flags" : "",
+"compiler-flags" : "-c",
 "linker-flags" : "",
 "archiver-flags" : "rs",
 

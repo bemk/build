@@ -709,12 +709,11 @@ public class Module {
 
 			ArrayList<String> command = new ArrayList<String>();
 			command.add(compiler);
-			command.add("-c");
-			command.add(sFile);
 			command.add("-o");
 			command.add(oFile);
 			for (String s : compilerFlags)
 				command.add(s);
+			command.add(sFile);
 			
 			String cmd[] = command.toArray(new String[command.size()]);
 			sendCommand(cmd, oFile);

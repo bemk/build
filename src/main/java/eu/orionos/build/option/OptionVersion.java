@@ -36,7 +36,7 @@ public class OptionVersion extends Option {
 	public void option() {
 		System.out.println("Build");
 		System.out.println("A simple build system built by the Orion project");
-		System.out.println("Version 0.1");
+		System.out.println("Version 0.2");
 		System.exit(ErrorCode.SUCCESS);
 	}
 
