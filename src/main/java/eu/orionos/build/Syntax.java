@@ -25,10 +25,13 @@ public class Syntax {
 
 	public static final String GLOBAL_COMPILER = "compiler";
 	public static final String GLOBAL_COMPILER_FLAGS = "compiler-flags";
+	public static final String GLOBAL_COMPILER_OVERRIDE_FLAGS = "compiler-override-flags";
 	public static final String GLOBAL_LINKER = "linker";
 	public static final String GLOBAL_LINKER_FLAGS = "linker-flags";
+	public static final String GLOBAL_LINKER_OVERRIDE_FLAGS = "linker-override-flags";
 	public static final String GLOBAL_ARCHIVER = "archiver";
 	public static final String GLOBAL_ARCHIVER_FLAGS = "archiver-flags";
+	public static final String GLOBAL_ARCHIVER_OVERRIDE_FLAGS = "archiver-override-flags";
 
 	public static final String GLOBAL_DEFS = "global";
 

@@ -29,6 +29,10 @@ public class Flags extends Field {
 	private String global_linker_flags = "";
 	private String global_archiver_flags = "";
 
+	private String global_override_compiler_flags = "";
+	private String global_override_linker_flags = "";
+	private String global_override_archiver_flags = "";
+
 	private String module_compililer_flags = "";
 	private String module_linker_flags = "";
 	private String module_archiver_flags = "";
@@ -40,7 +44,7 @@ public class Flags extends Field {
 	private HashMap<String, String> dynamic_module_compiler_flags = new HashMap<String, String>();
 	private HashMap<String, String> dynamic_module_linker_flags = new HashMap<String, String>();
 	private HashMap<String, String> dynamic_module_archiver_flags = new HashMap<String, String>();
-	
+
 	private void setFlags(HashMap<String, String> map, String type)
 	{
 		while (true)
@@ -58,6 +62,19 @@ public class Flags extends Field {
 
 	public Flags()
 	{
+		System.out.print("Do you want to override the global flags for this module?");
+		if (askBoolean())
+		{
+			System.out.println("Give the global overriding compiler flags");
+			System.out.print("Leave blank and hit return to skip this option");
+			global_override_compiler_flags = askString();
+			System.out.println("Give the global overriding linker flags");
+			System.out.print("Leave blank and hit return to skip this option");
+			global_override_linker_flags = askString();
+			System.out.println("Give the global overriding archiver flags");
+			System.out.print("Leave blank and hit return to skip this option");
+			global_override_archiver_flags = askString();
+		}
 		System.out.print("Do you want to add to the global flags?");
 		if (askBoolean())
 		{
@@ -124,6 +141,13 @@ public class Flags extends Field {
 			json += ",\n\"" + Syntax.MOD_LINKER_FLAGS + "\" : \"" + module_linker_flags + "\"";
 		if (!module_archiver_flags.equals(""))
 			json += ",\n\"" + Syntax.MOD_ARCHIVER_FLAGS + "\" : \"" + module_archiver_flags + "\"";
+
+		if (!global_override_compiler_flags.equals(""))
+			json += ",\n\"" + Syntax.GLOBAL_COMPILER_OVERRIDE_FLAGS + "\" : \"" + global_override_compiler_flags + "\"";
+		if (!global_override_linker_flags.equals(""))
+			json += ",\n\"" + Syntax.GLOBAL_LINKER_OVERRIDE_FLAGS + "\" : \"" + global_override_linker_flags + "\"";
+		if (!global_override_archiver_flags.equals(""))
+			json += ",\n\"" + Syntax.GLOBAL_ARCHIVER_OVERRIDE_FLAGS + "\" : \"" + global_override_archiver_flags + "\"";
 
 		String dcf = parseMap(dynamic_compiler_flags);
 		String dlf = parseMap(dynamic_linker_flags);

@@ -66,6 +66,10 @@ public class Module {
 	private String globalLinkerFlags;
 	private String globalArchiverFlags;
 
+	private String globalOverrideCompilerFlags;
+	private String globalOverrideLinkerFlags;
+	private String globalOverrideArchiverFlags;
+
 	private String modCompilerFlags;
 	private String modLinkerFlags;
 	private String modArchiverFlags;
@@ -146,6 +150,7 @@ public class Module {
 			System.err.println("Specify: \"" + Syntax.GLOBAL_COMPILER_FLAGS + "\" : \"<compiler flags>\"");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
+		this.globalOverrideCompilerFlags = module.optString(Syntax.GLOBAL_COMPILER_OVERRIDE_FLAGS, null);
 		this.globalLinker = module.optString(Syntax.GLOBAL_LINKER, null);
 		if (this.getGlobalLinker() == null) {
 			System.err.println("A Global linker must be set in the main build file");
@@ -158,6 +163,7 @@ public class Module {
 			System.err.println("Specify: \"" + Syntax.GLOBAL_LINKER_FLAGS +  "\" : \"<linker flags>\"");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
+		this.globalOverrideLinkerFlags = module.optString(Syntax.GLOBAL_LINKER_OVERRIDE_FLAGS, null);
 		this.globalArchiver = module.optString(Syntax.GLOBAL_ARCHIVER, null);
 		if (this.getGlobalArchiver() == null) {
 			System.err.println("A global archiver must be set in the main build file");
@@ -170,6 +176,7 @@ public class Module {
 			System.err.println("Specify: \"" + Syntax.GLOBAL_ARCHIVER_FLAGS + "\" : \"<archiver flags>\"");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
+		this.globalOverrideArchiverFlags = module.optString(Syntax.GLOBAL_ARCHIVER_OVERRIDE_FLAGS, null);
 
 		/* Get all the modular data in place */
 		this.modCompiler = module.optString(Syntax.MOD_COMPILER, null);
@@ -288,8 +295,15 @@ public class Module {
 	protected String getGlobalArchiverFlags()
 	{
 		final StringBuilder builder = new StringBuilder();
-		if (parent != null)
-			builder.append(parent.getGlobalArchiverFlags());
+		if (globalOverrideArchiverFlags == null || globalOverrideArchiverFlags.isEmpty())
+		{
+			if (parent != null)
+				builder.append(parent.getGlobalArchiverFlags());
+		}
+		else
+		{
+			builder.append(globalOverrideArchiverFlags);
+		}
 		if (globalArchiverFlags != null) {
 			if (builder.length() > 0)
 				builder.append(' ');
@@ -307,8 +321,15 @@ public class Module {
 	protected String getGlobalCompilerFlags()
 	{
 		final StringBuilder builder = new StringBuilder();
-		if (parent != null)
-			builder.append(parent.getGlobalCompilerFlags());
+		if (globalOverrideCompilerFlags == null || globalOverrideCompilerFlags.isEmpty())
+		{
+			if (parent != null)
+				builder.append(parent.getGlobalCompilerFlags());
+		}
+		else
+		{
+			builder.append(globalOverrideCompilerFlags);
+		}
 		if (globalCompilerFlags != null) {
 			if (builder.length() > 0)
 				builder.append(' ');
@@ -326,8 +347,15 @@ public class Module {
 	protected String getGlobalLinkerFlags()
 	{
 		final StringBuilder builder = new StringBuilder();
-		if (parent != null)
-			builder.append(parent.getGlobalLinkerFlags());
+		if (globalOverrideLinkerFlags == null || globalOverrideLinkerFlags.isEmpty())
+		{
+			if (parent != null)
+				builder.append(parent.getGlobalLinkerFlags());
+		}
+		else
+		{
+			builder.append(globalOverrideLinkerFlags);
+		}
 		if (globalLinkerFlags != null) {
 			if (builder.length() > 0)
 				builder.append(' ');
