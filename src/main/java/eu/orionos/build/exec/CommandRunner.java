@@ -41,9 +41,10 @@ public class CommandRunner extends Thread {
 		this.runnable = false;
 	}
 
-	private void writeStream(InputStream p, PrintStream out) throws IOException
+	private void writeStream(InputStream p, PrintStream out, boolean prio) throws IOException
 	{
-		if (Config.getInstance().verbose() && !Config.getInstance().silent())
+		
+		if ((prio || Config.getInstance().verbose()) && !Config.getInstance().silent())
 		{
 			BufferedReader in = new BufferedReader(new InputStreamReader(p));
 			String line;
@@ -80,8 +81,8 @@ public class CommandRunner extends Thread {
 					Runtime r = Runtime.getRuntime();
 					Process p = r.exec(c.getCommand());
 
-					writeStream(p.getErrorStream(), System.err);
-					writeStream(p.getInputStream(), System.out);
+					writeStream(p.getErrorStream(), System.err, true);
+					writeStream(p.getInputStream(), System.out, false);
 
 					if (p.waitFor() != 0)
 					{
