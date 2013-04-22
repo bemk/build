@@ -41,7 +41,7 @@ public class CommandRunner extends Thread {
 		this.runnable = false;
 	}
 
-	private void writeStream(InputStream p, PrintStream out, boolean prio) throws IOException
+	private void writeStream(InputStream p, PrintStream out, boolean prio, String prefix) throws IOException
 	{
 		
 		if ((prio || Config.getInstance().verbose()) && !Config.getInstance().silent())
@@ -50,7 +50,7 @@ public class CommandRunner extends Thread {
 			String line;
 			while ((line = in.readLine()) != null)
 			{
-				out.println(line);
+				out.println(prefix + line);
 			}
 		}
 	}
@@ -81,8 +81,8 @@ public class CommandRunner extends Thread {
 					Runtime r = Runtime.getRuntime();
 					Process p = r.exec(c.getCommand());
 
-					writeStream(p.getErrorStream(), System.err, true);
-					writeStream(p.getInputStream(), System.out, false);
+					writeStream(p.getErrorStream(), System.err, true, "[ WARNING! ]");
+					writeStream(p.getInputStream(), System.out, false, "[ INFO ]");
 
 					if (p.waitFor() != 0)
 					{
