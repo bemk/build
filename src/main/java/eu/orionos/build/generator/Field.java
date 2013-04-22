@@ -19,13 +19,18 @@
 */
 package eu.orionos.build.generator;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 public abstract class Field {
-	public static boolean askBoolean()
+	protected static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+	public static boolean askBoolean() throws IOException
 	{
 		while (true)
 		{
 			System.out.print("[y/N] ");
-			String s = System.console().readLine();
+			String s = input.readLine();
 			if (s.toLowerCase().equals("y") || s.toLowerCase().equals("yes"))
 				return true;
 			else if (s.toLowerCase().equals("n") || s.toLowerCase().equals("no") || s.equals(""))
@@ -33,12 +38,12 @@ public abstract class Field {
 		}
 	}
 
-	public static int askInt()
+	public static int askInt() throws IOException
 	{
 		while (true)
 		{
 			System.out.print("[0..9] ");
-			String s = System.console().readLine();
+			String s = input.readLine();
 			try {
 				int i = Integer.parseInt(s);
 				return i;
@@ -48,10 +53,10 @@ public abstract class Field {
 		}
 	}
 
-	public static String askString()
+	public static String askString() throws IOException
 	{
 		System.out.print(": ");
-		return System.console().readLine();
+		return input.readLine();
 	}
 
 	public abstract String toJSON();

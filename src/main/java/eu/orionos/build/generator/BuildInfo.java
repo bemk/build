@@ -19,6 +19,7 @@
 */
 package eu.orionos.build.generator;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import eu.orionos.build.Syntax;
@@ -30,7 +31,7 @@ public class BuildInfo extends Field {
 	private boolean toLink = false;
 	private boolean toArchive = false;
 
-	public BuildInfo()
+	public BuildInfo() throws IOException
 	{
 		System.out.print("Do you wish to link this module?");
 		toLink = askBoolean();

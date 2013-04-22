@@ -19,6 +19,8 @@
 */
 package eu.orionos.build.generator;
 
+import java.io.IOException;
+
 import eu.orionos.build.Syntax;
 
 public class Executables extends Field {
@@ -29,7 +31,7 @@ public class Executables extends Field {
 	private String global_archiver = "";
 	private String module_archiver = "";
 
-	public Executables()
+	public Executables() throws IOException
 	{
 		System.out.print("Do you wish to set the global compiler fields?");
 		if (askBoolean())

@@ -20,6 +20,9 @@
 
 package eu.orionos.build.option;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.Random;
 
@@ -40,6 +43,7 @@ public class OptionTask extends Option {
 	@Override
 	public void option() {
 		int cores = Runtime.getRuntime().availableProcessors();
+		BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 		if (this.operand.equals("random"))
 		{
 			Random r = new Random(new Date().getTime());
@@ -62,7 +66,7 @@ public class OptionTask extends Option {
 			{
 				System.out.println("You are attempting to run " + max_factor + " times more threads than you have cores available");
 				System.out.println("Are you certain you don't want to scale down to " + (cores * max_factor) + " threads? (y/N)");
-				String ret = System.console().readLine().toLowerCase();
+				String ret = input.readLine().toLowerCase();
 				if (!(ret.equals("y") || ret.equals("yes")))
 				{
 					System.out.println("Setting the number of tasks to " + (cores * max_factor));
@@ -74,6 +78,9 @@ public class OptionTask extends Option {
 		{
 			System.err.println("Operand " + this.operand + " to -t or --tasks is not a valid number!");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
+		} catch (IOException e) {
+			System.err.println("System input broke somehow ...");
+			System.exit(ErrorCode.GENERIC);
 		}
 	}
 

@@ -19,8 +19,10 @@
 */
 package eu.orionos.build.generator;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
+import eu.orionos.build.ErrorCode;
 import eu.orionos.build.Syntax;
 
 public class Module {
@@ -30,6 +32,7 @@ public class Module {
 
 	public Module()
 	{
+		try {
 		while (this.name == null || this.name.equals(""))
 		{
 			System.out.print("Specify the unique module id");
@@ -39,6 +42,10 @@ public class Module {
 		fields.add(new Executables());
 		fields.add(new Flags());
 		fields.add(new Dependencies());
+		} catch (IOException e) {
+			System.out.println("Input reading triggered an error");
+			System.exit(ErrorCode.GENERIC);
+		}
 	}
 
 	public String getJSON()

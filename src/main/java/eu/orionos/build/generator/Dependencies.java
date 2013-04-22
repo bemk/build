@@ -19,6 +19,7 @@
 */
 package eu.orionos.build.generator;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +30,7 @@ public class Dependencies extends Field {
 	private ArrayList<String> dependencies = new ArrayList<String>();
 	private HashMap<String, String> dynamic_dependencies = new HashMap<String, String>();
 
-	private void setDynDeps(HashMap<String, String> map)
+	private void setDynDeps(HashMap<String, String> map) throws IOException
 	{
 		while (true)
 		{
@@ -44,7 +45,7 @@ public class Dependencies extends Field {
 		}
 	}
 
-	private void setDeps(ArrayList<String> list)
+	private void setDeps(ArrayList<String> list) throws IOException
 	{
 		while (true)
 		{
@@ -57,7 +58,7 @@ public class Dependencies extends Field {
 		}
 	}
 
-	public Dependencies()
+	public Dependencies() throws IOException
 	{
 		System.out.print("Do you want to set static dependencies?");
 		if (askBoolean())

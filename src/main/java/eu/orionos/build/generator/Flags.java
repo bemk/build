@@ -19,9 +19,16 @@
 */
 package eu.orionos.build.generator;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import eu.orionos.build.ErrorCode;
 import eu.orionos.build.Syntax;
 
 public class Flags extends Field {
@@ -45,22 +52,23 @@ public class Flags extends Field {
 	private HashMap<String, String> dynamic_module_linker_flags = new HashMap<String, String>();
 	private HashMap<String, String> dynamic_module_archiver_flags = new HashMap<String, String>();
 
-	private void setFlags(HashMap<String, String> map, String type)
+	private void setFlags(HashMap<String, String> map, String type) throws IOException
 	{
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		while (true)
 		{
 			System.out.println("Set the key for the dymamic " + type + " flag");
 			System.out.println("Leave field blank and return to go to the next item");
-			String key = System.console().readLine();
+			String key = in.readLine();
 			if (key.equals(""))
 				break;
 			System.out.print("Set the flag for " + type + "-" + key);
-			String flag = System.console().readLine();
+			String flag = askString();
 			map.put(key, flag);
 		}
 	}
 
-	public Flags()
+	public Flags() throws IOException
 	{
 		System.out.print("Do you want to override the global flags for this module?");
 		if (askBoolean())
@@ -98,16 +106,26 @@ public class Flags extends Field {
 		System.out.print("Do you want to add to the global flags conditionally?");
 		if (askBoolean())
 		{
+			try {
 			setFlags(dynamic_compiler_flags, "global compiler");
 			setFlags(dynamic_linker_flags, "global linker");
 			setFlags(dynamic_archiver_flags, "global archiver");
+			} catch (IOException e) {
+				System.err.println("Something went wrong in capturing input");
+				System.exit(ErrorCode.GENERIC);
+			}
 		}
 		System.out.print("Do you want to add to the module flags conditionally?");
 		if (askBoolean())
 		{
+			try {
 			setFlags(dynamic_module_compiler_flags, "module wide compiler");
 			setFlags(dynamic_module_linker_flags, "module wide linker");
 			setFlags(dynamic_module_archiver_flags, "module wide archiver");
+			} catch (IOException e) {
+				System.err.println("Something went wrong in capturing input");
+				System.exit(ErrorCode.GENERIC);
+			}
 		}
 	}
 
