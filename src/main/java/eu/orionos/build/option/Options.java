@@ -50,6 +50,9 @@ public class Options {
 		options.add(new OptionConfigure());
 		options.add(new OptionConfig());
 		options.add(new OptionTask());
+		options.add(new OptionCflags());
+		options.add(new OptionLDflags());
+		options.add(new OptionAflags());
 		options.add(new OptionGenModule());
 		
 

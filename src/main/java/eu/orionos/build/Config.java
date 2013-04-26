@@ -36,6 +36,9 @@ public class Config {
 	private boolean verbose = false;
 	private String buildFile = "main.build";
 	private String configFile = null;
+	private String cflags = null;
+	private String ldflags = null;
+	private String aflags = null;
 	private boolean clean = false;
 	private boolean configured = false;
 	private File buildDir = null;
@@ -72,13 +75,13 @@ public class Config {
 		return instance;
 	}
 
-	public static Config getInstance(String conf) throws FileNotFoundException, IOException, JSONException
+	public synchronized static Config getInstance(String conf) throws FileNotFoundException, IOException, JSONException
 	{
 		instance.setConfigFile(conf);
 		return instance;
 	}
 	
-	public void override(String conf) throws FileNotFoundException, IOException, JSONException
+	public synchronized void override(String conf) throws FileNotFoundException, IOException, JSONException
 	{
 		this.setConfigFile(conf);
 	}
@@ -149,15 +152,15 @@ public class Config {
 		return false;
 	}
 
-	public void configured(boolean configured)
+	public synchronized void configured(boolean configured)
 	{
 		this.configured = configured;
 	}
-	public boolean configured()
+	public synchronized boolean configured()
 	{
 		return this.configured;
 	}
-	public boolean hasConf()
+	public synchronized boolean hasConf()
 	{
 		if (this.conf == null)
 			return false;
@@ -179,7 +182,7 @@ public class Config {
 		modules.put(m.getName(), m);
 		return true;
 	}
-	public String getBuildDir()
+	public synchronized String getBuildDir()
 	{
 		if (buildDir == null)
 		{
@@ -204,5 +207,30 @@ public class Config {
 	public void threads(int threads)
 	{
 		this.threads = threads;
+	}
+
+	public void cflags(String cflags)
+	{
+		this.cflags = cflags;
+	}
+	public String cflags()
+	{
+		return this.cflags;
+	}
+	public void aflags(String aflags)
+	{
+		this.aflags = aflags;
+	}
+	public String aflags()
+	{
+		return this.aflags;
+	}
+	public void ldflags(String ldflags)
+	{
+		this.ldflags = ldflags;
+	}
+	public String ldflags()
+	{
+		return this.ldflags;
 	}
 }

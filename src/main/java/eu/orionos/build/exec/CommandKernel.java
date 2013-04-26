@@ -36,11 +36,11 @@ public class CommandKernel {
 	
 	private ArrayList<CommandRunner> runners = new ArrayList<CommandRunner>();
 	private AtomicInteger killedThreads = new AtomicInteger(0);
-	private AtomicInteger commandsRegistered = new AtomicInteger(0);
+	private int commandsRegistered = 0;
 	private Queue<CompileUnit> compileCommands = new ConcurrentLinkedQueue<CompileUnit>();
 	private ConcurrentHashMap<String, Module> modules;
 	
-	public static CommandKernel getInstance()
+	public synchronized static CommandKernel getInstance()
 	{
 		if (instance == null)
 		{
@@ -80,7 +80,7 @@ public class CommandKernel {
 		}
 	}
 
-	public void stopThreads()
+	public synchronized void stopThreads()
 	{
 		/* Skip this step if no command was ever issued */
 		while(!modules.isEmpty() && getNoCommands() != 0)
@@ -111,15 +111,15 @@ public class CommandKernel {
 		return compileCommands.poll();
 	}
 	
-	public void runCommand(CompileUnit cmd)
+	public synchronized void runCommand(CompileUnit cmd)
 	{
 		compileCommands.offer(cmd);
-		commandsRegistered.incrementAndGet();
+		commandsRegistered ++;
 	}
 
-	public int getNoCommands()
+	public synchronized int getNoCommands()
 	{
-		return commandsRegistered.get();
+		return commandsRegistered;
 	}
 
 	public void registerModule(Module m)
