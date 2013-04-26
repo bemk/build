@@ -299,6 +299,8 @@ public class Module {
 		{
 			if (parent != null)
 				builder.append(parent.getGlobalArchiverFlags());
+			else
+				builder.append(Config.getInstance().aflags());
 		}
 		else
 		{
@@ -325,6 +327,8 @@ public class Module {
 		{
 			if (parent != null)
 				builder.append(parent.getGlobalCompilerFlags());
+			else
+				builder.append(Config.getInstance().cflags());
 		}
 		else
 		{
@@ -351,6 +355,8 @@ public class Module {
 		{
 			if (parent != null)
 				builder.append(parent.getGlobalLinkerFlags());
+			else
+				builder.append(Config.getInstance().ldflags());
 		}
 		else
 		{

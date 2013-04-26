@@ -36,9 +36,9 @@ public class Config {
 	private boolean verbose = false;
 	private String buildFile = "main.build";
 	private String configFile = null;
-	private String cflags = null;
-	private String ldflags = null;
-	private String aflags = null;
+	private String cflags = "";
+	private String ldflags = "";
+	private String aflags = "";
 	private boolean clean = false;
 	private boolean configured = false;
 	private File buildDir = null;
