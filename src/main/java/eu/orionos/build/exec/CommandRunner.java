@@ -29,6 +29,7 @@ import eu.orionos.build.ErrorCode;
 import java.io.*;
 
 import ui.CLI;
+import ui.CLIInfo;
 import ui.CLIWarning;
 
 public class CommandRunner extends Thread {
@@ -68,7 +69,7 @@ public class CommandRunner extends Thread {
 				s.append(cmd[i]);
 				s.append(" ");
 			}
-			CLI.getInstance().writeline(s.toString());
+			CLIInfo.getInstance().writeline(s.toString());
 		}
 	}
 
@@ -86,7 +87,7 @@ public class CommandRunner extends Thread {
 					Runtime r = Runtime.getRuntime();
 					Process p = r.exec(c.getCommand());
 
-					writeStream(p.getErrorStream(), CLI.getInstance(), true);
+					writeStream(p.getErrorStream(), CLIInfo.getInstance(), true);
 					writeStream(p.getInputStream(), CLIWarning.getInstance(), false);
 
 					if (p.waitFor() != 0)

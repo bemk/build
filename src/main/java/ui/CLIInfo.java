@@ -17,47 +17,45 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
+package ui;
 
-package eu.orionos.build;
+import java.util.Iterator;
 
-import ui.CLI;
+/**
+ * @author bemk
+ *
+ */
+public class CLIInfo extends CLI {
+	private static CLIInfo instance = null;
 
-public class CompileUnit {
-	private String command[];
-	private Module module;
-	private String object;
-
-	public CompileUnit(Module module, String command[], String object)
+	public static CLIInfo getInstance()
 	{
-		this.module = module;
-		this.command = command;
-		this.object = object;
+		instanceLock.lock();
+		if (instance == null)
+			instance = new CLIInfo();
+		instanceLock.unlock();
+		return instance;
 	}
 
-	public String[] getCommand()
+	private CLIInfo()
 	{
-		return this.command;
+		super();
+		this.prefix = "[ INFO ] ";
 	}
 
-	public void markComplete()
+	/** @0verride */
+	public void run()
 	{
-		module.markCompileUnitDone(this);
-		if (!Config.getInstance().silent())
-			CLI.getInstance().writeline("[ OK ] " + object);
-	}
-
-	public String key()
-	{
-		return module.getName() + object;
-	}
-
-	public Module getModule()
-	{
-		return module;
-	}
-
-	public String getObject()
-	{
-		return this.object;
+		while (!finished)
+		{
+			this.getLock();
+			Iterator<String> i = out.iterator();
+			while (i.hasNext())
+			{
+				System.err.print(i.next());
+				i.remove();
+			}
+			this.unlock();
+		}
 	}
 }

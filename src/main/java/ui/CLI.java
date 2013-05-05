@@ -34,7 +34,7 @@ public class CLI extends Thread {
 	private Lock lock = new ReentrantLock(true);
 	private BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
 	protected static Lock instanceLock = new ReentrantLock(true);
-	protected String prefix = "[ INFO ] ";
+	protected String prefix = "";
 
 	public static CLI getInstance()
 	{
