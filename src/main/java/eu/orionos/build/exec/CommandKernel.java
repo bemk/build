@@ -25,6 +25,8 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import eu.orionos.build.CompileUnit;
 import eu.orionos.build.Config;
@@ -39,14 +41,20 @@ public class CommandKernel {
 	private int commandsRegistered = 0;
 	private Queue<CompileUnit> compileCommands = new ConcurrentLinkedQueue<CompileUnit>();
 	private ConcurrentHashMap<String, Module> modules;
-	
-	public synchronized static CommandKernel getInstance()
+
+	private static Lock instanceLock = new ReentrantLock();
+	private static Lock commandLock = new ReentrantLock();
+	private static Lock countLock = new ReentrantLock();
+
+	public static CommandKernel getInstance()
 	{
+		instanceLock.lock();
 		if (instance == null)
 		{
 			instance = new CommandKernel();
 			instance.startThreads();
 		}
+		instanceLock.unlock();
 		return instance;
 	}
 
@@ -80,7 +88,7 @@ public class CommandKernel {
 		}
 	}
 
-	public synchronized void stopThreads()
+	public void stopThreads()
 	{
 		/* Skip this step if no command was ever issued */
 		while(!modules.isEmpty() && getNoCommands() != 0)
@@ -108,18 +116,28 @@ public class CommandKernel {
 
 	public CompileUnit getCommand()
 	{
-		return compileCommands.poll();
+		commandLock.lock();
+		CompileUnit ret = compileCommands.poll();
+		commandLock.unlock();
+		return ret;
 	}
 	
-	public synchronized void runCommand(CompileUnit cmd)
+	public void runCommand(CompileUnit cmd)
 	{
+		commandLock.lock();
 		compileCommands.offer(cmd);
+		commandLock.unlock();
+		countLock.lock();
 		commandsRegistered ++;
+		countLock.unlock();
 	}
 
-	public synchronized int getNoCommands()
+	public int getNoCommands()
 	{
-		return commandsRegistered;
+		countLock.lock();
+		int ret = commandsRegistered;
+		countLock.unlock();
+		return ret;
 	}
 
 	public void registerModule(Module m)
