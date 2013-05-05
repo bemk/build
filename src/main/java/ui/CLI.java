@@ -23,64 +23,68 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class CLI extends Thread {
 	private static CLI cli = null;
-	private boolean finished = false;
-	private ArrayList<String> out = new ArrayList<String>();
+	protected static boolean finished = false;
+	protected ArrayList<String> out = new ArrayList<String>();
 	private Lock lock = new ReentrantLock(true);
 	private BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+	protected static Lock instanceLock = new ReentrantLock(true);
+	protected String prefix = "[ INFO ] ";
 
 	public static CLI getInstance()
 	{
+		instanceLock.lock();
 		if (cli == null)
 			cli = new CLI();
+		instanceLock.unlock();
 		return cli;
 	}
-	private CLI()
+	protected CLI()
 	{
 		this.start();
 	}
 
 	public void writeline(String msg)
 	{
-		msg += "\n";
-		lock.lock();
-		this.out.add(msg);
-		lock.unlock();
+		this.write(msg + "\n");
 	}
 	public void write(String msg)
 	{
-		lock.lock();
-		this.out.add(msg);
-		lock.unlock();
+		this.getLock();
+		this.out.add(prefix + msg);
+		this.unlock();
 	}
 	public String readline(String msg)
 	{
 		String ret = null;
-		lock.lock();
+		this.getLock();
 		try {
 			System.out.print(msg);
 			ret = r.readLine();
 		} catch (IOException e) {
 			ret = "";
 		}
-		lock.unlock();
+		this.unlock();
 		return ret;
 	}
-	
+
 	public void run()
 	{
 		while (!finished)
 		{
-			lock.lock();
-			for (String s : out)
+			this.getLock();
+			Iterator<String> i = out.iterator();
+			while (i.hasNext())
 			{
-				System.out.print(s);
+				System.out.print(i.next());
+				i.remove();
 			}
-			lock.unlock();
+			this.unlock();
 		}
 	}
 	public void kill()
@@ -88,10 +92,20 @@ public class CLI extends Thread {
 		try {
 			if (this.isAlive())
 			{
-				this.finished = true;
+				finished = true;
 				this.join();
 			}
 		} catch (InterruptedException e){
 		}
-	} 
+	}
+
+	protected void getLock()
+	{
+		lock.lock();
+	}
+
+	protected void unlock()
+	{
+		lock.unlock();
+	}
 }

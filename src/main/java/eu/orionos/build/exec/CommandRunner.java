@@ -28,6 +28,9 @@ import eu.orionos.build.ErrorCode;
 
 import java.io.*;
 
+import ui.CLI;
+import ui.CLIWarning;
+
 public class CommandRunner extends Thread {
 	private boolean runnable = true;
 
@@ -41,7 +44,7 @@ public class CommandRunner extends Thread {
 		this.runnable = false;
 	}
 
-	private void writeStream(InputStream p, PrintStream out, boolean prio, String prefix) throws IOException
+	private void writeStream(InputStream p, CLI output, boolean prio) throws IOException
 	{
 		
 		if ((prio || Config.getInstance().verbose()) && !Config.getInstance().silent())
@@ -50,7 +53,7 @@ public class CommandRunner extends Thread {
 			String line;
 			while ((line = in.readLine()) != null)
 			{
-				out.println(prefix + line);
+				output.writeline(line);
 			}
 		}
 	}
@@ -59,11 +62,13 @@ public class CommandRunner extends Thread {
 	{
 		if (!Config.getInstance().silent() && Config.getInstance().verbose())
 		{
+			StringBuilder s = new StringBuilder();
 			for (int i = 0; i < cmd.length; i++)
 			{
-				System.out.print(cmd[i] + " ");
+				s.append(cmd[i]);
+				s.append(" ");
 			}
-			System.out.println("");
+			CLI.getInstance().writeline(s.toString());
 		}
 	}
 
@@ -81,8 +86,8 @@ public class CommandRunner extends Thread {
 					Runtime r = Runtime.getRuntime();
 					Process p = r.exec(c.getCommand());
 
-					writeStream(p.getErrorStream(), System.err, true, "[ WARNING! ]");
-					writeStream(p.getInputStream(), System.out, false, "[ INFO ]");
+					writeStream(p.getErrorStream(), CLI.getInstance(), true);
+					writeStream(p.getInputStream(), CLIWarning.getInstance(), false);
 
 					if (p.waitFor() != 0)
 					{
