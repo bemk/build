@@ -26,6 +26,8 @@ import eu.orionos.build.exec.CommandKernel;
 import eu.orionos.build.option.Options;
 import org.json.JSONException;
 
+import ui.CLI;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -58,6 +60,7 @@ public class Build {
 			while (!modules.getDone() && CommandKernel.getInstance().getNoCommands() != 0)
 				Thread.sleep(250);
 			CommandKernel.getInstance().stopThreads();
+			CLI.getInstance().kill();
 		} catch (FileNotFoundException e) {
 			System.err.println(e.getMessage());
 		} catch (IOException e) {

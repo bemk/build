@@ -19,6 +19,7 @@
 */
 package eu.orionos.build.option;
 
+import ui.CLI;
 import eu.orionos.build.ErrorCode;
 import eu.orionos.build.generator.ModuleGenerator;
 
@@ -35,6 +36,7 @@ public class OptionGenModule extends Option{
 	@Override
 	public void option() {
 		new ModuleGenerator(operand);
+		CLI.getInstance().kill();
 		System.exit(ErrorCode.SUCCESS);
 	}
 

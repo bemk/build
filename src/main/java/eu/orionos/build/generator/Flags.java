@@ -19,10 +19,7 @@
 */
 package eu.orionos.build.generator;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -107,9 +104,9 @@ public class Flags extends Field {
 		if (askBoolean())
 		{
 			try {
-			setFlags(dynamic_compiler_flags, "global compiler");
-			setFlags(dynamic_linker_flags, "global linker");
-			setFlags(dynamic_archiver_flags, "global archiver");
+				setFlags(dynamic_compiler_flags, "global compiler");
+				setFlags(dynamic_linker_flags, "global linker");
+				setFlags(dynamic_archiver_flags, "global archiver");
 			} catch (IOException e) {
 				System.err.println("Something went wrong in capturing input");
 				System.exit(ErrorCode.GENERIC);
@@ -119,9 +116,9 @@ public class Flags extends Field {
 		if (askBoolean())
 		{
 			try {
-			setFlags(dynamic_module_compiler_flags, "module wide compiler");
-			setFlags(dynamic_module_linker_flags, "module wide linker");
-			setFlags(dynamic_module_archiver_flags, "module wide archiver");
+				setFlags(dynamic_module_compiler_flags, "module wide compiler");
+				setFlags(dynamic_module_linker_flags, "module wide linker");
+				setFlags(dynamic_module_archiver_flags, "module wide archiver");
 			} catch (IOException e) {
 				System.err.println("Something went wrong in capturing input");
 				System.exit(ErrorCode.GENERIC);
