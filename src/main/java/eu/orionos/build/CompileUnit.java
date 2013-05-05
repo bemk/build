@@ -20,7 +20,7 @@
 
 package eu.orionos.build;
 
-import ui.CLI;
+import eu.orionos.build.ui.CLI;
 
 public class CompileUnit {
 	private String command[];

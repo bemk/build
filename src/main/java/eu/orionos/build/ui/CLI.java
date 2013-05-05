@@ -17,7 +17,7 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package ui;
+package eu.orionos.build.ui;
 
 import java.io.BufferedReader;
 import java.io.IOException;

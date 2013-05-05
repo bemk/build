@@ -19,7 +19,7 @@
 */
 package eu.orionos.build.option;
 
-import ui.CLI;
+import eu.orionos.build.ui.CLI;
 import eu.orionos.build.ErrorCode;
 import eu.orionos.build.generator.ModuleGenerator;
 

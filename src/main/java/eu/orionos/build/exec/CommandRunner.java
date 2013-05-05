@@ -28,9 +28,7 @@ import eu.orionos.build.ErrorCode;
 
 import java.io.*;
 
-import ui.CLI;
-import ui.CLIInfo;
-import ui.CLIWarning;
+import eu.orionos.build.ui.*;
 
 public class CommandRunner extends Thread {
 	private boolean runnable = true;
@@ -87,8 +85,8 @@ public class CommandRunner extends Thread {
 					Runtime r = Runtime.getRuntime();
 					Process p = r.exec(c.getCommand());
 
-					writeStream(p.getErrorStream(), CLIInfo.getInstance(), true);
-					writeStream(p.getInputStream(), CLIWarning.getInstance(), false);
+					writeStream(p.getErrorStream(), CLIWarning.getInstance(), true);
+					writeStream(p.getInputStream(), CLIInfo.getInstance(), false);
 
 					if (p.waitFor() != 0)
 					{

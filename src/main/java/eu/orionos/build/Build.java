@@ -26,7 +26,8 @@ import eu.orionos.build.exec.CommandKernel;
 import eu.orionos.build.option.Options;
 import org.json.JSONException;
 
-import ui.CLI;
+import eu.orionos.build.ui.CLI;
+
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

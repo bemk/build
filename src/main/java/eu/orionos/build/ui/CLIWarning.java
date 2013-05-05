@@ -17,30 +17,26 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package ui;
+package eu.orionos.build.ui;
 
 import java.util.Iterator;
 
-/**
- * @author bemk
- *
- */
-public class CLIInfo extends CLI {
-	private static CLIInfo instance = null;
+public class CLIWarning extends CLI {
+	private static CLIWarning instance = null;
 
-	public static CLIInfo getInstance()
+	public static CLIWarning getInstance()
 	{
 		instanceLock.lock();
 		if (instance == null)
-			instance = new CLIInfo();
+			instance = new CLIWarning();
 		instanceLock.unlock();
 		return instance;
 	}
 
-	private CLIInfo()
+	private CLIWarning()
 	{
 		super();
-		this.prefix = "[ INFO ] ";
+		this.prefix = "[ WARNING ] ";
 	}
 
 	/** @0verride */

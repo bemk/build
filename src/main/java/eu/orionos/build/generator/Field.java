@@ -20,7 +20,7 @@
 package eu.orionos.build.generator;
 
 import java.io.IOException;
-import ui.CLI;
+import eu.orionos.build.ui.CLI;
 
 public abstract class Field {
 	public static boolean askBoolean() throws IOException
