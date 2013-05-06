@@ -19,7 +19,7 @@
 */
 package eu.orionos.build.option;
 
-import eu.orionos.build.ErrorCode;
+import eu.orionos.build.Config;
 
 public class OptionConfigure extends Option {
 
@@ -34,9 +34,7 @@ public class OptionConfigure extends Option {
 
 	@Override
 	public void option() {
-		System.err.println("Configuring is not yet implemented");
-		System.err.println("For now you manually have to edit the config file");
-		System.exit(ErrorCode.SUCCESS);
+		Config.getInstance().toConfigure(true);
 	}
 
 	@Override

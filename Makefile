@@ -1,9 +1,12 @@
-.PHONY: all clean distclean native bin/build
+.PHONY: all clean distclean native bin/build configure
 all: build.jar
 	@java -jar build.jar --config new.config new.build -t random $(FLAGS)
 
-clean:
+clean: build.jar
 	@java -jar build.jar -c --config new.config new.build -t random $(FLAGS)
+
+configure: build.jar
+	@java -jar build.jar --config new.config new.build --configure
 
 distclean: clean
 	mvn clean

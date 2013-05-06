@@ -40,7 +40,7 @@ public class Config {
 	private String ldflags = "";
 	private String aflags = "";
 	private boolean clean = false;
-	private boolean configured = false;
+	private boolean toConfigure = false;
 	private File buildDir = null;
 	private HashMap<String, Module> modules = new HashMap<String, Module>();
 	private int threads = 4;
@@ -152,13 +152,13 @@ public class Config {
 		return false;
 	}
 
-	public synchronized void configured(boolean configured)
+	public synchronized void toConfigure(boolean configured)
 	{
-		this.configured = configured;
+		this.toConfigure = configured;
 	}
-	public synchronized boolean configured()
+	public synchronized boolean toConfigure()
 	{
-		return this.configured;
+		return this.toConfigure;
 	}
 	public synchronized boolean hasConf()
 	{

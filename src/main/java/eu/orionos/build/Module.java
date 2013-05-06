@@ -29,8 +29,11 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Module {
@@ -676,6 +679,50 @@ public class Module {
 
 		if (this.compile() != 0)
 			System.exit(ErrorCode.COMPILE_FAILED);
+	}
+
+	protected Set<String> getDynamicBuildFlags(JSONArray flaglist)
+	{
+		Set<String> set = new HashSet<String>();
+		if (flaglist == null)
+			return set;
+		for (int i = 0; i < flaglist.length(); i++)
+		{
+			JSONObject o = flaglist.getJSONObject(i);
+			String key = o.getString(Syntax.CONFIG_GLOBAL_KEY);
+			set.add(key);
+		}
+		return set;
+	}
+	
+	public Set<String> getBuildFlags()
+	{
+		Set<String> flags = new HashSet<String>();
+
+		/* Figure out dependencies */
+		Set<Module> deps = new HashSet<Module>(subModules);
+		deps.addAll(dynamicModules.values());
+
+		/* Ask all dependencies for their flags */
+		Iterator<Module> i = deps.iterator();
+		Set<String> tmp = new HashSet<String>();
+		while (i.hasNext())
+		{
+			Module m = i.next();
+			tmp.addAll(m.getBuildFlags());
+		}
+
+		/* Add our own flags to the set */
+		flags.addAll(dynamicModules.keySet());
+		flags.addAll(getDynamicBuildFlags(dynArchiverFlags));
+		flags.addAll(getDynamicBuildFlags(dynCompilerFlags));
+		flags.addAll(getDynamicBuildFlags(dynLinkerFlags));
+		flags.addAll(getDynamicBuildFlags(dynModArchiverFlags));
+		flags.addAll(getDynamicBuildFlags(dynModCompilerFlags));
+		flags.addAll(getDynamicBuildFlags(dynModLinkerFlags));
+		flags.addAll(tmp);
+
+		return flags;
 	}
 
 	/* get the absolute location of a file */
