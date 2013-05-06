@@ -32,6 +32,7 @@ import eu.orionos.build.ui.CLI;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Set;
 
 public class Build {
 	
@@ -54,18 +55,18 @@ public class Build {
 			this.modules = new Module(Config.getInstance().buildFile());
 			if (Config.getInstance().toConfigure())
 			{
-				for (String s : modules.getBuildFlags())
+				Set<String> flags = modules.getBuildFlags();
+				for (String s : flags)
 				{
 					CLI.getInstance().writeline(s);
 				}
 				/* \TODO: Present a nice little menu for configuring options */
-				CommandKernel.getInstance().stopThreads();
-				CLI.getInstance().kill();
-				System.exit(ErrorCode.SUCCESS);
 			}
-
-			modules.build();
-			/* Wait untill the commads have finished running & don't bother waiting if no commands were issued */
+			else
+			{
+				modules.build();
+			}
+			/* Wait until the commands have finished running & don't bother waiting if no commands were issued */
 			while (!modules.getDone() && CommandKernel.getInstance().getNoCommands() != 0)
 				Thread.sleep(250);
 			CommandKernel.getInstance().stopThreads();
@@ -80,7 +81,7 @@ public class Build {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void main(String args[])
 	{
 		new Build("main.build", args);

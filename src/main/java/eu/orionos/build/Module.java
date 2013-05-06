@@ -952,6 +952,8 @@ public class Module {
 	/* Allows parent objects to check whether we're done or not */
 	public boolean getDone()
 	{
+		if (waiting == null)
+			return true;
 		return waiting.isEmpty();
 	}
 }
