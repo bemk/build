@@ -23,13 +23,13 @@
 package eu.orionos.build;
 
 import eu.orionos.build.exec.CommandKernel;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -38,7 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Module {
 	private ConcurrentHashMap<String, CompileUnit> toRun;
-	private ConcurrentHashMap<String, CompileUnit> ran;
+	private ConcurrentHashMap<String, CompileUnit> hasRun;
 	private ConcurrentHashMap<String, Module> waiting;
 
 	private ArrayList<Module> subModules = new ArrayList<Module>();
@@ -309,7 +309,7 @@ public class Module {
 		{
 			builder.append(globalOverrideArchiverFlags);
 		}
-		if (globalArchiverFlags != null) {
+		if (globalArchiverFlags != null && !globalArchiverFlags.isEmpty()) {
 			if (builder.length() > 0)
 				builder.append(' ');
 			builder.append(globalArchiverFlags);
@@ -337,7 +337,7 @@ public class Module {
 		{
 			builder.append(globalOverrideCompilerFlags);
 		}
-		if (globalCompilerFlags != null) {
+		if (globalCompilerFlags != null && !globalCompilerFlags.isEmpty()) {
 			if (builder.length() > 0)
 				builder.append(' ');
 			builder.append(globalCompilerFlags);
@@ -365,7 +365,7 @@ public class Module {
 		{
 			builder.append(globalOverrideLinkerFlags);
 		}
-		if (globalLinkerFlags != null) {
+		if (globalLinkerFlags != null && !globalLinkerFlags.isEmpty()) {
 			if (builder.length() > 0)
 				builder.append(' ');
 			builder.append(globalLinkerFlags);
@@ -664,7 +664,7 @@ public class Module {
 	public void build() throws InterruptedException
 	{
 		CommandKernel.getInstance().registerModule(this);
-		ran = new ConcurrentHashMap<String, CompileUnit>(Config.getInstance().threads()+1);
+		hasRun = new ConcurrentHashMap<String, CompileUnit>(Config.getInstance().threads()+1);
 		toRun = new ConcurrentHashMap<String, CompileUnit>(Config.getInstance().threads()+1);
 		waiting = new ConcurrentHashMap<String, Module>(Config.getInstance().threads()+1);
 
@@ -944,7 +944,7 @@ public class Module {
 		if (toRun.containsKey(unit.key()))
 		{
 			toRun.remove(unit.key());
-			ran.put(unit.key(), unit);
+			hasRun.put(unit.key(), unit);
 		}
 		switchPhases();
 	}

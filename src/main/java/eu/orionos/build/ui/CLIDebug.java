@@ -19,21 +19,21 @@
 */
 package eu.orionos.build.ui;
 
-public class CLIWarning extends CLI {
-	private static CLIWarning instance = null;
+public class CLIDebug extends CLI {
+	private static CLIDebug instance = null;
 
-	public static CLIWarning getInstance()
+	public static CLIDebug getInstance() 
 	{
 		instanceLock.lock();
 		if (instance == null)
-			instance = new CLIWarning();
+			instance = new CLIDebug();
 		instanceLock.unlock();
 		return instance;
 	}
 
-	private CLIWarning()
+	public CLIDebug()
 	{
 		super();
-		this.prefix = "[ WARNING ] ";
+		this.prefix = "[ DEBUG ] ";
 	}
 }

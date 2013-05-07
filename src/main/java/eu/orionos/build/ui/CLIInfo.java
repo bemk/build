@@ -19,8 +19,6 @@
 */
 package eu.orionos.build.ui;
 
-import java.util.Iterator;
-
 /**
  * @author bemk
  *
@@ -41,21 +39,5 @@ public class CLIInfo extends CLI {
 	{
 		super();
 		this.prefix = "[ INFO ] ";
-	}
-
-	/** @0verride */
-	public void run()
-	{
-		while (!finished)
-		{
-			this.getLock();
-			Iterator<String> i = out.iterator();
-			while (i.hasNext())
-			{
-				System.err.print(i.next());
-				i.remove();
-			}
-			this.unlock();
-		}
 	}
 }
