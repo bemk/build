@@ -657,6 +657,9 @@ public class Module {
 		JSONArray flags = Config.getInstance().getGlobalFlags();
 		if (flags != null)
 			addDynamicDeps(dependencies, flags);
+		flags = Config.getInstance().getModuleFlags(name);
+		if (flags != null)
+			addDynamicDeps(dependencies, flags);
 		return dependencies;
 	}
 

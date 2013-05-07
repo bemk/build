@@ -9,6 +9,9 @@ int main (int argc, char** argv)
 #ifdef ALPHA
 	alpha();
 #endif
+#ifdef BETA
+	beta();
+#endif
 	
 	return EXIT_SUCCESS;
 }

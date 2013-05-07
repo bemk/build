@@ -1,4 +1,4 @@
-.PHONY: all clean distclean native bin/build configure
+.PHONY: all clean distclean native bin/build configure test
 all: build.jar
 	@java -jar build.jar --config new.config new.build -t random $(FLAGS)
 
@@ -21,3 +21,6 @@ native: bin/build
 bin/build:
 	./check_bin.sh
 	gcj --main=eu.orionos.build.Build -o bin/build `find -name *.java`
+
+test: all
+	./bin/main.bin
