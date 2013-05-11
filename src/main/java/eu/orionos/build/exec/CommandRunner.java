@@ -103,7 +103,8 @@ public class CommandRunner extends Thread {
 				}
 				catch (IOException e)
 				{
-					e.printStackTrace();
+					System.err.println(e.getMessage());
+					Runtime.getRuntime().halt(ErrorCode.GENERIC);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
