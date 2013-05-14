@@ -22,6 +22,7 @@
 
 package eu.orionos.build.exec;
 
+import eu.orionos.build.Build;
 import eu.orionos.build.CompileUnit;
 import eu.orionos.build.Config;
 import eu.orionos.build.ErrorCode;
@@ -52,7 +53,10 @@ public class CommandRunner extends Thread {
 			String line;
 			while ((line = in.readLine()) != null)
 			{
-				output.writeline(line);
+				if (line.toLowerCase().contains("error"))
+					CLIError.getInstance().writeline(line);
+				else
+					output.writeline(line);
 			}
 		}
 	}
@@ -90,21 +94,25 @@ public class CommandRunner extends Thread {
 
 					if (p.waitFor() != 0)
 					{
+						StringBuilder err = new StringBuilder();
 						final String[] array = c.getCommand();
 						for (int i = 0; i < array.length; i++) {
-							System.err.print(array[i]);
-							System.err.print(' ');
+							err.append(array[i]);
+							err.append(' ');
 						}
-						System.err.println("Could not compute!");
-						r.halt(ErrorCode.INSTRUCTION_FAILED);
+						err.append("Could not compute!");
+						CLIError.getInstance().writeline(err.toString());
+						CommandKernel.getInstance().killThreads();
+						Build.setError(ErrorCode.COMPILE_FAILED);
 					}
 
 					c.markComplete();
 				}
 				catch (IOException e)
 				{
-					System.err.println(e.getMessage());
-					Runtime.getRuntime().halt(ErrorCode.GENERIC);
+					CLIError.getInstance().writeline(e.getMessage());
+					CommandKernel.getInstance().killThreads();
+					Build.setError(ErrorCode.GENERIC);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

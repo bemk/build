@@ -75,8 +75,9 @@ public class CLI extends Thread {
 
 	public void run()
 	{
-		while (!finished)
+		while (!finished || !out.isEmpty())
 		{
+			Thread.yield();
 			this.getLock();
 			Iterator<String> i = out.iterator();
 			while (i.hasNext())
@@ -89,14 +90,7 @@ public class CLI extends Thread {
 	}
 	public void kill()
 	{
-		try {
-			if (this.isAlive())
-			{
-				finished = true;
-				this.join();
-			}
-		} catch (InterruptedException e){
-		}
+		finished = true;
 	}
 
 	protected void getLock()

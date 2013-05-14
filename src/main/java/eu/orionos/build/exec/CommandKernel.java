@@ -99,10 +99,18 @@ public class CommandKernel {
 				e1.printStackTrace();
 			}
 		}
+		killThreads();
+		waitThreads();
+	}
+	public void killThreads()
+	{
 		for (CommandRunner r : runners)
 		{
 			r.haltThread();
 		}
+	}
+	private void waitThreads()
+	{
 		while (this.killedThreads.get() < this.runners.size())
 		{
 			try {

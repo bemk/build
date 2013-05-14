@@ -27,16 +27,16 @@ import eu.orionos.build.option.Options;
 import org.json.JSONException;
 
 import eu.orionos.build.ui.CLI;
-
+import eu.orionos.build.ui.CLIError;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Set;
 
 public class Build {
 	
 	private Module modules;
+	private static int error = ErrorCode.SUCCESS;
 
 	public Build(String path, String args[])
 	{
@@ -67,9 +67,13 @@ public class Build {
 				modules.build();
 			}
 			/* Wait until the commands have finished running & don't bother waiting if no commands were issued */
-			while (!modules.getDone() && CommandKernel.getInstance().getNoCommands() != 0)
+			while (!modules.getDone() && CommandKernel.getInstance().getNoCommands() != 0 && error == ErrorCode.SUCCESS)
 				Thread.sleep(250);
-			CommandKernel.getInstance().stopThreads();
+			if (error == ErrorCode.SUCCESS)
+				CommandKernel.getInstance().stopThreads();
+			else
+				CLIError.getInstance().writeline("Stopping due to error!");
+			Thread.yield();
 			CLI.getInstance().kill();
 		} catch (FileNotFoundException e) {
 			System.err.println(e.getMessage());
@@ -80,8 +84,13 @@ public class Build {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		System.exit(error);
 	}
 
+	public static void setError(int error)
+	{
+		Build.error = error;
+	}
 	public static void main(String args[])
 	{
 		new Build("main.build", args);

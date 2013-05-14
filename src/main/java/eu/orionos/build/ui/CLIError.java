@@ -19,21 +19,21 @@
 */
 package eu.orionos.build.ui;
 
-public class CLIInfo extends CLI {
-	private static CLIInfo instance = null;
+public class CLIError extends CLI {
+	private static CLIError instance = null;
 
-	public static CLIInfo getInstance()
+	public static CLIError getInstance()
 	{
 		instanceLock.lock();
 		if (instance == null)
-			instance = new CLIInfo();
+			instance = new CLIError();
 		instanceLock.unlock();
 		return instance;
 	}
-
-	private CLIInfo()
+	
+	private CLIError()
 	{
 		super();
-		this.prefix = "[ INFO ] ";
+		this.prefix = "[ ERROR ] ";
 	}
 }
