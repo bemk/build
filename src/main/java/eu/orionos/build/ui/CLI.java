@@ -73,6 +73,29 @@ public class CLI extends Thread {
 		return ret;
 	}
 
+	public boolean readboolean(String msg)
+	{
+		String ret = this.readline(msg + " [y/N] ").toLowerCase();
+		if (ret.equals("y") || ret.equals("yes") || ret.equals("true") || ret.equals("1"))
+		{
+			return true;
+		}
+		return false;
+	}
+	public int readint(String msg)
+	{
+		String str = this.readline(msg + " [0..9] ").toLowerCase();
+		while (true)
+		{
+			try {
+				return Integer.parseInt(str);
+			} catch (NumberFormatException e)
+			{
+				str = this.readline("Invalid number").toLowerCase();
+			}
+		}
+	}
+
 	public void run()
 	{
 		while (!finished || !out.isEmpty())

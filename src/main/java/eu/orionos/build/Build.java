@@ -22,6 +22,7 @@
 
 package eu.orionos.build;
 
+import eu.orionos.build.configure.ConfigFile;
 import eu.orionos.build.exec.CommandKernel;
 import eu.orionos.build.option.Options;
 import org.json.JSONException;
@@ -29,7 +30,9 @@ import org.json.JSONException;
 import eu.orionos.build.ui.CLI;
 import eu.orionos.build.ui.CLIError;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Set;
 
@@ -56,11 +59,10 @@ public class Build {
 			if (Config.getInstance().toConfigure())
 			{
 				Set<String> flags = modules.getBuildFlags();
-				for (String s : flags)
-				{
-					CLI.getInstance().writeline(s);
-				}
-				/* \TODO: Present a nice little menu for configuring options */
+				File f = new File(Config.getInstance().getConfigFile());
+				FileWriter fw = new FileWriter(f);
+				fw.write(new ConfigFile(flags).toString());
+				fw.close();
 			}
 			else
 			{

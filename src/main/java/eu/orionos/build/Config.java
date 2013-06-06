@@ -74,6 +74,10 @@ public class Config {
 	{
 		return instance;
 	}
+	public String getConfigFile()
+	{
+		return this.configFile;
+	}
 
 	public synchronized static Config getInstance(String conf) throws FileNotFoundException, IOException, JSONException
 	{
@@ -186,7 +190,9 @@ public class Config {
 	{
 		if (buildDir == null)
 		{
-			String s = (String) conf.get(Syntax.CONFIG_BUILD_DIR);
+			String s = (String) conf.optString(Syntax.CONFIG_BUILD_DIR);
+			if (s == null || s.equals(""))
+				s = "bin";
 			buildDir = new File(s);
 		}
 		if (!buildDir.exists())
