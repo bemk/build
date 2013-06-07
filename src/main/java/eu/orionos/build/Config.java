@@ -135,6 +135,8 @@ public class Config {
 
 	public boolean getDefined(String key)
 	{
+		if (conf == null)
+			return false;
 		if (!conf.has(Syntax.GLOBAL_DEFS))
 			return false;
 		JSONArray a = conf.getJSONArray(Syntax.GLOBAL_DEFS);
@@ -146,6 +148,8 @@ public class Config {
 	}
 	public boolean getModuleDefined(String module, String key)
 	{
+		if (conf == null)
+			return false;
 		if (!conf.has(module))
 			return false;
 		JSONArray a = conf.getJSONArray(module);

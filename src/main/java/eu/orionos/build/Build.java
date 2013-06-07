@@ -49,7 +49,7 @@ public class Build {
 			if (Config.getInstance().hasConf() == false)
 			{
 				Config.getInstance().override(".config");
-				if (Config.getInstance().hasConf() == false)
+				if (Config.getInstance().hasConf() == false && !Config.getInstance().toConfigure())
 				{
 					System.err.println("No usable config files found!");
 					System.exit(1);
@@ -60,6 +60,8 @@ public class Build {
 			{
 				Set<String> flags = modules.getBuildFlags();
 				File f = new File(Config.getInstance().getConfigFile());
+				if (!f.exists())
+					f.createNewFile();
 				FileWriter fw = new FileWriter(f);
 				fw.write(new ConfigFile(flags).toString());
 				fw.close();

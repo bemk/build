@@ -85,6 +85,7 @@ public class ConfigFile {
 		json.append(binDir);
 		json.append("\"\n");
 		json.append("}\n");
+
 		return json.toString();
 	}
 }
