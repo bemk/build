@@ -26,6 +26,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import eu.orionos.build.ui.CLI;
+
 import java.io.*;
 import java.util.HashMap;
 
@@ -35,7 +37,7 @@ public class Config {
 	private boolean silent = false;
 	private boolean verbose = false;
 	private String buildFile = "main.build";
-	private String configFile = null;
+	private String configFile = ".config";
 	private String cflags = "";
 	private String ldflags = "";
 	private String aflags = "";
@@ -170,7 +172,7 @@ public class Config {
 	}
 	public synchronized boolean hasConf()
 	{
-		if (this.conf == null)
+		if (this.conf == null && this.toConfigure == false)
 			return false;
 		return true;
 	}

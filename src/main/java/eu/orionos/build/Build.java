@@ -59,12 +59,19 @@ public class Build {
 			if (Config.getInstance().toConfigure())
 			{
 				Set<String> flags = modules.getBuildFlags();
+				try {
+				CLI.getInstance().writeline(Config.getInstance().getConfigFile());
 				File f = new File(Config.getInstance().getConfigFile());
 				if (!f.exists())
 					f.createNewFile();
 				FileWriter fw = new FileWriter(f);
 				fw.write(new ConfigFile(flags).toString());
 				fw.close();
+				}
+				catch (NullPointerException e)
+				{
+					e.printStackTrace();
+				}
 			}
 			else
 			{
