@@ -17,24 +17,42 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package eu.orionos.build.configure;
+package eu.orionos.build.moduleGenerator;
 
-import java.util.Set;
-import eu.orionos.build.Syntax;
+import java.io.IOException;
+import eu.orionos.build.ui.CLI;
 
-public class Flag extends FlagGroup {
-	private String module = Syntax.GLOBAL_DEFS;
-	private String key = "";
-	private boolean value = false;
-
-	public Flag(Set<String> flags, String name, String description, String key)
+public abstract class Field {
+	public static boolean askBoolean() throws IOException
 	{
-		super(flags, name, description);
-		this.key = key;
+		while (true)
+		{
+			String s = CLI.getInstance().readline("[y/N] ");
+			if (s.toLowerCase().equals("y") || s.toLowerCase().equals("yes"))
+				return true;
+			else if (s.toLowerCase().equals("n") || s.toLowerCase().equals("no") || s.equals(""))
+				return false;
+		}
 	}
 
-	@Override
-	public String getJSON() {
-		return null;
+	public static int askInt() throws IOException
+	{
+		while (true)
+		{
+			String s = CLI.getInstance().readline("[0..9] ");
+			try {
+				int i = Integer.parseInt(s);
+				return i;
+			} catch (NumberFormatException e) {
+				System.out.println(s + " is an invalid number!");
+			}
+		}
 	}
+
+	public static String askString() throws IOException
+	{
+		return CLI.getInstance().readline(": ");
+	}
+
+	public abstract String toJSON();
 }

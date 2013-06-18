@@ -17,7 +17,7 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package eu.orionos.build.generator;
+package eu.orionos.build.moduleGenerator;
 
 import java.io.IOException;
 import java.util.ArrayList;

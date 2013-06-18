@@ -17,42 +17,22 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package eu.orionos.build.generator;
+package eu.orionos.builld.configGenerator;
 
-import java.io.IOException;
-import eu.orionos.build.ui.CLI;
+import java.util.ArrayList;
 
-public abstract class Field {
-	public static boolean askBoolean() throws IOException
-	{
-		while (true)
-		{
-			String s = CLI.getInstance().readline("[y/N] ");
-			if (s.toLowerCase().equals("y") || s.toLowerCase().equals("yes"))
-				return true;
-			else if (s.toLowerCase().equals("n") || s.toLowerCase().equals("no") || s.equals(""))
-				return false;
-		}
+public class EnumFlag extends Flag {
+	private ArrayList<Flag> flags;
+	private Flag chosen;
+
+	public EnumFlag(String key) {
+		super(key);
 	}
 
-	public static int askInt() throws IOException
+	@Override
+	public void configure()
 	{
-		while (true)
-		{
-			String s = CLI.getInstance().readline("[0..9] ");
-			try {
-				int i = Integer.parseInt(s);
-				return i;
-			} catch (NumberFormatException e) {
-				System.out.println(s + " is an invalid number!");
-			}
-		}
+		return;
 	}
 
-	public static String askString() throws IOException
-	{
-		return CLI.getInstance().readline(": ");
-	}
-
-	public abstract String toJSON();
 }

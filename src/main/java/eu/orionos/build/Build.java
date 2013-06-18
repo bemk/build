@@ -22,13 +22,15 @@
 
 package eu.orionos.build;
 
-import eu.orionos.build.configure.ConfigFile;
 import eu.orionos.build.exec.CommandKernel;
 import eu.orionos.build.option.Options;
 import org.json.JSONException;
 
+
+
 import eu.orionos.build.ui.CLI;
 import eu.orionos.build.ui.CLIError;
+import eu.orionos.builld.configGenerator.ConfigFile;
 
 import java.io.File;
 import java.io.FileNotFoundException;

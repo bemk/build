@@ -17,32 +17,21 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package eu.orionos.build.generator;
+package eu.orionos.builld.configGenerator;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+public abstract class Flag {
+	protected String key;
+	protected String info;
+	protected boolean configured = false;
+	protected boolean mandatory = false;
 
-import eu.orionos.build.ErrorCode;
-
-public class ModuleGenerator {
-	public ModuleGenerator(String path)
+	public Flag(String key)
 	{
-		Module m = new Module();
-		String s = m.getJSON();
-
-		System.out.println("Generating module");
-
-		File f = new File(path);
-		FileWriter fw;
-		try {
-			fw = new FileWriter(f);
-			fw.write(s);
-			fw.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(ErrorCode.GENERIC);
-		}
-		System.out.println("[ OK ] " + path);
+		this.key = key;
+	}
+	
+	public void configure()
+	{
+		return;
 	}
 }

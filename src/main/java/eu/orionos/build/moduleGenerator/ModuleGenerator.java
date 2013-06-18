@@ -17,53 +17,32 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package eu.orionos.build.generator;
+package eu.orionos.build.moduleGenerator;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import eu.orionos.build.ErrorCode;
-import eu.orionos.build.Syntax;
 
-public class Module {
-	private String name;
-
-	private ArrayList<Field> fields = new ArrayList<Field>();
-
-	public Module()
+public class ModuleGenerator {
+	public ModuleGenerator(String path)
 	{
+		Module m = new Module();
+		String s = m.getJSON();
+
+		System.out.println("Generating module");
+
+		File f = new File(path);
+		FileWriter fw;
 		try {
-		while (this.name == null || this.name.equals(""))
-		{
-			System.out.print("Specify the unique module id");
-			this.name = Field.askString();
-		}
-		fields.add(new BuildInfo());
-		fields.add(new Executables());
-		fields.add(new Flags());
-		fields.add(new Dependencies());
+			fw = new FileWriter(f);
+			fw.write(s);
+			fw.close();
 		} catch (IOException e) {
-			System.out.println("Input reading triggered an error");
+			e.printStackTrace();
 			System.exit(ErrorCode.GENERIC);
 		}
-	}
-
-	public String getJSON()
-	{
-		String json = "{\n";
-		json += "\"" + Syntax.MODULE_NAME + "\" : \"" + name + "\",\n";
-		Field[] f = fields.toArray(new Field[fields.size()]);
-		for (int i = 0; i < f.length; i++)
-		{
-			String tmp = f[i].toJSON();
-			if (!tmp.equals(""))
-			{
-				if (i != 0)
-					json += ",\n";
-				json += f[i].toJSON();
-			}
-		}
-		json += "\n}\n";
-		return json;
+		System.out.println("[ OK ] " + path);
 	}
 }

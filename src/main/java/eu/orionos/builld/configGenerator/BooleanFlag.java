@@ -17,24 +17,19 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package eu.orionos.build.configure;
+package eu.orionos.builld.configGenerator;
 
-import java.util.Set;
-import eu.orionos.build.Syntax;
+public class BooleanFlag extends Flag {
+	private boolean value;
 
-public class Flag extends FlagGroup {
-	private String module = Syntax.GLOBAL_DEFS;
-	private String key = "";
-	private boolean value = false;
-
-	public Flag(Set<String> flags, String name, String description, String key)
+	public BooleanFlag(String key)
 	{
-		super(flags, name, description);
-		this.key = key;
+		super (key);
 	}
 
 	@Override
-	public String getJSON() {
-		return null;
+	public void configure()
+	{
+		return;
 	}
 }

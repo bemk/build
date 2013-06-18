@@ -21,7 +21,7 @@ package eu.orionos.build.option;
 
 import eu.orionos.build.ui.CLI;
 import eu.orionos.build.ErrorCode;
-import eu.orionos.build.generator.ModuleGenerator;
+import eu.orionos.build.moduleGenerator.ModuleGenerator;
 
 public class OptionGenModule extends Option{
 

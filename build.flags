@@ -1,0 +1,5 @@
+{
+"alpha" : {"mandatory" : false},
+"beta" : {"mandatory" : true},
+"gamma" : [{"delta" : {"mandatory" : false}},{"epsylon" : {"mandatory" : false}}]
+}

@@ -17,16 +17,16 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package eu.orionos.build.configure;
+package eu.orionos.builld.configGenerator;
 
 import java.util.Iterator;
 import java.util.Set;
-
 import eu.orionos.build.Syntax;
 import eu.orionos.build.ui.CLI;
 
 public class ConfigFile {
 	private String globalFlags[][];
+	private Flag flags[];
 	private String binDir = null;
 	private boolean parsed = false;
 
@@ -36,11 +36,13 @@ public class ConfigFile {
 	public ConfigFile(Set<String> flags)
 	{
 		globalFlags = new String[flags.size()][2];
+		this.flags = new Flag[flags.size()];
 		Iterator<String> i = flags.iterator();
 		int j = 0;
 		while (i.hasNext())
 		{
 			String flag = i.next();
+			this.flags[j] = new BooleanFlag(flag);
 			globalFlags[j][FLAGFIELD] = flag;
 			globalFlags[j][VALUEFIELD] = "false";
 			j++;
@@ -53,6 +55,8 @@ public class ConfigFile {
 		parsed = true;
 		int i = 0;
 		binDir = CLI.getInstance().readline("Set the binary output directory: ");
+		if (binDir.equals(""))
+			binDir = "bin";
 		for (; i < globalFlags.length; i++)
 		{
 			globalFlags[i][VALUEFIELD] = CLI.getInstance().readboolean("Set flag " + globalFlags[i][FLAGFIELD] + "?") ? "true" : "false";
