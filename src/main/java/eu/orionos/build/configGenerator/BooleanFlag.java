@@ -17,7 +17,7 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package eu.orionos.builld.configGenerator;
+package eu.orionos.build.configGenerator;
 
 public class BooleanFlag extends Flag {
 	private boolean value;
@@ -30,6 +30,19 @@ public class BooleanFlag extends Flag {
 	@Override
 	public void configure()
 	{
+		if (this.mandatory)
+			value = true;
+		else
+			value = getBoolean("Enable flag ");
+
+		this.configured = true;
 		return;
+	}
+
+	@Override
+	public void setEnabled()
+	{
+		this.configured = true;
+		this.value = true;
 	}
 }

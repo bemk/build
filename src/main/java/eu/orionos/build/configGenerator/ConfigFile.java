@@ -17,7 +17,7 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package eu.orionos.builld.configGenerator;
+package eu.orionos.build.configGenerator;
 
 import java.util.Iterator;
 import java.util.Set;

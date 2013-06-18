@@ -17,7 +17,9 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package eu.orionos.builld.configGenerator;
+package eu.orionos.build.configGenerator;
+
+import eu.orionos.build.ui.CLI;
 
 public abstract class Flag {
 	protected String key;
@@ -29,9 +31,32 @@ public abstract class Flag {
 	{
 		this.key = key;
 	}
-	
-	public void configure()
+
+	public abstract void configure();
+	public abstract void setEnabled();
+
+	protected boolean getBoolean(String msg)
 	{
-		return;
+		boolean finished = false;
+		boolean val = false;
+		while (!finished)
+		{
+			String Answer = CLI.getInstance().readline(msg + this.key + "(Yes/No/Info)").toLowerCase();
+			if (Answer.equals("y") || Answer.equals("yes"))
+			{
+				finished = true;
+				val = true;
+			}
+			else if (Answer.equals("n") || Answer.equals("no"))
+			{
+				finished = true;
+				val = false;
+			}
+			else if (Answer.equals("i") || Answer.equals("info"))
+			{
+				CLI.getInstance().writeline(info);
+			}
+		}
+		return val;
 	}
 }

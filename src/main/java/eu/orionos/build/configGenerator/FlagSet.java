@@ -17,22 +17,49 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package eu.orionos.builld.configGenerator;
+package eu.orionos.build.configGenerator;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.Set;
 
-public class EnumFlag extends Flag {
-	private ArrayList<Flag> flags;
-	private Flag chosen;
+public class FlagSet extends Flag {
+	protected boolean enabled = false;
+	protected HashMap <Integer, Flag> flags = new HashMap<Integer, Flag>();
 
-	public EnumFlag(String key) {
+	public FlagSet(String key) {
 		super(key);
 	}
 
 	@Override
 	public void configure()
 	{
-		return;
+		if (!mandatory)
+		{
+			this.enabled = getBoolean("Enable group ");
+		}
+
+		if (mandatory || enabled)
+		{
+			Set<Entry<Integer, Flag>> entries = flags.entrySet();
+			Iterator<Entry<Integer, Flag>> i = entries.iterator();
+			while (i.hasNext())
+			{
+				Entry<Integer, Flag> o = i.next();
+				o.getValue().configure();
+			}
+		}
 	}
 
+	@Override
+	public void setEnabled()
+	{
+		this.mandatory = true;
+	}
+
+	public void setOptions(String keys)
+	{
+		return;
+	}
 }
