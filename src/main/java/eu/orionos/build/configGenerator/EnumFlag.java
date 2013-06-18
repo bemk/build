@@ -19,6 +19,12 @@
 */
 package eu.orionos.build.configGenerator;
 
+import java.util.Map.Entry;
+import java.util.Iterator;
+import java.util.Set;
+
+import eu.orionos.build.ui.CLI;
+
 public class EnumFlag extends FlagSet {
 	int choice = 0;
 
@@ -29,6 +35,50 @@ public class EnumFlag extends FlagSet {
 	@Override
 	public void configure()
 	{
+		if (!mandatory)
+		{
+			this.enabled = getBoolean("Enable ");
+		}
+
+		if (mandatory || enabled)
+		{
+			while (!configured)
+			{
+				Set<Entry<Integer, Flag>> entries = flags.entrySet();
+				Iterator<Entry<Integer, Flag>> i = entries.iterator();
+				while (i.hasNext())
+				{
+					Entry<Integer, Flag> e = i.next();
+					CLI.getInstance().writeline("Index: " + e.getKey() + " : " + e.getValue().key);
+				}
+			}
+			String answer = CLI.getInstance().readline("({0 .. n},info {0 .. n})").toLowerCase();
+			try {
+				choice = Integer.parseInt(answer);
+				configured = true;
+			}
+			catch (NumberFormatException e)
+			{
+				if (answer.startsWith("info ") || answer.startsWith("i "))
+				{
+					answer = answer.replaceFirst("info ", "");
+					answer = answer.replaceFirst("i ", "");
+					try {
+						int n = Integer.parseInt(answer);
+						CLI.getInstance().writeline(flags.get(n).info);
+					}
+					catch (NumberFormatException ee)
+					{
+						CLI.getInstance().writeline("Illegal answer format");
+					}
+				}
+				else
+				{
+					CLI.getInstance().writeline("Illegal answer format");
+				}
+			}
+		}
+
 		return;
 	}
 
