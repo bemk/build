@@ -1,5 +1,0 @@
-{
-"alpha" : {"mandatory" : false, "info" : "alpha flag"},
-"beta" : {"mandatory" : true, "info" : "beta flag"},
-"gamma" : [{"delta" : {"mandatory" : false, "info" : "delta flag"}},{"epsylon" : {"mandatory" : false, "info" : "epsylon flag"}}]
-}

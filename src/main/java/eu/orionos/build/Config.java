@@ -46,6 +46,7 @@ public class Config {
 	private File buildDir = null;
 	private HashMap<String, Module> modules = new HashMap<String, Module>();
 	private int threads = 4;
+	private String depFile = "dep.flags";
 
 	private void setConfigFile(String conf) throws FileNotFoundException, IOException, JSONException
 	{
@@ -244,5 +245,16 @@ public class Config {
 	public String ldflags()
 	{
 		return this.ldflags;
+	}
+	public String getDepFile()
+	{
+		if (depFile == null || depFile.equals(""))
+			return "dep.flags";
+
+		return depFile;
+	}
+	public void setDepFile(String depFile)
+	{
+		this.depFile = depFile;
 	}
 }

@@ -82,9 +82,22 @@ public class EnumFlag extends FlagSet {
 		return;
 	}
 
-	public void setOptions()
+	@Override
+	public void addFlag(Flag f)
 	{
 		
+	}
+
+	@Override
+	public String getConfigFlags()
+	{
+		return null;
+	}
+
+	@Override
+	public String getDepFlags()
+	{
+		return null;
 	}
 
 }

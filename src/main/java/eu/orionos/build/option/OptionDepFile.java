@@ -17,43 +17,32 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package eu.orionos.build.configGenerator;
+package eu.orionos.build.option;
 
-public class BooleanFlag extends Flag {
-	private boolean value;
+import eu.orionos.build.Config;
 
-	public BooleanFlag(String key)
+public class OptionDepFile extends Option {
+
+	private OptionDepFile(char c, String s, boolean operands) {
+		super(c, s, operands);
+	}
+
+	public OptionDepFile()
 	{
-		super (key);
+		this(' ', "dep-file", true);
 	}
 
 	@Override
-	public void configure()
-	{
-		if (this.mandatory)
-			value = true;
-		else
-			value = getBoolean("Enable flag ");
-
-		this.configured = true;
-		return;
+	public void option() {
+		Config.getInstance().setDepFile(operand);
 	}
 
 	@Override
-	public void setEnabled()
-	{
-		this.configured = true;
-		this.value = true;
+	public String help() {
+		StringBuilder s = new StringBuilder();
+		s.append("   | --dep-file [dependency file]\n\t\t\t");
+		s.append("Specify the dependency file to be used for configuring\n");
+		return s.toString();
 	}
 
-	@Override
-	public String getConfigFlags()
-	{
-		return null;
-	}
-
-	public String getDepFlags()
-	{
-		return null;
-	}
 }

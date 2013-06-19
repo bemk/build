@@ -64,4 +64,10 @@ public class Syntax {
 	public static final String CONFIG_GLOBAL_KEY = "key";
 	public static final String CONFIG_GLOBAL_FLAGS = "flags";
 	public static final String CONFIG_BUILD_DIR = "build-dir";
+
+	public static final String FLAG_DEP_SET = "set";
+	public static final String FLAG_DEP_ENUM = "enum";
+
+	public static final String FLAG_DEP_INFO = "info";
+	public static final String FLAG_DEP_MANDATORY = "mandatory";
 }

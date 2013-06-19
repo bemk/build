@@ -32,8 +32,21 @@ public abstract class Flag {
 		this.key = key;
 	}
 
+	public Flag(String key, String info)
+	{
+		this.key = key;
+		this.info = info;
+	}
+
+	public void setInfo(String info)
+	{
+		this.info = info;
+	}
+
 	public abstract void configure();
 	public abstract void setEnabled();
+	public abstract String getConfigFlags();
+	public abstract String getDepFlags();
 
 	protected boolean getBoolean(String msg)
 	{
