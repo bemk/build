@@ -30,20 +30,19 @@ public class OptionNewConfigure extends Option {
 	
 	public OptionNewConfigure()
 	{
-		this(' ', "new-configure", false);
+		this(' ', "gen-depfile", false);
 	}
 
 	@Override
 	public void option() {
-		Config.getInstance().toNewConfigure(true);
-		CLI.getInstance().writeline("Using new configure!");
+		Config.getInstance().genDepFile(true);
 		return;
 	}
 
 	@Override
 	public String help() {
-		return "   | --new-configure\n\t\t\t" +
-				"Use the new configuring option";
+		return "   | --gen-depfile\n\t\t\t" +
+				"Generate a new file outlining dependencies of the build flags";
 	}
 
 }

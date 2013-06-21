@@ -43,7 +43,7 @@ public class EnumFlag extends FlagSet {
 
 		if (mandatory || enabled)
 		{
-			while (!configured)
+			while (true)
 			{
 				Set<Entry<Integer, Flag>> entries = flags.entrySet();
 				Iterator<Entry<Integer, Flag>> i = entries.iterator();
@@ -55,6 +55,10 @@ public class EnumFlag extends FlagSet {
 				String answer = CLI.getInstance().readline("({0 .. n},info {0 .. n})").toLowerCase();
 				try {
 					choice = Integer.parseInt(answer);
+					if (flags.get(new Integer(choice)) == null)
+						continue;
+					else
+						break;
 				}
 				catch (NumberFormatException e)
 				{

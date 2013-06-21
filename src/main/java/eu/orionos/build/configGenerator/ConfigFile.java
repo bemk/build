@@ -19,77 +19,40 @@
 */
 package eu.orionos.build.configGenerator;
 
-import java.util.Iterator;
-import java.util.Set;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import eu.orionos.build.Config;
 import eu.orionos.build.Semantics;
-import eu.orionos.build.ui.CLI;
 
 public class ConfigFile {
-	private String globalFlags[][];
-	private Flag flags[];
-	private String binDir = null;
-	private boolean parsed = false;
+	private JSONObject configFile;
 
-	private static final int FLAGFIELD = 0;
-	private static final int VALUEFIELD = 1;
-
-	public ConfigFile(Set<String> flags)
+	public ConfigFile(Iterable<String> flags)
 	{
-		globalFlags = new String[flags.size()][2];
-		this.flags = new Flag[flags.size()];
-		Iterator<String> i = flags.iterator();
-		int j = 0;
-		while (i.hasNext())
-		{
-			String flag = i.next();
-			this.flags[j] = new BooleanFlag(flag);
-			globalFlags[j][FLAGFIELD] = flag;
-			globalFlags[j][VALUEFIELD] = "false";
-			j++;
-		}
-		this.ask();
+		configFile = new JSONObject();
+
+		configFile.put(Semantics.GLOBAL_DEFS, flags);
 	}
 
-	private void ask()
+	public void write() throws IOException
 	{
-		parsed = true;
-		int i = 0;
-		binDir = CLI.getInstance().readline("Set the binary output directory: ");
-		if (binDir.equals(""))
-			binDir = "bin";
-		for (; i < globalFlags.length; i++)
-		{
-			globalFlags[i][VALUEFIELD] = CLI.getInstance().readboolean("Set flag " + globalFlags[i][FLAGFIELD] + "?") ? "true" : "false";
-		}
-	}
+		File f = new File(Config.getInstance().getConfigFile());
+		if (!f.exists())
+			f.createNewFile();
+		if (f.isDirectory())
+			return;
 
-	public String toString()
-	{
-		if (!parsed)
-			return null;
+		FileWriter fw = new FileWriter(f);
+		BufferedWriter bw = new BufferedWriter(fw);
 
-		StringBuilder json = new StringBuilder("{\n\"global\" : [");
-		boolean firstField = true;
-		for (int i = 0; i < globalFlags.length; i++)
-		{
-			if (globalFlags[i][VALUEFIELD].equals("true")){
-				if (!firstField)
-					json.append(", ");
-				else
-					firstField = false;
-				json.append("\"");
-				json.append(globalFlags[i][FLAGFIELD]);
-				json.append("\"");
-			}
-		}
-		json.append("],\n");
-		json.append("\"");
-		json.append(Semantics.CONFIG_BUILD_DIR);
-		json.append("\" : \"");
-		json.append(binDir);
-		json.append("\"\n");
-		json.append("}\n");
-
-		return json.toString();
+		bw.write(this.configFile.toString());
+		bw.close();
+		fw.close();
 	}
 }

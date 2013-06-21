@@ -34,7 +34,7 @@ public class OptionConfigure extends Option {
 
 	@Override
 	public void option() {
-		Config.getInstance().toConfigure(true);
+		Config.getInstance().genConfigFile(true);
 	}
 
 	@Override

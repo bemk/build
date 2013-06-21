@@ -52,36 +52,46 @@ public class Build {
 			if (Config.getInstance().hasConf() == false)
 			{
 				Config.getInstance().override(".config");
-				if (Config.getInstance().hasConf() == false && !Config.getInstance().toConfigure() && !Config.getInstance().toNewConfigure())
+				if (Config.getInstance().hasConf() == false && !Config.getInstance().genDepFile() && !Config.getInstance().genConfigFile())
 				{
 					System.err.println("No usable config files found!");
 					System.exit(1);
 				}
 			}
 			this.modules = new Module(Config.getInstance().buildFile());
-			if (Config.getInstance().toConfigure())
+			if (Config.getInstance().genDepFile())
 			{
 				Set<String> flags = modules.getBuildFlags();
 				try {
-				CLI.getInstance().writeline(Config.getInstance().getConfigFile());
-				File f = new File(Config.getInstance().getConfigFile());
-				if (!f.exists())
-					f.createNewFile();
-				FileWriter fw = new FileWriter(f);
-				fw.write(new ConfigFile(flags).toString());
-				fw.close();
+					File f = new File (Config.getInstance().getDepFile());
+					if (!f.exists())
+						f.createNewFile();
+					if (f.isDirectory())
+						throw (new Exception());
+					FileWriter fw = new FileWriter(f);
+
+					DepFile d = new DepFile();
+					fw.write(d.generateDepFile(flags).toString());
+
+					fw.close();
 				}
 				catch (NullPointerException e)
 				{
 					e.printStackTrace();
+				} catch (Exception e) {
 				}
 			}
-			else if (Config.getInstance().toNewConfigure())
+			else if (Config.getInstance().genConfigFile())
 			{
 				DepFile d = new DepFile();
 				d.readDepFile();
-				d.generateConfigFile();
-				CLI.getInstance().writeline(d.toString());
+				ConfigFile c = d.generateConfigFile();
+				try {
+					c.write();
+				} catch (IOException e)
+				{
+					e.printStackTrace();
+				}
 			}
 			else
 			{

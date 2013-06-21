@@ -32,12 +32,12 @@ import eu.orionos.build.Semantics;
 public class FlagSet extends Flag {
 	protected boolean enabled = false;
 	protected HashMap <Integer, Flag> flags = new HashMap<Integer, Flag>();
+	int mapKey = 0;
 
 	public FlagSet(String key) {
 		super(key);
 	}
 
-	@Override
 	public void configure()
 	{
 		if (!mandatory)
@@ -58,24 +58,27 @@ public class FlagSet extends Flag {
 		this.configured = true;
 	}
 
-	@Override
 	public void setEnabled()
 	{
 		this.mandatory = true;
 	}
 
-	public void addFlag(Flag f)
+	public synchronized void addFlag(Flag f)
 	{
+		int key = mapKey++;
+
+		flags.put(key, f);
+
 		return;
 	}
 
-	public void parseJSON(JSONObject json)
+	public synchronized void parseJSON(JSONObject json)
 	{
 		String[] keys = JSONObject.getNames(json);
 
-		for (int i = 0; i < keys.length; i++)
+		for (; mapKey < keys.length; mapKey++)
 		{
-			JSONObject flag = json.optJSONObject(keys[i]);
+			JSONObject flag = json.optJSONObject(keys[mapKey]);
 			JSONObject set = flag.optJSONObject(Semantics.FLAG_DEP_SET);
 			JSONObject num = flag.optJSONObject(Semantics.FLAG_DEP_ENUM);
 
@@ -83,17 +86,17 @@ public class FlagSet extends Flag {
 			
 			if (set != null)
 			{
-				f = new FlagSet(keys[i]);
+				f = new FlagSet(keys[mapKey]);
 				((FlagSet)f).parseJSON(set);
 			}
 			else if (num != null)
 			{
-				f = new EnumFlag(keys[i]);
+				f = new EnumFlag(keys[mapKey]);
 				((EnumFlag)f).parseJSON(num);
 			}
 			else
 			{
-				f = new BooleanFlag(keys[i]);
+				f = new BooleanFlag(keys[mapKey]);
 			}
 
 			f.setInfo(flag.optString(Semantics.FLAG_DEP_INFO));
@@ -101,13 +104,12 @@ public class FlagSet extends Flag {
 			{
 				f.setEnabled();
 			}
-			flags.put(i, f);
+			flags.put(mapKey, f);
 		}
 
 		return;
 	}
 
-	@Override
 	public ArrayList<String> getConfigFlags()
 	{
 		ArrayList<String> list = new ArrayList<String>();
@@ -123,7 +125,6 @@ public class FlagSet extends Flag {
 		return list;
 	}
 
-	@Override
 	public String getDepFlags()
 	{
 		return null;
@@ -164,7 +165,6 @@ public class FlagSet extends Flag {
 		return s.toString(); 
 	}
 
-	@Override
 	public boolean getEnabled()
 	{
 		return (this.mandatory || this.enabled);

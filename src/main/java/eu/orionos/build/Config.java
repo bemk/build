@@ -42,8 +42,8 @@ public class Config {
 	private String ldflags = "";
 	private String aflags = "";
 	private boolean clean = false;
-	private boolean toConfigure = false;
-	private boolean toNewConfigure = false;
+	private boolean genDepFile = false;
+	private boolean genConfigFile = false;
 	private File buildDir = null;
 	private HashMap<String, Module> modules = new HashMap<String, Module>();
 	private int threads = 4;
@@ -159,27 +159,27 @@ public class Config {
 		return false;
 	}
 
-	public synchronized void toConfigure(boolean configured)
+	public synchronized void genDepFile(boolean value)
 	{
-		this.toConfigure = configured;
+		this.genDepFile = value;
 	}
-	public synchronized boolean toConfigure()
+	public synchronized boolean genDepFile()
 	{
-		return this.toConfigure;
+		return this.genDepFile;
 	}
 
-	public synchronized void toNewConfigure(boolean configured)
+	public synchronized void genConfigFile(boolean value)
 	{
-		this.toNewConfigure = configured;
+		this.genConfigFile = value;
 	}
-	public synchronized boolean toNewConfigure()
+	public synchronized boolean genConfigFile()
 	{
-		return this.toNewConfigure;
+		return this.genConfigFile;
 	}
 
 	public synchronized boolean hasConf()
 	{
-		if (this.conf == null && this.toConfigure == false)
+		if (this.conf == null && this.genDepFile == false)
 			return false;
 		return true;
 	}

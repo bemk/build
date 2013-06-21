@@ -31,6 +31,7 @@ import java.util.Set;
 import org.json.JSONObject;
 
 import eu.orionos.build.Config;
+import eu.orionos.build.Semantics;
 import eu.orionos.build.ui.CLI;
 import eu.orionos.build.ui.CLIError;
 
@@ -43,18 +44,33 @@ public class DepFile {
 		flags.setInfo("");
 	}
 
-	public void generateDepFile(Set<String> flags)
+	public JSONObject generateDepFile(Set<String> flags)
 	{
-		return;
+		JSONObject o = new JSONObject();
+		Iterator <String> i = flags.iterator();
+
+		while (i.hasNext())
+		{
+			String key = i.next();
+			JSONObject value = new JSONObject();
+	
+			value.put(Semantics.FLAG_DEP_MANDATORY, false);
+			value.put(Semantics.FLAG_DEP_INFO, "");
+
+			o.put(key, value);
+		}
+
+		return o;
 	}
 
 	public void readDepFile() throws IOException
 	{
 		File f = new File (Config.getInstance().getDepFile());
-		if (!f.exists())
-			f.createNewFile();
-		if (f.isDirectory())
+		if (f.isDirectory() || !f.exists())
+		{
+			CLIError.getInstance().writeline("Missing dep file, run build with --gen-depfile option first");
 			return;
+		}
 		FileReader depReader = new FileReader(f);
 
 		StringBuilder b = new StringBuilder();
@@ -74,13 +90,10 @@ public class DepFile {
 	public ConfigFile generateConfigFile()
 	{
 		flags.configure();
-		Iterator <String> i = flags.getConfigFlags().iterator();
-		while (i.hasNext())
-		{
-			String s = i.next();
-			CLI.getInstance().writeline(s);
-		}
-		return null;
+
+		ConfigFile c = new ConfigFile(flags.getConfigFlags());
+
+		return c;
 	}
 
 	@Override

@@ -29,7 +29,6 @@ public class BooleanFlag extends Flag {
 		super (key);
 	}
 
-	@Override
 	public void configure()
 	{
 		if (this.mandatory)
@@ -41,14 +40,12 @@ public class BooleanFlag extends Flag {
 		return;
 	}
 
-	@Override
 	public void setEnabled()
 	{
 		this.configured = true;
 		this.value = true;
 	}
 
-	@Override
 	public ArrayList<String> getConfigFlags()
 	{
 		ArrayList<String> list = new ArrayList<String>();
