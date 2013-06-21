@@ -55,7 +55,7 @@ public class Options {
 		options.add(new OptionAflags());
 		options.add(new OptionGenModule());
 		options.add(new OptionDepFile());
-		
+		options.add(new OptionNewConfigure());
 
 		for (; i < args.length; i++)
 		{

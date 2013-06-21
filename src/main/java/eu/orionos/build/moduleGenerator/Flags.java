@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import eu.orionos.build.ErrorCode;
-import eu.orionos.build.Syntax;
+import eu.orionos.build.Semantics;
 
 public class Flags extends Field {
 	private String global_compiler_flags = "";
@@ -136,8 +136,8 @@ public class Flags extends Field {
 				ret += ",";
 			else
 				first = true;
-			ret += "{\"" + Syntax.CONFIG_GLOBAL_KEY+ "\" : \"" + e.getKey() + "\",";
-			ret += "\"" + Syntax.CONFIG_GLOBAL_FLAGS + "\" : \"" + e.getValue() + "\"}";
+			ret += "{\"" + Semantics.CONFIG_GLOBAL_KEY+ "\" : \"" + e.getKey() + "\",";
+			ret += "\"" + Semantics.CONFIG_GLOBAL_FLAGS + "\" : \"" + e.getValue() + "\"}";
 		}
 		return ret;
 	}
@@ -146,43 +146,43 @@ public class Flags extends Field {
 	public String toJSON() {
 		String json = "";
 
-		json += "\"" + Syntax.GLOBAL_COMPILER_FLAGS + "\" : \"" + global_compiler_flags + "\"";
-		json += ",\n\"" + Syntax.GLOBAL_LINKER_FLAGS + "\" : \"" + global_linker_flags + "\"";
-		json += ",\n\"" + Syntax.GLOBAL_ARCHIVER_FLAGS + "\" : \"" + global_archiver_flags + "\"";
+		json += "\"" + Semantics.GLOBAL_COMPILER_FLAGS + "\" : \"" + global_compiler_flags + "\"";
+		json += ",\n\"" + Semantics.GLOBAL_LINKER_FLAGS + "\" : \"" + global_linker_flags + "\"";
+		json += ",\n\"" + Semantics.GLOBAL_ARCHIVER_FLAGS + "\" : \"" + global_archiver_flags + "\"";
 
 		if (!module_compililer_flags.equals(""))
-			json += ",\"\n" + Syntax.MOD_COMPILER_FLAGS + "\" : \"" + module_compililer_flags + "\"";
+			json += ",\"\n" + Semantics.MOD_COMPILER_FLAGS + "\" : \"" + module_compililer_flags + "\"";
 		if (!module_linker_flags.equals(""))
-			json += ",\n\"" + Syntax.MOD_LINKER_FLAGS + "\" : \"" + module_linker_flags + "\"";
+			json += ",\n\"" + Semantics.MOD_LINKER_FLAGS + "\" : \"" + module_linker_flags + "\"";
 		if (!module_archiver_flags.equals(""))
-			json += ",\n\"" + Syntax.MOD_ARCHIVER_FLAGS + "\" : \"" + module_archiver_flags + "\"";
+			json += ",\n\"" + Semantics.MOD_ARCHIVER_FLAGS + "\" : \"" + module_archiver_flags + "\"";
 
 		if (!global_override_compiler_flags.equals(""))
-			json += ",\n\"" + Syntax.GLOBAL_COMPILER_OVERRIDE_FLAGS + "\" : \"" + global_override_compiler_flags + "\"";
+			json += ",\n\"" + Semantics.GLOBAL_COMPILER_OVERRIDE_FLAGS + "\" : \"" + global_override_compiler_flags + "\"";
 		if (!global_override_linker_flags.equals(""))
-			json += ",\n\"" + Syntax.GLOBAL_LINKER_OVERRIDE_FLAGS + "\" : \"" + global_override_linker_flags + "\"";
+			json += ",\n\"" + Semantics.GLOBAL_LINKER_OVERRIDE_FLAGS + "\" : \"" + global_override_linker_flags + "\"";
 		if (!global_override_archiver_flags.equals(""))
-			json += ",\n\"" + Syntax.GLOBAL_ARCHIVER_OVERRIDE_FLAGS + "\" : \"" + global_override_archiver_flags + "\"";
+			json += ",\n\"" + Semantics.GLOBAL_ARCHIVER_OVERRIDE_FLAGS + "\" : \"" + global_override_archiver_flags + "\"";
 
 		String dcf = parseMap(dynamic_compiler_flags);
 		String dlf = parseMap(dynamic_linker_flags);
 		String daf = parseMap(dynamic_archiver_flags);
 		if (!dcf.equals(""))
-			json += ",\n\"" + Syntax.DYN_COMPILER_FLAGS + "\" : [" + dcf + "]";
+			json += ",\n\"" + Semantics.DYN_COMPILER_FLAGS + "\" : [" + dcf + "]";
 		if (!dlf.equals(""))
-			json += ",\n\"" + Syntax.DYN_LINKER_FLAGS + "\" : [" + dlf + "]";
+			json += ",\n\"" + Semantics.DYN_LINKER_FLAGS + "\" : [" + dlf + "]";
 		if (!daf.equals(""))
-			json += ",\n\"" + Syntax.DYN_ARCHIVER_FLAGS + "\" : [" + daf + "]";
+			json += ",\n\"" + Semantics.DYN_ARCHIVER_FLAGS + "\" : [" + daf + "]";
 
 		String dmcf = parseMap(dynamic_module_compiler_flags);
 		String dmlf = parseMap(dynamic_module_linker_flags);
 		String dmaf = parseMap(dynamic_module_archiver_flags);
 		if (!dmcf.equals(""))
-			json += ",\n\"" + Syntax.DYN_MOD_COMPILER_FLAGS + "\" : [" + dmcf + "]";
+			json += ",\n\"" + Semantics.DYN_MOD_COMPILER_FLAGS + "\" : [" + dmcf + "]";
 		if (!dmlf.equals(""))
-			json += ",\n\"" + Syntax.DYN_MOD_LINKER_FLAGS + "\" : [" + dmlf + "]";
+			json += ",\n\"" + Semantics.DYN_MOD_LINKER_FLAGS + "\" : [" + dmlf + "]";
 		if (!dmaf.equals(""))
-			json += ",\n\"" + Syntax.DYN_MOD_ARCHIVER_FLAGS + "\" : [" + dmaf + "]";
+			json += ",\n\"" + Semantics.DYN_MOD_ARCHIVER_FLAGS + "\" : [" + dmaf + "]";
 
 		return json;
 	}

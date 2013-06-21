@@ -22,7 +22,7 @@ package eu.orionos.build.moduleGenerator;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import eu.orionos.build.Syntax;
+import eu.orionos.build.Semantics;
 
 public class BuildInfo extends Field {
 	private ArrayList<String> sFiles = new ArrayList<String>();
@@ -61,13 +61,13 @@ public class BuildInfo extends Field {
 
 	@Override
 	public String toJSON() {
-		String s = "\"" + Syntax.LINK + "\" : " + ((toLink) ? "true" : "false") + ",\n";
-		s += "\"" + Syntax.ARCHIVE + "\" : " + ((toArchive) ? "true" : "false") + ",\n";
+		String s = "\"" + Semantics.LINK + "\" : " + ((toLink) ? "true" : "false") + ",\n";
+		s += "\"" + Semantics.ARCHIVE + "\" : " + ((toArchive) ? "true" : "false") + ",\n";
 		if (toLink)
-			s += "\"" + Syntax.LINKED + "\" : \"" + lFile + "\",\n";
+			s += "\"" + Semantics.LINKED + "\" : \"" + lFile + "\",\n";
 		if (toArchive)
-			s += "\"" + Syntax.ARCHIVED + "\" : \"" + aFile + "\",\n";
-		s += "\"" + Syntax.SOURCE + "\" : [";
+			s += "\"" + Semantics.ARCHIVED + "\" : \"" + aFile + "\",\n";
+		s += "\"" + Semantics.SOURCE + "\" : [";
 		String a[] = sFiles.toArray(new String[sFiles.size()]);
 		for (int i = 0; i < sFiles.size(); i++)
 		{

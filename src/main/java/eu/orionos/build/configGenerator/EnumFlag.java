@@ -20,6 +20,7 @@
 package eu.orionos.build.configGenerator;
 
 import java.util.Map.Entry;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -51,33 +52,35 @@ public class EnumFlag extends FlagSet {
 					Entry<Integer, Flag> e = i.next();
 					CLI.getInstance().writeline("Index: " + e.getKey() + " : " + e.getValue().key);
 				}
-			}
-			String answer = CLI.getInstance().readline("({0 .. n},info {0 .. n})").toLowerCase();
-			try {
-				choice = Integer.parseInt(answer);
-				configured = true;
-			}
-			catch (NumberFormatException e)
-			{
-				if (answer.startsWith("info ") || answer.startsWith("i "))
+				String answer = CLI.getInstance().readline("({0 .. n},info {0 .. n})").toLowerCase();
+				try {
+					choice = Integer.parseInt(answer);
+				}
+				catch (NumberFormatException e)
 				{
-					answer = answer.replaceFirst("info ", "");
-					answer = answer.replaceFirst("i ", "");
-					try {
-						int n = Integer.parseInt(answer);
-						CLI.getInstance().writeline(flags.get(n).info);
+					if (answer.startsWith("info ") || answer.startsWith("i "))
+					{
+						answer = answer.replaceFirst("info ", "");
+						answer = answer.replaceFirst("i ", "");
+						if (answer.replace(" ", "").equals(""))
+							CLI.getInstance().writeline(this.info);
+						try {
+							int n = Integer.parseInt(answer);
+							CLI.getInstance().writeline(flags.get(n).info);
+						}
+						catch (NumberFormatException ee)
+						{
+							CLI.getInstance().writeline("Illegal answer format");
+						}
 					}
-					catch (NumberFormatException ee)
+					else
 					{
 						CLI.getInstance().writeline("Illegal answer format");
 					}
 				}
-				else
-				{
-					CLI.getInstance().writeline("Illegal answer format");
-				}
 			}
 		}
+		configured = true;
 
 		return;
 	}
@@ -89,9 +92,12 @@ public class EnumFlag extends FlagSet {
 	}
 
 	@Override
-	public String getConfigFlags()
+	public ArrayList<String> getConfigFlags()
 	{
-		return null;
+		ArrayList<String> list = new ArrayList<String>();
+		if (this.getEnabled())
+			list.addAll(flags.get(new Integer(choice)).getConfigFlags());
+		return list;
 	}
 
 	@Override
@@ -100,4 +106,47 @@ public class EnumFlag extends FlagSet {
 		return null;
 	}
 
+	@Override
+	public String toString()
+	{
+		if (configured && !enabled)
+			return "";
+		Set<Entry<Integer, Flag>> flags = this.flags.entrySet();
+		Iterator <Entry<Integer, Flag>> i = flags.iterator();
+
+		StringBuilder s = new StringBuilder();
+		s.append("Enum: ");
+		s.append(key);
+		s.append("\ninfo: ");
+		s.append(info);
+		s.append(": {\n");
+
+		if (!configured)
+		{	
+			while (i.hasNext())
+			{
+				Entry<Integer, Flag> e = i.next();
+				s.append("[");
+				s.append(e.getKey().toString());
+				s.append("] ");
+				String str = e.getValue().toString();
+				str = str.replaceAll("\n", "\n\t");
+				s.append(str);
+				s.append("\n");
+			}
+		}
+		else
+		{
+			s.append("[");
+			s.append(choice);
+			s.append("] ");
+			String str = this.flags.get(new Integer(choice)).toString();
+			str = str.replaceAll("\n", "\n\t");
+			s.append(str);
+		}
+
+		s.append("}\n");
+
+		return s.toString(); 
+	}
 }

@@ -17,59 +17,33 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package eu.orionos.build.configGenerator;
+package eu.orionos.build.option;
 
-import java.util.ArrayList;
+import eu.orionos.build.Config;
+import eu.orionos.build.ui.CLI;
 
-public class BooleanFlag extends Flag {
-	private boolean value;
+public class OptionNewConfigure extends Option {
 
-	public BooleanFlag(String key)
+	private OptionNewConfigure(char c, String s, boolean operands) {
+		super(c, s, operands);
+	}
+	
+	public OptionNewConfigure()
 	{
-		super (key);
+		this(' ', "new-configure", false);
 	}
 
 	@Override
-	public void configure()
-	{
-		if (this.mandatory)
-			value = true;
-		else
-			value = getBoolean("Enable flag ");
-
-		this.configured = true;
+	public void option() {
+		Config.getInstance().toNewConfigure(true);
+		CLI.getInstance().writeline("Using new configure!");
 		return;
 	}
 
 	@Override
-	public void setEnabled()
-	{
-		this.configured = true;
-		this.value = true;
+	public String help() {
+		return "   | --new-configure\n\t\t\t" +
+				"Use the new configuring option";
 	}
 
-	@Override
-	public ArrayList<String> getConfigFlags()
-	{
-		ArrayList<String> list = new ArrayList<String>();
-		if (this.getEnabled())
-			list.add(key);
-		return list;
-	}
-
-	public String getDepFlags()
-	{
-		return null;
-	}
-
-	@Override
-	public String toString()
-	{
-		return "Key: " + key + ", mandator: " + Boolean.toString(mandatory);
-	}
-
-	public boolean getEnabled()
-	{
-		return (this.mandatory || this.value);
-	}
 }

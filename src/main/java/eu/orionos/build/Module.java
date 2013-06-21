@@ -141,66 +141,66 @@ public class Module {
 		}
 
 		/* Read global stuff into local variables for easier access */
-		this.globalCompiler = module.optString(Syntax.GLOBAL_COMPILER, null);
+		this.globalCompiler = module.optString(Semantics.GLOBAL_COMPILER, null);
 		if (this.getGlobalCompiler() == null) {
 			System.err.println("A global compiler has to be set in the main build file");
-			System.err.println("Specify: \"" + Syntax.GLOBAL_COMPILER + "\" : \"<compiler>\"");
+			System.err.println("Specify: \"" + Semantics.GLOBAL_COMPILER + "\" : \"<compiler>\"");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
-		this.globalCompilerFlags = module.optString(Syntax.GLOBAL_COMPILER_FLAGS, null);
+		this.globalCompilerFlags = module.optString(Semantics.GLOBAL_COMPILER_FLAGS, null);
 		if (this.getGlobalCompilerFlags() == null) {
 			System.err.println("Global compiler options must be set in the main build file");
-			System.err.println("Specify: \"" + Syntax.GLOBAL_COMPILER_FLAGS + "\" : \"<compiler flags>\"");
+			System.err.println("Specify: \"" + Semantics.GLOBAL_COMPILER_FLAGS + "\" : \"<compiler flags>\"");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
-		this.globalOverrideCompilerFlags = module.optString(Syntax.GLOBAL_COMPILER_OVERRIDE_FLAGS, null);
-		this.globalLinker = module.optString(Syntax.GLOBAL_LINKER, null);
+		this.globalOverrideCompilerFlags = module.optString(Semantics.GLOBAL_COMPILER_OVERRIDE_FLAGS, null);
+		this.globalLinker = module.optString(Semantics.GLOBAL_LINKER, null);
 		if (this.getGlobalLinker() == null) {
 			System.err.println("A Global linker must be set in the main build file");
-			System.err.println("Specify: \"" + Syntax.GLOBAL_LINKER+ "\" : \"<linker>\"");
+			System.err.println("Specify: \"" + Semantics.GLOBAL_LINKER+ "\" : \"<linker>\"");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
-		this.globalLinkerFlags = module.optString(Syntax.GLOBAL_LINKER_FLAGS, null);
+		this.globalLinkerFlags = module.optString(Semantics.GLOBAL_LINKER_FLAGS, null);
 		if (this.getGlobalLinkerFlags() == null) {
 			System.err.println("Global Linker options must be set in the main build file");
-			System.err.println("Specify: \"" + Syntax.GLOBAL_LINKER_FLAGS +  "\" : \"<linker flags>\"");
+			System.err.println("Specify: \"" + Semantics.GLOBAL_LINKER_FLAGS +  "\" : \"<linker flags>\"");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
-		this.globalOverrideLinkerFlags = module.optString(Syntax.GLOBAL_LINKER_OVERRIDE_FLAGS, null);
-		this.globalArchiver = module.optString(Syntax.GLOBAL_ARCHIVER, null);
+		this.globalOverrideLinkerFlags = module.optString(Semantics.GLOBAL_LINKER_OVERRIDE_FLAGS, null);
+		this.globalArchiver = module.optString(Semantics.GLOBAL_ARCHIVER, null);
 		if (this.getGlobalArchiver() == null) {
 			System.err.println("A global archiver must be set in the main build file");
-			System.err.println("Specify: \"" + Syntax.GLOBAL_ARCHIVER + "\" : \"<archiver>\"");
+			System.err.println("Specify: \"" + Semantics.GLOBAL_ARCHIVER + "\" : \"<archiver>\"");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
-		this.globalArchiverFlags = module.optString(Syntax.GLOBAL_ARCHIVER_FLAGS, null);
+		this.globalArchiverFlags = module.optString(Semantics.GLOBAL_ARCHIVER_FLAGS, null);
 		if (this.getGlobalArchiverFlags() == null) {
 			System.err.println("Global archiver flags must be set in the main build file");
-			System.err.println("Specify: \"" + Syntax.GLOBAL_ARCHIVER_FLAGS + "\" : \"<archiver flags>\"");
+			System.err.println("Specify: \"" + Semantics.GLOBAL_ARCHIVER_FLAGS + "\" : \"<archiver flags>\"");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
-		this.globalOverrideArchiverFlags = module.optString(Syntax.GLOBAL_ARCHIVER_OVERRIDE_FLAGS, null);
+		this.globalOverrideArchiverFlags = module.optString(Semantics.GLOBAL_ARCHIVER_OVERRIDE_FLAGS, null);
 
 		/* Get all the modular data in place */
-		this.modCompiler = module.optString(Syntax.MOD_COMPILER, null);
-		this.modCompilerFlags = module.optString(Syntax.MOD_COMPILER_FLAGS, null);
-		this.modArchiverFlags = module.optString(Syntax.MOD_ARCHIVER_FLAGS, null);
-		this.modArchiver = module.optString(Syntax.MOD_ARCHIVER, null);
-		this.modArchiverFlags = module.optString(Syntax.MOD_ARCHIVER_FLAGS, null);
-		this.modLinker = module.optString(Syntax.MOD_LINKER, null);
-		this.modLinkerFlags = module.optString(Syntax.MOD_LINKER_FLAGS, null);
+		this.modCompiler = module.optString(Semantics.MOD_COMPILER, null);
+		this.modCompilerFlags = module.optString(Semantics.MOD_COMPILER_FLAGS, null);
+		this.modArchiverFlags = module.optString(Semantics.MOD_ARCHIVER_FLAGS, null);
+		this.modArchiver = module.optString(Semantics.MOD_ARCHIVER, null);
+		this.modArchiverFlags = module.optString(Semantics.MOD_ARCHIVER_FLAGS, null);
+		this.modLinker = module.optString(Semantics.MOD_LINKER, null);
+		this.modLinkerFlags = module.optString(Semantics.MOD_LINKER_FLAGS, null);
 
 		/* The dynamic flags */
-		this.dynArchiverFlags = module.optJSONArray(Syntax.DYN_ARCHIVER_FLAGS);
-		this.dynCompilerFlags = module.optJSONArray(Syntax.DYN_COMPILER_FLAGS);
-		this.dynLinkerFlags = module.optJSONArray(Syntax.DYN_LINKER_FLAGS);
+		this.dynArchiverFlags = module.optJSONArray(Semantics.DYN_ARCHIVER_FLAGS);
+		this.dynCompilerFlags = module.optJSONArray(Semantics.DYN_COMPILER_FLAGS);
+		this.dynLinkerFlags = module.optJSONArray(Semantics.DYN_LINKER_FLAGS);
 		
 		/* And the dynamic module wide flags */
-		this.dynModArchiverFlags = module.optJSONArray(Syntax.DYN_MOD_ARCHIVER_FLAGS);
-		this.dynModCompilerFlags = module.optJSONArray(Syntax.DYN_MOD_COMPILER_FLAGS);
-		this.dynModLinkerFlags = module.optJSONArray(Syntax.DYN_MOD_LINKER_FLAGS);
+		this.dynModArchiverFlags = module.optJSONArray(Semantics.DYN_MOD_ARCHIVER_FLAGS);
+		this.dynModCompilerFlags = module.optJSONArray(Semantics.DYN_MOD_COMPILER_FLAGS);
+		this.dynModLinkerFlags = module.optJSONArray(Semantics.DYN_MOD_LINKER_FLAGS);
 		/* Find all source files for this module */
-		JSONArray sources = module.optJSONArray(Syntax.SOURCE);
+		JSONArray sources = module.optJSONArray(Semantics.SOURCE);
 		for (int i = 0; i < sources.length(); i++) {
 			final String source = sources.optString(i, null);
 			if (source != null)
@@ -208,14 +208,14 @@ public class Module {
 		}
 		/* Determine whether or not we should link */
 		try {
-			this.toLink = module.getBoolean(Syntax.LINK);
+			this.toLink = module.getBoolean(Semantics.LINK);
 		} catch (JSONException e) {
 			System.err.println("Module " + name + " Did not specify linking");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
 		/* And determine the same for archiving */
 		try {
-			this.toArchive = module.getBoolean(Syntax.ARCHIVE);
+			this.toArchive = module.getBoolean(Semantics.ARCHIVE);
 		} catch (JSONException e) {
 			System.err.println("Module " + name + " did not specify archiving");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
@@ -223,25 +223,25 @@ public class Module {
 		/* Determine the linked output file */
 		if (this.toLink) {
 			try {
-				this.linkedFile = module.getString(Syntax.LINKED);
+				this.linkedFile = module.getString(Semantics.LINKED);
 			} catch (JSONException e) {
 				System.err.println("Module " + name + " is to link, but no output file specified");
-				System.err.println("Specify: \"" + Syntax.LINKED + "\" : \"<outputfile>\"");
+				System.err.println("Specify: \"" + Semantics.LINKED + "\" : \"<outputfile>\"");
 				System.exit(ErrorCode.PARSE_FAILED);
 			}
 		}
 		if (this.toArchive) {
 			try {
-				this.archivedFile = module.getString(Syntax.ARCHIVED);
+				this.archivedFile = module.getString(Semantics.ARCHIVED);
 			} catch (JSONException e) {
 				System.err.println("Module " + name + " is to be archived, but no output file specified");
-				System.err.println("Specify: \"" + Syntax.ARCHIVED + "\" : \"<outputfile>\"");
+				System.err.println("Specify: \"" + Semantics.ARCHIVED + "\" : \"<outputfile>\"");
 				System.exit(ErrorCode.PARSE_FAILED);
 			}
 		}
 		
 		/* Get all the dependencies, dynamic or not */
-		JSONArray array = module.optJSONArray(Syntax.DEP);
+		JSONArray array = module.optJSONArray(Semantics.DEP);
 		if (array != null) {
 			for (int i = 0; i < array.length(); i++) {
 				final StringBuilder modPath = new StringBuilder();
@@ -249,14 +249,14 @@ public class Module {
 					final JSONObject o = array.getJSONObject(i);
 					modPath.append(cwd);
 					modPath.append('/');
-					modPath.append(o.getString(Syntax.DEP_PATH));
+					modPath.append(o.getString(Semantics.DEP_PATH));
 					subModules.add(new Module(modPath.toString(), this));
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		array = module.optJSONArray(Syntax.DYN_DEP);
+		array = module.optJSONArray(Semantics.DYN_DEP);
 		if (array != null) {
 			for (int i = 0; i < array.length(); i++) {
 				final StringBuilder modPath = new StringBuilder();
@@ -264,8 +264,8 @@ public class Module {
 					JSONObject o = array.getJSONObject(i);
 					modPath.append(cwd);
 					modPath.append('/');
-					modPath.append(o.getString(Syntax.DEP_PATH));
-					dynamicModules.put(o.getString(Syntax.CONFIG_GLOBAL_KEY), new Module(modPath.toString(), this));
+					modPath.append(o.getString(Semantics.DEP_PATH));
+					dynamicModules.put(o.getString(Semantics.CONFIG_GLOBAL_KEY), new Module(modPath.toString(), this));
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -398,12 +398,12 @@ public class Module {
 			for (int i = 0; i < dynCompilerFlags.length(); i++) {
 				try {
 					final JSONObject o = dynCompilerFlags.getJSONObject(i);
-					final String key = o.getString(Syntax.CONFIG_GLOBAL_KEY);
-					if (c.getDefined(key) && o.has(Syntax.CONFIG_GLOBAL_KEY))
+					final String key = o.getString(Semantics.CONFIG_GLOBAL_KEY);
+					if (c.getDefined(key) && o.has(Semantics.CONFIG_GLOBAL_KEY))
 					{
 						if (builder.length() > 0)
 							builder.append(' ');
-						builder.append(o.getString(Syntax.CONFIG_GLOBAL_FLAGS));
+						builder.append(o.getString(Semantics.CONFIG_GLOBAL_FLAGS));
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -422,12 +422,12 @@ public class Module {
 			for (int i = 0; i < dynModCompilerFlags.length(); i++) {
 				try {
 					final JSONObject o = dynModCompilerFlags.getJSONObject(i);
-					final String key = o.getString(Syntax.CONFIG_GLOBAL_KEY);
-					if (c.getModuleDefined(this.name, key) && o.has(Syntax.CONFIG_GLOBAL_FLAGS))
+					final String key = o.getString(Semantics.CONFIG_GLOBAL_KEY);
+					if (c.getModuleDefined(this.name, key) && o.has(Semantics.CONFIG_GLOBAL_FLAGS))
 					{
 						if (builder.length() > 0)
 							builder.append(' ');
-						builder.append(o.getString(Syntax.CONFIG_GLOBAL_FLAGS));
+						builder.append(o.getString(Semantics.CONFIG_GLOBAL_FLAGS));
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -476,12 +476,12 @@ public class Module {
 			for (int i = 0; i < dynArchiverFlags.length(); i++) {
 				try {
 					final JSONObject o = dynArchiverFlags.getJSONObject(i);
-					final String key = o.getString(Syntax.CONFIG_GLOBAL_KEY);
-					if (c.getDefined(key) && o.has(Syntax.CONFIG_GLOBAL_FLAGS))
+					final String key = o.getString(Semantics.CONFIG_GLOBAL_KEY);
+					if (c.getDefined(key) && o.has(Semantics.CONFIG_GLOBAL_FLAGS))
 					{
 						if (builder.length() > 0)
 							builder.append(' ');
-						builder.append(o.getString(Syntax.CONFIG_GLOBAL_FLAGS));
+						builder.append(o.getString(Semantics.CONFIG_GLOBAL_FLAGS));
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -499,12 +499,12 @@ public class Module {
 			for (int i = 0; i < dynModArchiverFlags.length(); i++) {
 				try {
 					final JSONObject o = dynModArchiverFlags.getJSONObject(i);
-					final String key = o.getString(Syntax.CONFIG_GLOBAL_KEY);
-					if (c.getModuleDefined(this.name, key) && o.has(Syntax.CONFIG_GLOBAL_FLAGS))
+					final String key = o.getString(Semantics.CONFIG_GLOBAL_KEY);
+					if (c.getModuleDefined(this.name, key) && o.has(Semantics.CONFIG_GLOBAL_FLAGS))
 					{
 						if (builder.length() > 0)
 							builder.append(' ');
-						builder.append(o.getString(Syntax.CONFIG_GLOBAL_FLAGS));
+						builder.append(o.getString(Semantics.CONFIG_GLOBAL_FLAGS));
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -552,12 +552,12 @@ public class Module {
 			for (int i = 0; i < dynLinkerFlags.length(); i++) {
 				try {
 					final JSONObject o = dynLinkerFlags.getJSONObject(i);
-					final String key = o.getString(Syntax.CONFIG_GLOBAL_KEY);
-					if (c.getModuleDefined(this.name, key) && o.has(Syntax.CONFIG_GLOBAL_FLAGS))
+					final String key = o.getString(Semantics.CONFIG_GLOBAL_KEY);
+					if (c.getModuleDefined(this.name, key) && o.has(Semantics.CONFIG_GLOBAL_FLAGS))
 					{
 						if (builder.length() > 0)
 							builder.append(' ');
-						builder.append(o.getString(Syntax.CONFIG_GLOBAL_FLAGS));
+						builder.append(o.getString(Semantics.CONFIG_GLOBAL_FLAGS));
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -576,12 +576,12 @@ public class Module {
 			for (int i = 0; i < dynModLinkerFlags.length(); i++) {
 				try {
 					final JSONObject o = dynModLinkerFlags.getJSONObject(i);
-					final String key = o.getString(Syntax.CONFIG_GLOBAL_KEY);
-					if (c.getModuleDefined(this.name, key) && o.has(Syntax.CONFIG_GLOBAL_FLAGS))
+					final String key = o.getString(Semantics.CONFIG_GLOBAL_KEY);
+					if (c.getModuleDefined(this.name, key) && o.has(Semantics.CONFIG_GLOBAL_FLAGS))
 					{
 						if (builder.length() > 0)
 							builder.append(' ');
-						builder.append(o.getString(Syntax.CONFIG_GLOBAL_FLAGS));
+						builder.append(o.getString(Semantics.CONFIG_GLOBAL_FLAGS));
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -692,7 +692,7 @@ public class Module {
 		for (int i = 0; i < flaglist.length(); i++)
 		{
 			JSONObject o = flaglist.getJSONObject(i);
-			String key = o.getString(Syntax.CONFIG_GLOBAL_KEY);
+			String key = o.getString(Semantics.CONFIG_GLOBAL_KEY);
 			set.add(key);
 		}
 		return set;

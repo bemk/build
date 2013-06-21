@@ -20,10 +20,10 @@
 package eu.orionos.build.configure;
 
 import java.util.Set;
-import eu.orionos.build.Syntax;
+import eu.orionos.build.Semantics;
 
 public class Flag extends FlagGroup {
-	private String module = Syntax.GLOBAL_DEFS;
+	private String module = Semantics.GLOBAL_DEFS;
 	private String key = "";
 	private boolean value = false;
 

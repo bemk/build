@@ -25,33 +25,20 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.json.JSONObject;
 
 import eu.orionos.build.Config;
+import eu.orionos.build.ui.CLI;
 import eu.orionos.build.ui.CLIError;
 
 public class DepFile {
-	private FileWriter depWriter = null;
-	private FileReader depReader = null;
-	private JSONObject JSON = null;
-
 	private FlagSet flags = new FlagSet("base");
-	private HashMap<String, Flag> flagsList = new HashMap<String, Flag>();
-
+	
 	public DepFile() throws IOException
 	{
-		File f = new File(Config.getInstance().getDepFile());
-		if (f.isDirectory())
-			CLIError.getInstance().writeline("Depfile " + Config.getInstance().getDepFile() + " is a directory");
-		if (!f.exists())
-		{
-			f.createNewFile();
-		}
-		depWriter = new FileWriter(f);
-		depReader = new FileReader(f);
-
 		flags.setEnabled();
 		flags.setInfo("");
 	}
@@ -63,6 +50,13 @@ public class DepFile {
 
 	public void readDepFile() throws IOException
 	{
+		File f = new File (Config.getInstance().getDepFile());
+		if (!f.exists())
+			f.createNewFile();
+		if (f.isDirectory())
+			return;
+		FileReader depReader = new FileReader(f);
+
 		StringBuilder b = new StringBuilder();
 		BufferedReader br = new BufferedReader(depReader);
 		String line = br.readLine();
@@ -70,14 +64,28 @@ public class DepFile {
 		{
 			b.append(line);
 		}
+		br.close();
 
-		JSON = new JSONObject(b.toString());
+		JSONObject JSON = new JSONObject(b.toString());
 
 		flags.parseJSON(JSON);
 	}
 
 	public ConfigFile generateConfigFile()
 	{
+		flags.configure();
+		Iterator <String> i = flags.getConfigFlags().iterator();
+		while (i.hasNext())
+		{
+			String s = i.next();
+			CLI.getInstance().writeline(s);
+		}
 		return null;
+	}
+
+	@Override
+	public String toString()
+	{
+		return flags.toString();
 	}
 }

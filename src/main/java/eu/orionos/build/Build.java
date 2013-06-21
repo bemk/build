@@ -23,6 +23,7 @@
 package eu.orionos.build;
 
 import eu.orionos.build.configGenerator.ConfigFile;
+import eu.orionos.build.configGenerator.DepFile;
 import eu.orionos.build.exec.CommandKernel;
 import eu.orionos.build.option.Options;
 import org.json.JSONException;
@@ -51,7 +52,7 @@ public class Build {
 			if (Config.getInstance().hasConf() == false)
 			{
 				Config.getInstance().override(".config");
-				if (Config.getInstance().hasConf() == false && !Config.getInstance().toConfigure())
+				if (Config.getInstance().hasConf() == false && !Config.getInstance().toConfigure() && !Config.getInstance().toNewConfigure())
 				{
 					System.err.println("No usable config files found!");
 					System.exit(1);
@@ -74,6 +75,13 @@ public class Build {
 				{
 					e.printStackTrace();
 				}
+			}
+			else if (Config.getInstance().toNewConfigure())
+			{
+				DepFile d = new DepFile();
+				d.readDepFile();
+				d.generateConfigFile();
+				CLI.getInstance().writeline(d.toString());
 			}
 			else
 			{

@@ -19,6 +19,7 @@
 */
 package eu.orionos.build.configGenerator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -26,7 +27,7 @@ import java.util.Set;
 
 import org.json.JSONObject;
 
-import eu.orionos.build.Syntax;
+import eu.orionos.build.Semantics;
 
 public class FlagSet extends Flag {
 	protected boolean enabled = false;
@@ -54,6 +55,7 @@ public class FlagSet extends Flag {
 				o.getValue().configure();
 			}
 		}
+		this.configured = true;
 	}
 
 	@Override
@@ -74,8 +76,8 @@ public class FlagSet extends Flag {
 		for (int i = 0; i < keys.length; i++)
 		{
 			JSONObject flag = json.optJSONObject(keys[i]);
-			JSONObject set = flag.optJSONObject(Syntax.FLAG_DEP_SET);
-			JSONObject num = flag.optJSONObject(Syntax.FLAG_DEP_ENUM);
+			JSONObject set = flag.optJSONObject(Semantics.FLAG_DEP_SET);
+			JSONObject num = flag.optJSONObject(Semantics.FLAG_DEP_ENUM);
 
 			Flag f = null;
 			
@@ -94,8 +96,8 @@ public class FlagSet extends Flag {
 				f = new BooleanFlag(keys[i]);
 			}
 
-			f.setInfo(flag.optString(Syntax.FLAG_DEP_INFO));
-			if (flag.optBoolean(Syntax.FLAG_DEP_MANDATORY))
+			f.setInfo(flag.optString(Semantics.FLAG_DEP_INFO));
+			if (flag.optBoolean(Semantics.FLAG_DEP_MANDATORY))
 			{
 				f.setEnabled();
 			}
@@ -106,14 +108,65 @@ public class FlagSet extends Flag {
 	}
 
 	@Override
-	public String getConfigFlags()
+	public ArrayList<String> getConfigFlags()
 	{
-		return null;
+		ArrayList<String> list = new ArrayList<String>();
+		if (this.getEnabled())
+		{
+			Iterator<Entry<Integer, Flag>> i = flags.entrySet().iterator();
+			while (i.hasNext())
+			{
+				Entry<Integer, Flag> e = i.next();
+				list.addAll(e.getValue().getConfigFlags());
+			}
+		}
+		return list;
 	}
 
 	@Override
 	public String getDepFlags()
 	{
 		return null;
+	}
+
+	@Override
+	public String toString()
+	{
+		if (configured && !getEnabled())
+			return "";
+		Set<Entry<Integer, Flag>> flags = this.flags.entrySet();
+		Iterator <Entry<Integer, Flag>> i = flags.iterator();
+
+		StringBuilder s = new StringBuilder();
+		s.append("Set: ");
+		s.append(key);
+		s.append("\ninfo: ");
+		s.append(info);
+		s.append(": {\n");
+
+		while (i.hasNext())
+		{
+			Entry<Integer, Flag> e = i.next();
+			if (!this.configured || (e.getValue().configured() && e.getValue().getEnabled()))
+			{
+				s.append("[");
+				s.append(e.getKey().toString());
+				s.append("] ");
+				String str = e.getValue().toString();
+				str = str.replaceAll("\n", "\n\t");
+				s.append(str);
+				s.append("\n");
+			}
+		}
+
+		s.append("}\n");
+
+		return s.toString(); 
+	}
+
+	@Override
+	public boolean getEnabled()
+	{
+		return (this.mandatory || this.enabled);
 	}
 }

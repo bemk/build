@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import eu.orionos.build.ErrorCode;
-import eu.orionos.build.Syntax;
+import eu.orionos.build.Semantics;
 
 public class Module {
 	private String name;
@@ -51,7 +51,7 @@ public class Module {
 	public String getJSON()
 	{
 		String json = "{\n";
-		json += "\"" + Syntax.MODULE_NAME + "\" : \"" + name + "\",\n";
+		json += "\"" + Semantics.MODULE_NAME + "\" : \"" + name + "\",\n";
 		Field[] f = fields.toArray(new Field[fields.size()]);
 		for (int i = 0; i < f.length; i++)
 		{

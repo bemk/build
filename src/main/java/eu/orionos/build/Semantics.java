@@ -20,7 +20,7 @@
 
 package eu.orionos.build;
 
-public class Syntax {
+public class Semantics {
 	public static final String MODULE_NAME = "name";
 
 	public static final String GLOBAL_COMPILER = "compiler";

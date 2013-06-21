@@ -58,6 +58,7 @@ public class CLI extends Thread {
 		this.getLock();
 		this.out.add(prefix + msg);
 		this.unlock();
+		Thread.yield();
 	}
 	public String readline(String msg)
 	{

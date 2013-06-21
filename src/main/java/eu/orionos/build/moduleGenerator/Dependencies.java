@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import eu.orionos.build.Syntax;
+import eu.orionos.build.Semantics;
 
 public class Dependencies extends Field {
 	private ArrayList<String> dependencies = new ArrayList<String>();
@@ -82,7 +82,7 @@ public class Dependencies extends Field {
 				first = false;
 			else
 				json += ", ";
-			json += "{\"" + Syntax.DEP_PATH + "\" : \"" + s + "\"}";
+			json += "{\"" + Semantics.DEP_PATH + "\" : \"" + s + "\"}";
 		}
 		return json;
 	}
@@ -97,8 +97,8 @@ public class Dependencies extends Field {
 				first = false;
 			else
 				json += ", ";
-			json += "{\"" + Syntax.CONFIG_GLOBAL_KEY + "\" : \"" + e.getKey() + "\", ";
-			json +=  "\"" + Syntax.DEP_PATH + "\" : \"" + e.getValue() + "\"}";
+			json += "{\"" + Semantics.CONFIG_GLOBAL_KEY + "\" : \"" + e.getKey() + "\", ";
+			json +=  "\"" + Semantics.DEP_PATH + "\" : \"" + e.getValue() + "\"}";
 		}
 		return json;
 	}
@@ -109,13 +109,13 @@ public class Dependencies extends Field {
 
 		if (!dependencies.isEmpty())
 		{
-			json += "\"" + Syntax.DEP + "\" : [" + parseArray(dependencies) +"]";
+			json += "\"" + Semantics.DEP + "\" : [" + parseArray(dependencies) +"]";
 		}
 		if (!dynamic_dependencies.isEmpty())
 		{
 			if (!dependencies.isEmpty())
 				json += ",\n";
-			json += "\"" + Syntax.DYN_DEP + "\" : [" + parseMap(dynamic_dependencies) + "]";
+			json += "\"" + Semantics.DYN_DEP + "\" : [" + parseMap(dynamic_dependencies) + "]";
 		}
 
 		return json;

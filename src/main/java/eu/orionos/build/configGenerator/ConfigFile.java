@@ -21,7 +21,7 @@ package eu.orionos.build.configGenerator;
 
 import java.util.Iterator;
 import java.util.Set;
-import eu.orionos.build.Syntax;
+import eu.orionos.build.Semantics;
 import eu.orionos.build.ui.CLI;
 
 public class ConfigFile {
@@ -84,7 +84,7 @@ public class ConfigFile {
 		}
 		json.append("],\n");
 		json.append("\"");
-		json.append(Syntax.CONFIG_BUILD_DIR);
+		json.append(Semantics.CONFIG_BUILD_DIR);
 		json.append("\" : \"");
 		json.append(binDir);
 		json.append("\"\n");

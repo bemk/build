@@ -21,7 +21,7 @@ package eu.orionos.build.moduleGenerator;
 
 import java.io.IOException;
 
-import eu.orionos.build.Syntax;
+import eu.orionos.build.Semantics;
 
 public class Executables extends Field {
 	private String global_compiler = "";
@@ -58,17 +58,17 @@ public class Executables extends Field {
 	public String toJSON() {
 		String json = "";
 		if (!global_compiler.equals(""))
-			json += "\"" + Syntax.GLOBAL_COMPILER + "\" : \"" + global_compiler + "\"";
+			json += "\"" + Semantics.GLOBAL_COMPILER + "\" : \"" + global_compiler + "\"";
 		if (!global_linker.equals(""))
-			json += ",\n\"" + Syntax.GLOBAL_LINKER + "\" : \"" + global_linker + "\"";
+			json += ",\n\"" + Semantics.GLOBAL_LINKER + "\" : \"" + global_linker + "\"";
 		if (!global_archiver.equals(""))
-			json += ",\n\"" + Syntax.GLOBAL_ARCHIVER + "\" : \"" + global_archiver + "\"";
+			json += ",\n\"" + Semantics.GLOBAL_ARCHIVER + "\" : \"" + global_archiver + "\"";
 		if (!module_compiler.equals(""))
-			json += ",\n\"" + Syntax.MOD_COMPILER + "\" : \"" + module_compiler + "\"";
+			json += ",\n\"" + Semantics.MOD_COMPILER + "\" : \"" + module_compiler + "\"";
 		if (!module_linker.equals(""))
-			json += ",\n\"" + Syntax.MOD_LINKER + "\" : \"" + module_linker + "\"";
+			json += ",\n\"" + Semantics.MOD_LINKER + "\" : \"" + module_linker + "\"";
 		if (!module_archiver.equals(""))
-			json += ",\n\"" + Syntax.MOD_ARCHIVER + "\" : \"" + module_archiver + "\"";
+			json += ",\n\"" + Semantics.MOD_ARCHIVER + "\" : \"" + module_archiver + "\"";
 
 		return json;
 	}

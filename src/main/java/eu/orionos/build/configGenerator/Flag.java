@@ -19,6 +19,8 @@
 */
 package eu.orionos.build.configGenerator;
 
+import java.util.ArrayList;
+
 import eu.orionos.build.ui.CLI;
 
 public abstract class Flag {
@@ -45,7 +47,8 @@ public abstract class Flag {
 
 	public abstract void configure();
 	public abstract void setEnabled();
-	public abstract String getConfigFlags();
+	public abstract boolean getEnabled();
+	public abstract ArrayList<String> getConfigFlags();
 	public abstract String getDepFlags();
 
 	protected boolean getBoolean(String msg)
@@ -71,5 +74,10 @@ public abstract class Flag {
 			}
 		}
 		return val;
+	}
+
+	public boolean configured()
+	{
+		return this.configured;
 	}
 }

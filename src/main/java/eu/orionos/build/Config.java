@@ -43,6 +43,7 @@ public class Config {
 	private String aflags = "";
 	private boolean clean = false;
 	private boolean toConfigure = false;
+	private boolean toNewConfigure = false;
 	private File buildDir = null;
 	private HashMap<String, Module> modules = new HashMap<String, Module>();
 	private int threads = 4;
@@ -93,11 +94,6 @@ public class Config {
 		this.setConfigFile(conf);
 	}
 
-	public void configure()
-	{
-		System.err.println("Configuration options should be set here!!!");
-	}
-
 	public boolean silent()
 	{
 		return this.silent;
@@ -140,9 +136,9 @@ public class Config {
 	{
 		if (conf == null)
 			return false;
-		if (!conf.has(Syntax.GLOBAL_DEFS))
+		if (!conf.has(Semantics.GLOBAL_DEFS))
 			return false;
-		JSONArray a = conf.getJSONArray(Syntax.GLOBAL_DEFS);
+		JSONArray a = conf.getJSONArray(Semantics.GLOBAL_DEFS);
 		for (int i = 0; i < a.length(); i++) {
 			if (key.equals(a.get(i)))
 				return true;
@@ -171,6 +167,16 @@ public class Config {
 	{
 		return this.toConfigure;
 	}
+
+	public synchronized void toNewConfigure(boolean configured)
+	{
+		this.toNewConfigure = configured;
+	}
+	public synchronized boolean toNewConfigure()
+	{
+		return this.toNewConfigure;
+	}
+
 	public synchronized boolean hasConf()
 	{
 		if (this.conf == null && this.toConfigure == false)
@@ -179,7 +185,7 @@ public class Config {
 	}
 	public JSONArray getGlobalFlags()
 	{
-		return conf.optJSONArray(Syntax.GLOBAL_DEFS);
+		return conf.optJSONArray(Semantics.GLOBAL_DEFS);
 	}
 	public JSONArray getModuleFlags(String key)
 	{
@@ -197,7 +203,7 @@ public class Config {
 	{
 		if (buildDir == null)
 		{
-			String s = (String) conf.optString(Syntax.CONFIG_BUILD_DIR);
+			String s = (String) conf.optString(Semantics.CONFIG_BUILD_DIR);
 			if (s == null || s.equals(""))
 				s = "bin";
 			buildDir = new File(s);
