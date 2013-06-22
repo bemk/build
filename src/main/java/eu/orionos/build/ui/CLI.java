@@ -63,14 +63,22 @@ public class CLI extends Thread {
 	public String readline(String msg)
 	{
 		String ret = null;
-		this.getLock();
-		try {
-			System.out.print(msg);
-			ret = r.readLine();
-		} catch (IOException e) {
-			ret = "";
+		while (ret == null)
+		{
+			this.getLock();
+			if (this.out.isEmpty())
+			{
+				try {
+					System.out.print(msg);
+					ret = r.readLine();
+				} catch (IOException e) {
+					ret = "";
+				}
+			}
+			else
+				Thread.yield();
+			this.unlock();
 		}
-		this.unlock();
 		return ret;
 	}
 

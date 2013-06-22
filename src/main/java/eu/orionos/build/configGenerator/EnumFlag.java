@@ -45,6 +45,7 @@ public class EnumFlag extends FlagSet {
 		{
 			while (true)
 			{
+				CLI.getInstance().writeline("Enum info: " + this.info);
 				Set<Entry<Integer, Flag>> entries = flags.entrySet();
 				Iterator<Entry<Integer, Flag>> i = entries.iterator();
 				while (i.hasNext())
@@ -62,19 +63,21 @@ public class EnumFlag extends FlagSet {
 				}
 				catch (NumberFormatException e)
 				{
-					if (answer.startsWith("info ") || answer.startsWith("i "))
+					if (answer.startsWith("info") || answer.startsWith("i"))
 					{
-						answer = answer.replaceFirst("info ", "");
-						answer = answer.replaceFirst("i ", "");
-						if (answer.replace(" ", "").equals(""))
-							CLI.getInstance().writeline(this.info);
-						try {
-							int n = Integer.parseInt(answer);
-							CLI.getInstance().writeline(flags.get(n).info);
-						}
-						catch (NumberFormatException ee)
+						answer = answer.replaceFirst("info", "");
+						answer = answer.replaceFirst("i", "");
+						answer = answer.replaceAll(" ", "");
+						if (!answer.equals(""))
 						{
-							CLI.getInstance().writeline("Illegal answer format");
+							try {
+								int n = Integer.parseInt(answer);
+								CLI.getInstance().writeline("Option info: " + flags.get(n).info);
+							}
+							catch (NumberFormatException ee)
+							{
+								CLI.getInstance().writeline("Illegal answer format (2)");
+							}
 						}
 					}
 					else
