@@ -59,7 +59,10 @@ public class EnumFlag extends FlagSet {
 					if (flags.get(new Integer(choice)) == null)
 						continue;
 					else
+					{
+						flags.get(new Integer(choice)).setEnabled();
 						break;
+					}
 				}
 				catch (NumberFormatException e)
 				{
@@ -93,16 +96,10 @@ public class EnumFlag extends FlagSet {
 	}
 
 	@Override
-	public void addFlag(Flag f)
-	{
-		
-	}
-
-	@Override
 	public ArrayList<String> getConfigFlags()
 	{
 		ArrayList<String> list = new ArrayList<String>();
-		if (this.getEnabled())
+		if (this.getEnabled() && this.configured())
 			list.addAll(flags.get(new Integer(choice)).getConfigFlags());
 		return list;
 	}

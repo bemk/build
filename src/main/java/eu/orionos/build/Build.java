@@ -71,7 +71,7 @@ public class Build {
 					FileWriter fw = new FileWriter(f);
 
 					DepFile d = new DepFile();
-					fw.write(d.generateDepFile(flags).toString());
+					fw.write(d.generateDepFile(flags).toString(8));
 
 					fw.close();
 				}

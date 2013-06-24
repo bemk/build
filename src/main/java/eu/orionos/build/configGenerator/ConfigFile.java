@@ -51,7 +51,7 @@ public class ConfigFile {
 		FileWriter fw = new FileWriter(f);
 		BufferedWriter bw = new BufferedWriter(fw);
 
-		bw.write(this.configFile.toString());
+		bw.write(this.configFile.toString(8));
 		bw.close();
 		fw.close();
 	}
