@@ -28,15 +28,15 @@ import java.util.Set;
 import org.json.JSONObject;
 
 import eu.orionos.build.Semantics;
-import eu.orionos.build.ui.CLI;
 
 public class FlagSet extends Flag {
 	protected boolean enabled = false;
 	protected HashMap <Integer, Flag> flags = new HashMap<Integer, Flag>();
 	int mapKey = 0;
+	protected DepFile depfile = null;
 
-	public FlagSet(String key) {
-		super(key);
+	public FlagSet(String key, DepFile depfile) {
+		super(key, depfile);
 	}
 
 	public void configure()
@@ -88,17 +88,17 @@ public class FlagSet extends Flag {
 			
 			if (set != null)
 			{
-				f = new FlagSet(keys[mapKey]);
+				f = new FlagSet(keys[mapKey], this.depfile);
 				((FlagSet)f).parseJSON(set);
 			}
 			else if (num != null)
 			{
-				f = new EnumFlag(keys[mapKey]);
+				f = new EnumFlag(keys[mapKey], this.depfile);
 				((EnumFlag)f).parseJSON(num);
 			}
 			else
 			{
-				f = new BooleanFlag(keys[mapKey]);
+				f = new BooleanFlag(keys[mapKey], this.depfile);
 			}
 
 			f.setInfo(flag.optString(Semantics.FLAG_DEP_INFO));
@@ -127,9 +127,25 @@ public class FlagSet extends Flag {
 		return list;
 	}
 
-	public String getDepFlags()
+	public JSONObject getDepFlags()
 	{
-		return null;
+		JSONObject o = new JSONObject();
+		JSONObject set = new JSONObject();
+
+		o.put(Semantics.FLAG_DEP_MANDATORY, this.mandatory);
+		o.put(Semantics.FLAG_DEP_INFO, this.info);
+		o.put(Semantics.FLAG_DEP_SET, set);
+
+		Set<Integer> keys = flags.keySet();
+		Iterator<Integer> i = keys.iterator();
+		while (i.hasNext())
+		{
+			Integer key = i.next();
+			Flag f = flags.get(key);
+			set.put(f.key, f.getDepFlags());
+		}
+
+		return o;
 	}
 
 	@Override

@@ -21,6 +21,8 @@ package eu.orionos.build.configGenerator;
 
 import java.util.ArrayList;
 
+import org.json.JSONObject;
+
 import eu.orionos.build.ui.CLI;
 
 public abstract class Flag {
@@ -28,16 +30,19 @@ public abstract class Flag {
 	protected String info;
 	protected boolean configured = false;
 	protected boolean mandatory = false;
+	protected DepFile depfile = null;
 
-	public Flag(String key)
+	public Flag(String key, DepFile depfile)
 	{
 		this.key = key;
+		this.depfile = depfile;
 	}
 
-	public Flag(String key, String info)
+	public Flag(String key, String info, DepFile depfile)
 	{
 		this.key = key;
 		this.info = info;
+		this.depfile = depfile;
 	}
 
 	public void setInfo(String info)
@@ -49,7 +54,7 @@ public abstract class Flag {
 	public abstract void setEnabled();
 	public abstract boolean getEnabled();
 	public abstract ArrayList<String> getConfigFlags();
-	public abstract String getDepFlags();
+	public abstract JSONObject getDepFlags();
 
 	protected boolean getBoolean(String msg)
 	{

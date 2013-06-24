@@ -34,6 +34,7 @@ import java.util.HashMap;
 public class Config {
 	private JSONObject conf;
 	private static final Config instance = new Config();
+	private boolean updateDepFile = false;
 	private boolean silent = false;
 	private boolean verbose = false;
 	private String buildFile = "main.build";
@@ -262,5 +263,13 @@ public class Config {
 	public void setDepFile(String depFile)
 	{
 		this.depFile = depFile;
+	}
+
+	public void updateDepFile(boolean value)
+	{
+		this.updateDepFile = value;
+	}
+	public boolean updateDepFile() {
+		return this.updateDepFile;
 	}
 }

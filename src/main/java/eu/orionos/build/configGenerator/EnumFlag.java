@@ -24,13 +24,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.json.JSONObject;
+
+import eu.orionos.build.Semantics;
 import eu.orionos.build.ui.CLI;
 
 public class EnumFlag extends FlagSet {
 	int choice = 0;
 
-	public EnumFlag(String key) {
-		super(key);
+	public EnumFlag(String key, DepFile depfile) {
+		super(key, depfile);
 	}
 
 	@Override
@@ -105,9 +108,24 @@ public class EnumFlag extends FlagSet {
 	}
 
 	@Override
-	public String getDepFlags()
+	public JSONObject getDepFlags()
 	{
-		return null;
+		JSONObject o = new JSONObject();
+		JSONObject set = new JSONObject();
+
+		o.put(Semantics.FLAG_DEP_MANDATORY, this.mandatory);
+		o.put(Semantics.FLAG_DEP_INFO, this.info);
+		o.put(Semantics.FLAG_DEP_ENUM, set);
+
+		Set<Integer> keys = flags.keySet();
+		Iterator<Integer> i = keys.iterator();
+		while (i.hasNext())
+		{
+			Integer key = i.next();
+			Flag f = flags.get(key);
+			set.put(f.key, f.getDepFlags());
+		}
+		return o;
 	}
 
 	@Override

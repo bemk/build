@@ -14,7 +14,7 @@
 "darchiver-flags" : [{"key" : "alpha", "flags" : ""}],
 
 "depend" : [{"path": "src/test/minimal.build"}],
-"ddepend" : [{"key" : "alpha", "path" : "src/test/alpha.build"}, {"key" : "beta", "path" : "src/test/beta.build"}],
+"ddepend" : [{"key" : "alpha", "path" : "src/test/alpha.build"}, {"key" : "beta", "path" : "src/test/beta.build"}, {"key" : "fubar", "path" : "src/test/fubar.build"} ],
 
 "mcompiler" : "clang",
 "mlinker" : "clang",

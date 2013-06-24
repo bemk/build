@@ -20,29 +20,30 @@
 package eu.orionos.build.option;
 
 import eu.orionos.build.Config;
+import eu.orionos.build.ui.CLI;
 
-public class OptionDepFile extends Option {
+public class OptionGenDepfile extends Option {
 
-	private OptionDepFile(char c, String s, boolean operands) {
+	private OptionGenDepfile(char c, String s, boolean operands) {
 		super(c, s, operands);
 	}
-
-	public OptionDepFile()
+	
+	public OptionGenDepfile()
 	{
-		this(' ', "dep-file", true);
+		this(' ', "gen-depfile", false);
 	}
 
 	@Override
 	public void option() {
-		Config.getInstance().setDepFile(operand);
+		Config.getInstance().genDepFile(true);
+		return;
 	}
 
 	@Override
 	public String help() {
-		StringBuilder s = new StringBuilder();
-		s.append("   | --dep-file [dependency file]\n\t\t\t");
-		s.append("Specify the dependency file to be used for configuring");
-		return s.toString();
+		return "   | --gen-depfile\n\t\t\t" +
+				"Generate a new file outlining dependencies of the build flags\n\t\t\t" +
+				"(This does not put the flags in the right dependency.\n\t\t\t" +
+				"Manual editing will remain necessary.)";
 	}
-
 }

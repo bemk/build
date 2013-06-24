@@ -21,14 +21,16 @@ package eu.orionos.build.configGenerator;
 
 import java.util.ArrayList;
 
-import eu.orionos.build.ui.CLI;
+import org.json.JSONObject;
+
+import eu.orionos.build.Semantics;
 
 public class BooleanFlag extends Flag {
 	private boolean value;
 
-	public BooleanFlag(String key)
+	public BooleanFlag(String key, DepFile depfile)
 	{
-		super (key);
+		super (key, depfile);
 	}
 
 	public void configure()
@@ -57,9 +59,12 @@ public class BooleanFlag extends Flag {
 		return list;
 	}
 
-	public String getDepFlags()
+	public JSONObject getDepFlags()
 	{
-		return null;
+		JSONObject o = new JSONObject();
+		o.put(Semantics.FLAG_DEP_MANDATORY, this.mandatory);
+		o.put(Semantics.FLAG_DEP_INFO, this.info);
+		return o;
 	}
 
 	@Override

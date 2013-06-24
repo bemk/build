@@ -27,6 +27,7 @@ import eu.orionos.build.configGenerator.DepFile;
 import eu.orionos.build.exec.CommandKernel;
 import eu.orionos.build.option.Options;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 
 
@@ -80,6 +81,27 @@ public class Build {
 					e.printStackTrace();
 				} catch (Exception e) {
 				}
+			}
+			else if (Config.getInstance().updateDepFile())
+			{
+				DepFile d = new DepFile();
+				d.readDepFile();
+
+				Set<String> flags = modules.getBuildFlags();
+				JSONObject o = d.updateDepFile(flags);
+
+				try {
+					File f = new File(Config.getInstance().getDepFile());
+					if (!f.exists() || f.isDirectory())
+						throw (new Exception());
+					FileWriter fw = new FileWriter(f);
+					fw.write(o.toString(8));
+					fw.close();
+				}
+				catch (Exception e)
+				{
+				}
+
 			}
 			else if (Config.getInstance().genConfigFile())
 			{

@@ -20,29 +20,29 @@
 package eu.orionos.build.option;
 
 import eu.orionos.build.Config;
-import eu.orionos.build.ui.CLI;
 
-public class OptionNewConfigure extends Option {
+public class OptionUpdateDepFile extends Option {
 
-	private OptionNewConfigure(char c, String s, boolean operands) {
+	private OptionUpdateDepFile(char c, String s, boolean operands) {
 		super(c, s, operands);
 	}
-	
-	public OptionNewConfigure()
+
+	public OptionUpdateDepFile()
 	{
-		this(' ', "gen-depfile", false);
+		super(' ', "update-depfile", false);
 	}
 
 	@Override
 	public void option() {
-		Config.getInstance().genDepFile(true);
-		return;
+		Config.getInstance().updateDepFile(true);
 	}
 
 	@Override
 	public String help() {
-		return "   | --gen-depfile\n\t\t\t" +
-				"Generate a new file outlining dependencies of the build flags";
+		return "   | --update-depfile\n\t\t\t" +
+				"Add newly added build flags to the build file\n\t\t\t"+
+				"(This does will likely not put them in the right place\n\t\t\t"+
+				"so manual editing will remain necessary.)";
 	}
 
 }

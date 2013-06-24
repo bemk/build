@@ -1,0 +1,8 @@
+{
+"name" : "fubar",
+"source-files" : [ "beta.c" ],
+"archived-file" : "beta.a",
+"mcompiler-flags" : "-D BETA",
+"link" : false,
+"archive" : true
+}
