@@ -21,6 +21,8 @@ package eu.orionos.build.configGenerator;
 
 import java.util.ArrayList;
 
+import eu.orionos.build.ui.CLI;
+
 public class BooleanFlag extends Flag {
 	private boolean value;
 
@@ -44,6 +46,7 @@ public class BooleanFlag extends Flag {
 	{
 		this.configured = true;
 		this.value = true;
+		this.mandatory = true;
 	}
 
 	public ArrayList<String> getConfigFlags()
@@ -62,7 +65,7 @@ public class BooleanFlag extends Flag {
 	@Override
 	public String toString()
 	{
-		return "Key: " + key + ", mandator: " + Boolean.toString(mandatory);
+		return "Key: " + this.key + ", mandator: " + Boolean.toString(mandatory);
 	}
 
 	public boolean getEnabled()

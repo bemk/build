@@ -28,6 +28,7 @@ import java.util.Set;
 import org.json.JSONObject;
 
 import eu.orionos.build.Semantics;
+import eu.orionos.build.ui.CLI;
 
 public class FlagSet extends Flag {
 	protected boolean enabled = false;
@@ -61,6 +62,7 @@ public class FlagSet extends Flag {
 	public void setEnabled()
 	{
 		this.mandatory = true;
+		this.enabled = true;
 	}
 
 	public synchronized void addFlag(Flag f)
