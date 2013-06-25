@@ -29,8 +29,6 @@ import eu.orionos.build.option.Options;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
-
 import eu.orionos.build.ui.CLI;
 import eu.orionos.build.ui.CLIError;
 
@@ -95,7 +93,7 @@ public class Build {
 					if (!f.exists() || f.isDirectory())
 						throw (new Exception());
 					FileWriter fw = new FileWriter(f);
-					fw.write(o.toString(8));
+					fw.write(o.toString(8) + "\n");
 					fw.close();
 				}
 				catch (Exception e)

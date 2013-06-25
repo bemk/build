@@ -36,6 +36,7 @@ public abstract class Flag {
 	{
 		this.key = key;
 		this.depfile = depfile;
+		this.depfile.registerFlag(this);
 	}
 
 	public Flag(String key, String info, DepFile depfile)

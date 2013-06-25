@@ -36,11 +36,12 @@ import eu.orionos.build.ui.CLI;
 import eu.orionos.build.ui.CLIError;
 
 public class DepFile {
-	private FlagSet flags = new FlagSet("base", this);
+	private FlagSet flags = null;
 	private HashMap<String, Flag> flagMap = new HashMap<String, Flag>();
 
 	public DepFile() throws IOException
 	{
+		flags = new FlagSet("base", this);
 		flags.setEnabled();
 		flags.setInfo("");
 	}
@@ -67,6 +68,7 @@ public class DepFile {
 	public JSONObject updateDepFile(Set<String> flags)
 	{
 		Iterator <String> i = flags.iterator();
+
 		while (i.hasNext())
 		{
 			String key = i.next();

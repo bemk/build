@@ -33,7 +33,6 @@ public class FlagSet extends Flag {
 	protected boolean enabled = false;
 	protected HashMap <Integer, Flag> flags = new HashMap<Integer, Flag>();
 	int mapKey = 0;
-	protected DepFile depfile = null;
 
 	public FlagSet(String key, DepFile depfile) {
 		super(key, depfile);
