@@ -80,14 +80,11 @@ public class DepFile {
 		return this.flags.getDepFlags().optJSONObject(Semantics.FLAG_DEP_SET);
 	}
 
-	public void readDepFile() throws IOException
+	public void readDepFile() throws IOException, DepfileException
 	{
 		File f = new File (Config.getInstance().getDepFile());
 		if (f.isDirectory() || !f.exists())
-		{
-			CLIError.getInstance().writeline("Missing dep file, run build with --gen-depfile option first");
-			return;
-		}
+			throw new DepfileException();
 		FileReader depReader = new FileReader(f);
 
 		StringBuilder b = new StringBuilder();
@@ -101,7 +98,12 @@ public class DepFile {
 
 		JSONObject JSON = new JSONObject(b.toString());
 
-		flags.parseJSON(JSON);
+		parseJSON(JSON);
+	}
+
+	public void parseJSON(JSONObject o)
+	{
+		flags.parseJSON(o);
 	}
 
 	public ConfigFile generateConfigFile()

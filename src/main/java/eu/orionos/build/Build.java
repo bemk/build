@@ -24,6 +24,7 @@ package eu.orionos.build;
 
 import eu.orionos.build.configGenerator.ConfigFile;
 import eu.orionos.build.configGenerator.DepFile;
+import eu.orionos.build.configGenerator.DepfileException;
 import eu.orionos.build.exec.CommandKernel;
 import eu.orionos.build.option.Options;
 import org.json.JSONException;
@@ -83,18 +84,23 @@ public class Build {
 			else if (Config.getInstance().updateDepFile())
 			{
 				DepFile d = new DepFile();
-				d.readDepFile();
-
-				Set<String> flags = modules.getBuildFlags();
-				JSONObject o = d.updateDepFile(flags);
-
 				try {
+					d.readDepFile();
+
+					Set<String> flags = modules.getBuildFlags();
+					JSONObject o = d.updateDepFile(flags);
+
 					File f = new File(Config.getInstance().getDepFile());
 					if (!f.exists() || f.isDirectory())
 						throw (new Exception());
 					FileWriter fw = new FileWriter(f);
 					fw.write(o.toString(8) + "\n");
 					fw.close();
+				}
+				catch (DepfileException e)
+				{
+					CLIError.getInstance().writeline("Missing depfile!");
+					CLIError.getInstance().writeline("Run with --gen-depfile first!");
 				}
 				catch (Exception e)
 				{
@@ -104,7 +110,13 @@ public class Build {
 			else if (Config.getInstance().genConfigFile())
 			{
 				DepFile d = new DepFile();
-				d.readDepFile();
+				try {
+					d.readDepFile();
+				}
+				catch(DepfileException e)
+				{
+					d.parseJSON(d.generateDepFile(modules.getBuildFlags()));
+				}
 				ConfigFile c = d.generateConfigFile();
 				try {
 					c.write();
