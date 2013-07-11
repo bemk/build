@@ -56,7 +56,7 @@ public class EnumFlag extends FlagSet {
 					Entry<Integer, Flag> e = i.next();
 					CLI.getInstance().writeline("Index: " + e.getKey() + " : " + e.getValue().key);
 				}
-				String answer = CLI.getInstance().readline("({0 .. n},info {0 .. n})").toLowerCase();
+				String answer = CLI.getInstance().readline("({0 .. n},info {0 .. n}) ").toLowerCase();
 				try {
 					choice = Integer.parseInt(answer);
 					if (flags.get(new Integer(choice)) == null)

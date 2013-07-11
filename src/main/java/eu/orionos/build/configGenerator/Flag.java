@@ -63,7 +63,7 @@ public abstract class Flag {
 		boolean val = false;
 		while (!finished)
 		{
-			String Answer = CLI.getInstance().readline(msg + this.key + "(Yes/No/Info)").toLowerCase();
+			String Answer = CLI.getInstance().readline(msg + this.key + "(Yes/No/Info) ").toLowerCase();
 			if (Answer.equals("y") || Answer.equals("yes"))
 			{
 				finished = true;
