@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.json.JSONObject;
 
+import eu.orionos.build.Config;
 import eu.orionos.build.Semantics;
 
 public class FlagSet extends Flag {
@@ -42,11 +43,19 @@ public class FlagSet extends Flag {
 	{
 		if (!mandatory)
 		{
-			this.enabled = getBoolean("Enable group ");
+			if (Config.getInstance().allyes_config())
+				this.enabled = true;
+			else
+				this.enabled = getBoolean("Enable group ");
 		}
 
 		if (mandatory || enabled)
 		{
+			if (Config.getInstance().allno_config())
+			{
+				this.configured = true;
+				return;
+			}
 			Set<Entry<Integer, Flag>> entries = flags.entrySet();
 			Iterator<Entry<Integer, Flag>> i = entries.iterator();
 			while (i.hasNext())

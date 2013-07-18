@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 import org.json.JSONObject;
 
+import eu.orionos.build.Config;
 import eu.orionos.build.Semantics;
 
 public class BooleanFlag extends Flag {
@@ -38,7 +39,14 @@ public class BooleanFlag extends Flag {
 		if (this.mandatory)
 			value = true;
 		else
-			value = getBoolean("Enable flag ");
+		{
+			if (Config.getInstance().allno_config())
+				value = false;
+			else if (Config.getInstance().allyes_config())
+				value = true;
+			else
+				value = getBoolean("Enable flag ");
+		}
 
 		this.configured = true;
 		return;

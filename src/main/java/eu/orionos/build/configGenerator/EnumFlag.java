@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.json.JSONObject;
 
+import eu.orionos.build.Config;
 import eu.orionos.build.Semantics;
 import eu.orionos.build.ui.CLI;
 
@@ -41,11 +42,21 @@ public class EnumFlag extends FlagSet {
 	{
 		if (!mandatory)
 		{
-			this.enabled = getBoolean("Enable ");
+			if (Config.getInstance().allyes_config() || Config.getInstance().allno_config())
+				this.enabled = true;
+			else
+				this.enabled = getBoolean("Enable ");
 		}
 
 		if (mandatory || enabled)
 		{
+			if (Config.getInstance().allyes_config() || Config.getInstance().allno_config())
+			{
+				/* This keeps the current choice the first one */
+				this.configured = true;
+				flags.get(new Integer(choice)).setEnabled();
+				return;
+			}
 			while (true)
 			{
 				CLI.getInstance().writeline("Enum info: " + this.info);

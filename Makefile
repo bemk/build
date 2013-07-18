@@ -8,6 +8,12 @@ clean: build.jar
 configure: build.jar
 	@java -jar build.jar --config new.config new.build --configure
 
+allyes_config: build.jar
+	@java -jar build.jar --config new.config new.build --configure --allyes-config
+
+allno_config: build.jar
+	@java -jar build.jar --config new.config new.build --configure --allno-config
+
 distclean: clean
 	mvn clean
 	rm -f build.jar

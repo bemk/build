@@ -45,6 +45,8 @@ public class Config {
 	private boolean clean = false;
 	private boolean genDepFile = false;
 	private boolean genConfigFile = false;
+	private boolean allyes_config = false;
+	private boolean allno_config = false;
 	private File buildDir = null;
 	private HashMap<String, Module> modules = new HashMap<String, Module>();
 	private int threads = 4;
@@ -176,6 +178,23 @@ public class Config {
 	public synchronized boolean genConfigFile()
 	{
 		return this.genConfigFile;
+	}
+
+	public synchronized void allyes_config(boolean value)
+	{
+		this.allyes_config = value;
+	}
+	public synchronized boolean allyes_config()
+	{
+		return this.allyes_config;
+	}
+	public synchronized void allno_config(boolean value)
+	{
+		this.allno_config = value;
+	}
+	public synchronized boolean allno_config()
+	{
+		return this.allno_config;
 	}
 
 	public synchronized boolean hasConf()
