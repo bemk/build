@@ -44,6 +44,8 @@ public class BooleanFlag extends Flag {
 				value = false;
 			else if (Config.getInstance().allyes_config())
 				value = true;
+			else if (Config.getInstance().random_config())
+				value = (Config.getInstance().getRandom(0, 1) == 0) ? false : true;
 			else
 				value = getBoolean("Enable flag ");
 		}

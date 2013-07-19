@@ -42,7 +42,7 @@ public class EnumFlag extends FlagSet {
 	{
 		if (!mandatory)
 		{
-			if (Config.getInstance().allyes_config() || Config.getInstance().allno_config())
+			if (Config.getInstance().allyes_config() || Config.getInstance().allno_config() || Config.getInstance().random_config())
 				this.enabled = true;
 			else
 				this.enabled = getBoolean("Enable ");
@@ -50,10 +50,12 @@ public class EnumFlag extends FlagSet {
 
 		if (mandatory || enabled)
 		{
-			if (Config.getInstance().allyes_config() || Config.getInstance().allno_config())
+			if (Config.getInstance().allyes_config() || Config.getInstance().allno_config() || Config.getInstance().random_config())
 			{
 				/* This keeps the current choice the first one */
 				this.configured = true;
+				if (Config.getInstance().random_config())
+					this.choice = Config.getInstance().getRandom(flags.size()-1);
 				flags.get(new Integer(choice)).setEnabled();
 				return;
 			}

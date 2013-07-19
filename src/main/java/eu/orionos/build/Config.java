@@ -30,6 +30,7 @@ import eu.orionos.build.ui.CLI;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.Random;
 
 public class Config {
 	private JSONObject conf;
@@ -47,10 +48,12 @@ public class Config {
 	private boolean genConfigFile = false;
 	private boolean allyes_config = false;
 	private boolean allno_config = false;
+	private boolean random_config = false;
 	private File buildDir = null;
 	private HashMap<String, Module> modules = new HashMap<String, Module>();
 	private int threads = 4;
 	private String depFile = "dep.flags";
+	private Random randomSource = new Random();
 
 	private void setConfigFile(String conf) throws FileNotFoundException, IOException, JSONException
 	{
@@ -196,6 +199,14 @@ public class Config {
 	{
 		return this.allno_config;
 	}
+	public synchronized void random_config(boolean value)
+	{
+		this.random_config = value;
+	}
+	public synchronized boolean random_config()
+	{
+		return this.random_config;
+	}
 
 	public synchronized boolean hasConf()
 	{
@@ -290,5 +301,17 @@ public class Config {
 	}
 	public boolean updateDepFile() {
 		return this.updateDepFile;
+	}
+	public int getRandom()
+	{
+		return randomSource.nextInt();
+	}
+	public int getRandom(int max)
+	{
+		return randomSource.nextInt(max);
+	}
+	public int getRandom(int min, int max)
+	{
+		return randomSource.nextInt(max - min + 1) + min;
 	}
 }

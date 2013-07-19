@@ -45,6 +45,8 @@ public class FlagSet extends Flag {
 		{
 			if (Config.getInstance().allyes_config())
 				this.enabled = true;
+			else if (Config.getInstance().random_config())
+				this.enabled = Config.getInstance().getRandom(0, 1) == 0 ? true : false;
 			else
 				this.enabled = getBoolean("Enable group ");
 		}

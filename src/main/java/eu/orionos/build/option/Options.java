@@ -59,6 +59,7 @@ public class Options {
 		options.add(new OptionUpdateDepFile());
 		options.add(new OptionAllYes());
 		options.add(new OptionAllNo());
+		options.add(new OptionRandom());
 
 		for (; i < args.length; i++)
 		{
