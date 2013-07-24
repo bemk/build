@@ -127,6 +127,7 @@ public class FlagSet extends Flag {
 		ArrayList<String> list = new ArrayList<String>();
 		if (this.getEnabled())
 		{
+			list.add(this.key);
 			Iterator<Entry<Integer, Flag>> i = flags.entrySet().iterator();
 			while (i.hasNext())
 			{

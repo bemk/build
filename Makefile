@@ -1,4 +1,4 @@
-.PHONY: all clean distclean native bin/build configure test allno-config allyes-config random-config configure 
+.PHONY: all clean distclean native bin/build configure test allno_config allyes_config random_config configure 
 all: build.jar
 	@java -jar build.jar --config new.config new.build -t random $(FLAGS)
 

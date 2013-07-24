@@ -119,7 +119,10 @@ public class EnumFlag extends FlagSet {
 	{
 		ArrayList<String> list = new ArrayList<String>();
 		if (this.getEnabled() && this.configured())
+		{
+			list.add(this.key);
 			list.addAll(flags.get(new Integer(choice)).getConfigFlags());
+		}
 		return list;
 	}
 
