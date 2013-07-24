@@ -55,7 +55,7 @@ public class EnumFlag extends FlagSet {
 				/* This keeps the current choice the first one */
 				this.configured = true;
 				if (Config.getInstance().random_config())
-					this.choice = Config.getInstance().getRandom(flags.size()-1);
+					this.choice = Config.getInstance().getRandom(flags.size());
 				flags.get(new Integer(choice)).setEnabled();
 				return;
 			}
@@ -91,7 +91,10 @@ public class EnumFlag extends FlagSet {
 						{
 							try {
 								int n = Integer.parseInt(answer);
-								CLI.getInstance().writeline("Option info: " + flags.get(n).info);
+								if (flags.containsKey(new Integer(n)))
+									CLI.getInstance().writeline("Option info: " + flags.get(n).info);
+								else
+									CLI.getInstance().writeline("Requested information not available");
 							}
 							catch (NumberFormatException ee)
 							{
