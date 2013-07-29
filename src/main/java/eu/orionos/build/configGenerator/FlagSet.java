@@ -29,9 +29,11 @@ import org.json.JSONObject;
 
 import eu.orionos.build.Config;
 import eu.orionos.build.Semantics;
+import eu.orionos.build.ui.CLI;
 
 public class FlagSet extends Flag {
 	protected boolean enabled = false;
+	protected boolean ignore_autoconf;
 	protected HashMap <Integer, Flag> flags = new HashMap<Integer, Flag>();
 	int mapKey = 0;
 
@@ -43,10 +45,15 @@ public class FlagSet extends Flag {
 	{
 		if (!mandatory)
 		{
-			if (Config.getInstance().allyes_config())
-				this.enabled = true;
-			else if (Config.getInstance().random_config())
-				this.enabled = Config.getInstance().getRandom(0, 1) == 0 ? true : false;
+			if (Config.getInstance().auto_config())
+			{
+				if (this.ignore_autoconf)
+					this.enabled = false;
+				else if (Config.getInstance().allyes_config())
+					this.enabled = true;
+				else if (Config.getInstance().random_config())
+					this.enabled = Config.getInstance().getRandom(0, 1) == 0 ? true : false;
+			}
 			else
 				this.enabled = getBoolean("Enable group ");
 		}
@@ -87,6 +94,7 @@ public class FlagSet extends Flag {
 	public synchronized void parseJSON(JSONObject json)
 	{
 		String[] keys = JSONObject.getNames(json);
+		this.ignore_autoconf = json.optBoolean(Semantics.FLAG_DEP_IGNORE_AUTOCONF);
 
 		for (; mapKey < keys.length; mapKey++)
 		{
@@ -108,7 +116,8 @@ public class FlagSet extends Flag {
 			}
 			else
 			{
-				f = new BooleanFlag(keys[mapKey], this.depfile);
+				boolean autoconf_ignore = flag.optBoolean(Semantics.FLAG_DEP_IGNORE_AUTOCONF);
+				f = new BooleanFlag(keys[mapKey], this.depfile, autoconf_ignore);
 			}
 
 			f.setInfo(flag.optString(Semantics.FLAG_DEP_INFO));
@@ -146,6 +155,7 @@ public class FlagSet extends Flag {
 		o.put(Semantics.FLAG_DEP_MANDATORY, this.mandatory);
 		o.put(Semantics.FLAG_DEP_INFO, this.info);
 		o.put(Semantics.FLAG_DEP_SET, set);
+		o.put(Semantics.FLAG_DEP_IGNORE_AUTOCONF, this.ignore_autoconf);
 
 		Set<Integer> keys = flags.keySet();
 		Iterator<Integer> i = keys.iterator();

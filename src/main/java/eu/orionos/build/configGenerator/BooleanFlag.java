@@ -28,10 +28,12 @@ import eu.orionos.build.Semantics;
 
 public class BooleanFlag extends Flag {
 	private boolean value;
+	private boolean ignore_autoconf;
 
-	public BooleanFlag(String key, DepFile depfile)
+	public BooleanFlag(String key, DepFile depfile, boolean ignore_autoconf)
 	{
 		super (key, depfile);
+		this.ignore_autoconf = ignore_autoconf;
 	}
 
 	public void configure()
@@ -43,7 +45,12 @@ public class BooleanFlag extends Flag {
 			if (Config.getInstance().allno_config())
 				value = false;
 			else if (Config.getInstance().allyes_config())
-				value = true;
+			{
+				if (this.ignore_autoconf)
+					value = false;
+				else
+					value = true;
+			}
 			else if (Config.getInstance().random_config())
 				value = (Config.getInstance().getRandom(0, 1) == 0) ? false : true;
 			else
@@ -74,6 +81,7 @@ public class BooleanFlag extends Flag {
 		JSONObject o = new JSONObject();
 		o.put(Semantics.FLAG_DEP_MANDATORY, this.mandatory);
 		o.put(Semantics.FLAG_DEP_INFO, this.info);
+		o.put(Semantics.FLAG_DEP_IGNORE_AUTOCONF, this.ignore_autoconf);
 		return o;
 	}
 

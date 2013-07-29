@@ -74,7 +74,7 @@ public class DepFile {
 			String key = i.next();
 			if (this.getFlag(key) == null)
 			{
-				this.flags.addFlag(new BooleanFlag(key, this));
+				this.flags.addFlag(new BooleanFlag(key, this, false));
 			}
 		}
 		return this.flags.getDepFlags().optJSONObject(Semantics.FLAG_DEP_SET);

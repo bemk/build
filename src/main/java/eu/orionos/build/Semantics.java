@@ -68,6 +68,8 @@ public class Semantics {
 	public static final String FLAG_DEP_SET = "set";
 	public static final String FLAG_DEP_ENUM = "enum";
 
+	public static final String FLAG_DEP_IGNORE_AUTOCONF = "ignore-autoconf";
+
 	public static final String FLAG_DEP_INFO = "info";
 	public static final String FLAG_DEP_MANDATORY = "mandatory";
 }

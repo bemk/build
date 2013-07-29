@@ -207,6 +207,10 @@ public class Config {
 	{
 		return this.random_config;
 	}
+	public synchronized boolean auto_config()
+	{
+		return allyes_config | allno_config | random_config;
+	}
 
 	public synchronized boolean hasConf()
 	{

@@ -1,4 +1,4 @@
-.PHONY: all clean distclean native bin/build configure test allno_config allyes_config random_config configure 
+.PHONY: all clean distclean native bin/build configure test allno_config allyes_config random_config configure preconfig
 all: build.jar
 	@java -jar build.jar --config new.config new.build -t random $(FLAGS)
 
@@ -16,6 +16,9 @@ allno_config: build.jar
 
 random_config: build.jar
 	@java -jar build.jar --config new.config new.build --configure --random-config
+
+preconfig: build.jar
+	@java -jar build.jar --config new.config new.build --update-depfile
 
 
 distclean: clean

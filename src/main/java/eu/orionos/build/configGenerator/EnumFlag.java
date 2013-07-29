@@ -43,7 +43,12 @@ public class EnumFlag extends FlagSet {
 		if (!mandatory)
 		{
 			if (Config.getInstance().allyes_config() || Config.getInstance().allno_config() || Config.getInstance().random_config())
-				this.enabled = true;
+			{
+				if (this.ignore_autoconf)
+					this.enabled = false;
+				else
+					this.enabled = true;
+			}
 			else
 				this.enabled = getBoolean("Enable ");
 		}
@@ -135,6 +140,7 @@ public class EnumFlag extends FlagSet {
 		o.put(Semantics.FLAG_DEP_MANDATORY, this.mandatory);
 		o.put(Semantics.FLAG_DEP_INFO, this.info);
 		o.put(Semantics.FLAG_DEP_ENUM, set);
+		o.put(Semantics.FLAG_DEP_IGNORE_AUTOCONF, this.ignore_autoconf);
 
 		Set<Integer> keys = flags.keySet();
 		Iterator<Integer> i = keys.iterator();

@@ -1,20 +1,50 @@
 {
-"alpha" : {"mandatory" : false, "info" : "alpha flag"},
-"beta" : {"mandatory" : true, "info" : "beta flag"},
-"gamma" : {
-	"mandatory" : false,
-	"info" : "Gamma enum",
-	"enum" : {
-		 "delta" : {"mandatory" : false, "info" : "delta flag"},
-		 "epsylon" : {"mandatory" : false, "info" : "epsylon flag"}
-		 }
-	  },
-"zeta" : {
-	"mandatory" : true,
-	"info" : "Zeta flag group",
-	"set" : {
-		"eta" : {"mandatory" : false, "info" : "eta flag"},
-		"theta" : {"mandatory" : false, "info" : "theta flag"}
-	 	}
-	}
+        "gamma": {
+                "ignore-autoconf": false,
+                "mandatory": false,
+                "enum": {
+                        "epsylon": {
+                                "ignore-autoconf": false,
+                                "mandatory": false,
+                                "info": "epsylon flag"
+                        },
+                        "delta": {
+                                "ignore-autoconf": false,
+                                "mandatory": false,
+                                "info": "delta flag"
+                        }
+                },
+                "info": "Gamma enum"
+        },
+        "alpha": {
+                "ignore-autoconf": false,
+                "mandatory": false,
+                "info": "alpha flag"
+        },
+        "zeta": {
+                "ignore-autoconf": false,
+                "set": {
+                        "eta": {
+                                "ignore-autoconf": false,
+                                "mandatory": false,
+                                "info": "eta flag"
+                        },
+                        "theta": {
+                                "ignore-autoconf": false,
+                                "mandatory": false,
+                                "info": "theta flag"
+                        }
+                },
+                "mandatory": true,
+                "info": "Zeta flag group"
+        },
+        "beta": {
+                "ignore-autoconf": false,
+                "mandatory": true,
+                "info": "beta flag"
+        },
+        "fubar": {
+                "ignore-autoconf": false,
+                "mandatory": false
+        }
 }
