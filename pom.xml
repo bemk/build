@@ -7,6 +7,9 @@
   <version>1.0</version>
   <name>build</name>
   <url>http://maven.apache.org</url>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -28,6 +31,7 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+	<version>2.4</version>
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
           <archive>
