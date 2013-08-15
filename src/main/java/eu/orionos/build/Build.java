@@ -27,6 +27,7 @@ import eu.orionos.build.configGenerator.DepFile;
 import eu.orionos.build.configGenerator.DepfileException;
 import eu.orionos.build.exec.CommandKernel;
 import eu.orionos.build.option.Options;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -37,6 +38,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.Set;
 
 public class Build {
@@ -157,5 +161,71 @@ public class Build {
 	public static void main(String args[])
 	{
 		new Build("main.build", args);
+	}
+	
+	public static Version getVersion()
+	{
+		Version version = new Version();
+		
+		try {
+			Enumeration<URL> en = Build.class.getClassLoader().getResources("version.properties");
+			
+			URL url = en.nextElement();;
+			
+			if(url == null)
+				return version;
+			
+			InputStream is = url.openStream();
+			
+			if(is == null)
+				return version;
+			
+			int data;
+			String varName = "";
+			String varVal = "";
+			
+			while( (data = is.read()) != -1 )
+			{
+				if( data == '\n' )
+				{
+					if(varName.equalsIgnoreCase("version.major"))
+					{
+						version.major = Integer.parseInt(varVal);
+					}
+					else if(varName.equalsIgnoreCase("version.minor"))
+					{
+						version.minor = Integer.parseInt(varVal);
+					}
+					else if(varName.equalsIgnoreCase("version.build"))
+					{
+						version.build = Integer.parseInt(varVal);
+					}
+					
+					varName = "";
+					varVal = "";
+				}
+				else if( data == '=' )
+				{
+					varName = varVal;
+					varVal = "";
+				}
+				else if( data != ' ' && data != '\t' )
+				{
+					varVal += (char)data;
+				}
+			}
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return version;
+	}
+	
+	public static class Version
+	{
+		public int major = -1;
+		public int minor = -1;
+		public int build = -1;
 	}
 }

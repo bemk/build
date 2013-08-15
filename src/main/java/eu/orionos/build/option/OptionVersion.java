@@ -19,6 +19,8 @@
 */
 package eu.orionos.build.option;
 
+import eu.orionos.build.Build;
+import eu.orionos.build.Build.Version;
 import eu.orionos.build.ErrorCode;
 
 public class OptionVersion extends Option {
@@ -36,7 +38,8 @@ public class OptionVersion extends Option {
 	public void option() {
 		System.out.println("Build");
 		System.out.println("A simple build system built by the Orion project");
-		System.out.println("Version 0.2");
+		Version version = Build.getVersion();
+		System.out.println("Version " + String.valueOf(version.major) + "." + String.valueOf(version.minor) + "-" + String.valueOf(version.build));
 		System.exit(ErrorCode.SUCCESS);
 	}
 
