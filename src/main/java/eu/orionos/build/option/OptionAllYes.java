@@ -35,12 +35,13 @@ public class OptionAllYes extends Option {
 	@Override
 	public void option() {
 		Config.getInstance().allyes_config(true);
+		Config.getInstance().genConfigFile(true);
 	}
 
 	@Override
 	public String help() {
 		StringBuilder s = new StringBuilder();
-		s.append("   | allyes-config\n\t\t\t");
+		s.append("   | --allyes-config\n\t\t\t");
 		s.append("Make the configure option run with all flags true");
 		return s.toString();
 	}

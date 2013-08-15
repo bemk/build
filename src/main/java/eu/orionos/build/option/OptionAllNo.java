@@ -35,12 +35,13 @@ public class OptionAllNo extends Option {
 	@Override
 	public void option() {
 		Config.getInstance().allno_config(true);
+		Config.getInstance().genConfigFile(true);
 	}
 
 	@Override
 	public String help() {
 		StringBuilder s = new StringBuilder();
-		s.append("   | allno-config\n\t\t\t");
+		s.append("   | --allno-config\n\t\t\t");
 		s.append("Make the configure option with all flags set to no");
 		return s.toString();
 	}

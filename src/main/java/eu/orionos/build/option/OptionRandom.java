@@ -35,6 +35,7 @@ public class OptionRandom extends Option {
 	@Override
 	public void option() {
 		Config.getInstance().random_config(true);
+		Config.getInstance().genConfigFile(true);
 	}
 
 	@Override
