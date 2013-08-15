@@ -14,3 +14,7 @@ bin/
 build.iml
 out/
 target/
+build
+dependency-reduced-pom.xml
+new.config
+

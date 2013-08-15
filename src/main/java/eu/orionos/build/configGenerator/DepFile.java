@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import eu.orionos.build.Config;
@@ -56,10 +57,20 @@ public class DepFile {
 			String key = i.next();
 			JSONObject value = new JSONObject();
 	
-			value.put(Semantics.FLAG_DEP_MANDATORY, false);
-			value.put(Semantics.FLAG_DEP_INFO, "");
+			try {
+				value.put(Semantics.FLAG_DEP_MANDATORY, false);
+				value.put(Semantics.FLAG_DEP_INFO, "");
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-			o.put(key, value);
+			try {
+				o.put(key, value);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		return o;
@@ -96,7 +107,14 @@ public class DepFile {
 		}
 		br.close();
 
-		JSONObject JSON = new JSONObject(b.toString());
+		JSONObject JSON;
+		try {
+			JSON = new JSONObject(b.toString());
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		}
 
 		parseJSON(JSON);
 	}
