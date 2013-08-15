@@ -4,7 +4,6 @@
   <groupId>eu.orionos.build</groupId>
   <artifactId>build</artifactId>
   <packaging>jar</packaging>
-  <version>1.0</version>
   <name>build</name>
   <url>https://github.com/bemk/build</url>
   <scm>
@@ -15,6 +14,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+  <version>${version.major}.${version.minor}.${version.build}</version>
   <dependencies>
     <dependency>
       <groupId>org.json</groupId>
@@ -27,6 +27,11 @@
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>properties-maven-plugin</artifactId>
+      <version>1.0-alpha-2</version>
+    </dependency> 
   </dependencies>
   <build>
     <plugins>
@@ -69,18 +74,40 @@
         <artifactId>maven-antrun-plugin</artifactId>
           <executions>
             <execution>
-              <phase>package</phase>
-              <configuration>
-                <tasks>
-                  <exec dir="${basedir}" executable="${basedir}/makeExecutable.sh" failonerror="true"></exec>
-                </tasks>
-              </configuration>
-              <goals>
-                <goal>run</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
+            <phase>package</phase>
+            <configuration>
+              <tasks>
+                <exec dir="${basedir}" executable="${basedir}/buildhelper.sh" failonerror="true">
+                  <arg value="${version.major}"/>
+                  <arg value="${version.minor}"/>
+                  <arg value="${version.build}"/>
+                </exec>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <version>1.0-alpha-2</version>
+        <executions>
+          <execution>
+            <phase>initialize</phase>
+            <goals>
+              <goal>read-project-properties</goal>
+            </goals>
+            <configuration>
+              <files>
+                <file>${basedir}/src/main/resources/version.properties</file>
+              </files>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>
