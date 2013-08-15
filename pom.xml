@@ -6,7 +6,12 @@
   <packaging>jar</packaging>
   <version>1.0</version>
   <name>build</name>
-  <url>http://maven.apache.org</url>
+  <url>https://github.com/bemk/build</url>
+  <scm>
+    <connection>scm:git:git://github.com/bemk/build.git</connection>
+    <developerConnection>scm:git:https://bemk@github.com/bemk/build.git</developerConnection>
+    <url>https://github.com/bemk/build</url>
+  </scm>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -60,6 +65,22 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <configuration>
+                <tasks>
+                  <exec dir="${basedir}" executable="${basedir}/makeExecutable.sh" failonerror="true"></exec>
+                </tasks>
+              </configuration>
+              <goals>
+                <goal>run</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
     </plugins>
   </build>
 </project>
