@@ -85,7 +85,7 @@ public class Module {
 	private JSONArray dynModCompilerFlags;
 	private JSONArray dynModLinkerFlags;
 
-	public Module(String path) throws FileNotFoundException, IOException, JSONException
+	public Module(String path) throws FileNotFoundException, IOException
 	{
 		this(path, null);
 	}
@@ -95,7 +95,7 @@ public class Module {
 		return this.name;
 	}
 
-	public Module(String path, Module parent) throws FileNotFoundException, IOException, JSONException
+	public Module(String path, Module parent) throws FileNotFoundException, IOException
 	{
 		/* Get some verbosity out of our system */
 		if (Config.getInstance().verbose())
@@ -117,7 +117,12 @@ public class Module {
 			stringBuilder.append(line);
 		}
 		reader.close();
-		module = new JSONObject(stringBuilder.toString());
+		try {
+			module = new JSONObject(stringBuilder.toString());
+		} catch (JSONException e1) {
+			System.err.println("Failed to parse JSON string");
+			e1.printStackTrace();
+		}
 		/* Get some paths right */
 		this.cwd = f.getAbsolutePath();
 		int len = 0;

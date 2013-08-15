@@ -28,7 +28,6 @@ import eu.orionos.build.configGenerator.DepfileException;
 import eu.orionos.build.exec.CommandKernel;
 import eu.orionos.build.option.Options;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import eu.orionos.build.ui.CLI;
@@ -145,8 +144,6 @@ public class Build {
 		} catch (FileNotFoundException e) {
 			System.err.println(e.getMessage());
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (JSONException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();

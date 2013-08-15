@@ -24,7 +24,6 @@ package eu.orionos.build.option;
 
 import eu.orionos.build.Config;
 import eu.orionos.build.ErrorCode;
-import org.json.JSONException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -35,7 +34,7 @@ public class Options {
 
 	private ArrayList<Option> options = new ArrayList<Option>();
 
-	public Options(String args[]) throws FileNotFoundException, IOException, JSONException
+	public Options(String args[]) throws FileNotFoundException, IOException
 	{
 		int i = 0;
 		if (args.length == 0)

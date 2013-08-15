@@ -57,7 +57,7 @@ public class Config {
 	private String depFile = "dep.flags";
 	private Random randomSource = new Random();
 
-	private void setConfigFile(String conf) throws FileNotFoundException, IOException, JSONException
+	private void setConfigFile(String conf) throws FileNotFoundException, IOException
 	{
 		this.configFile = conf;
 		File f = new File(configFile);
@@ -91,13 +91,13 @@ public class Config {
 		return this.configFile;
 	}
 
-	public synchronized static Config getInstance(String conf) throws FileNotFoundException, IOException, JSONException
+	public synchronized static Config getInstance(String conf) throws FileNotFoundException, IOException
 	{
 		instance.setConfigFile(conf);
 		return instance;
 	}
 	
-	public synchronized void override(String conf) throws FileNotFoundException, IOException, JSONException
+	public synchronized void override(String conf) throws FileNotFoundException, IOException
 	{
 		this.setConfigFile(conf);
 	}

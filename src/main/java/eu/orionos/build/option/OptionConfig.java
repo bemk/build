@@ -24,8 +24,6 @@ package eu.orionos.build.option;
 
 import java.io.IOException;
 
-import org.json.JSONException;
-
 public class OptionConfig extends Option {
 
 	public OptionConfig(char c, String s, boolean operands) {
@@ -42,8 +40,6 @@ public class OptionConfig extends Option {
 		try {
 			eu.orionos.build.Config.getInstance().override(this.operand);
 		} catch (IOException e) {
-			System.err.println("Something went wrong in switching config files!");
-		} catch (JSONException e) {
 			System.err.println("Something went wrong in switching config files!");
 		}
 	}
