@@ -21,6 +21,7 @@ package eu.orionos.build.newModuleGenerator;
 
 import java.io.*;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Module {
@@ -59,7 +60,12 @@ public class Module {
 			}
 			br.close();
 
-			json = new JSONObject(s.toString());
+			try {
+				json = new JSONObject(s.toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		catch (FileNotFoundException e)
 		{
@@ -73,7 +79,12 @@ public class Module {
 	{
 		try {
 			FileWriter fw = new FileWriter(f);
-			fw.write(json.toString(8));
+			try {
+				fw.write(json.toString(8));
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			fw.close();
 		} catch (IOException e) {
 		}

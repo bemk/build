@@ -21,6 +21,7 @@ package eu.orionos.build.configGenerator;
 
 import java.util.ArrayList;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import eu.orionos.build.Config;
@@ -79,9 +80,14 @@ public class BooleanFlag extends Flag {
 	public JSONObject getDepFlags()
 	{
 		JSONObject o = new JSONObject();
-		o.put(Semantics.FLAG_DEP_MANDATORY, this.mandatory);
-		o.put(Semantics.FLAG_DEP_INFO, this.info);
-		o.put(Semantics.FLAG_DEP_IGNORE_AUTOCONF, this.ignore_autoconf);
+		try {
+			o.put(Semantics.FLAG_DEP_MANDATORY, this.mandatory);
+			o.put(Semantics.FLAG_DEP_INFO, this.info);
+			o.put(Semantics.FLAG_DEP_IGNORE_AUTOCONF, this.ignore_autoconf);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return o;
 	}
 

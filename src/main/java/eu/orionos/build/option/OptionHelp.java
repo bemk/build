@@ -36,7 +36,7 @@ public class OptionHelp extends Option {
 	@Override
 	public void option() {
 		System.out.println("USAGE");
-		System.out.println("\tjava -jar build.jar [options] [build file]");
+		System.out.println("\tbuild [options] [build file]");
 		System.out.println("");
 		o.help();
 

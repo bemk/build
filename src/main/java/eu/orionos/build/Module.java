@@ -691,9 +691,14 @@ public class Module {
 			return set;
 		for (int i = 0; i < flaglist.length(); i++)
 		{
-			JSONObject o = flaglist.getJSONObject(i);
-			String key = o.getString(Semantics.CONFIG_GLOBAL_KEY);
-			set.add(key);
+			try {
+				JSONObject o = flaglist.getJSONObject(i);
+				String key = o.getString(Semantics.CONFIG_GLOBAL_KEY);
+				set.add(key);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return set;
 	}

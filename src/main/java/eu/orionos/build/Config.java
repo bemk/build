@@ -22,15 +22,17 @@
 
 package eu.orionos.build;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Random;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import eu.orionos.build.ui.CLI;
-
-import java.io.*;
-import java.util.HashMap;
-import java.util.Random;
 
 public class Config {
 	private JSONObject conf;
@@ -144,10 +146,24 @@ public class Config {
 			return false;
 		if (!conf.has(Semantics.GLOBAL_DEFS))
 			return false;
-		JSONArray a = conf.getJSONArray(Semantics.GLOBAL_DEFS);
+		JSONArray a;
+		
+		try {
+			a = conf.getJSONArray(Semantics.GLOBAL_DEFS);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		
 		for (int i = 0; i < a.length(); i++) {
-			if (key.equals(a.get(i)))
-				return true;
+			try {
+				if (key.equals(a.get(i)))
+					return true;
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return false;
 	}
@@ -157,10 +173,24 @@ public class Config {
 			return false;
 		if (!conf.has(module))
 			return false;
-		JSONArray a = conf.getJSONArray(module);
+		
+		JSONArray a;
+		try {
+			a = conf.getJSONArray(module);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		
 		for (int i = 0; i < a.length(); i++) {
-			if (key.equals(a.get(i)))
-				return true;
+			try {
+				if (key.equals(a.get(i)))
+					return true;
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return false;
 	}

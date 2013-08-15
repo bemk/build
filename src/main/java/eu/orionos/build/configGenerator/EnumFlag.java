@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import eu.orionos.build.Config;
@@ -137,10 +138,15 @@ public class EnumFlag extends FlagSet {
 		JSONObject o = new JSONObject();
 		JSONObject set = new JSONObject();
 
-		o.put(Semantics.FLAG_DEP_MANDATORY, this.mandatory);
-		o.put(Semantics.FLAG_DEP_INFO, this.info);
-		o.put(Semantics.FLAG_DEP_ENUM, set);
-		o.put(Semantics.FLAG_DEP_IGNORE_AUTOCONF, this.ignore_autoconf);
+		try {
+			o.put(Semantics.FLAG_DEP_MANDATORY, this.mandatory);
+			o.put(Semantics.FLAG_DEP_INFO, this.info);
+			o.put(Semantics.FLAG_DEP_ENUM, set);
+			o.put(Semantics.FLAG_DEP_IGNORE_AUTOCONF, this.ignore_autoconf);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		Set<Integer> keys = flags.keySet();
 		Iterator<Integer> i = keys.iterator();
@@ -148,7 +154,12 @@ public class EnumFlag extends FlagSet {
 		{
 			Integer key = i.next();
 			Flag f = flags.get(key);
-			set.put(f.key, f.getDepFlags());
+			try {
+				set.put(f.key, f.getDepFlags());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return o;
 	}

@@ -25,6 +25,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import eu.orionos.build.Config;
@@ -37,7 +38,12 @@ public class ConfigFile {
 	{
 		configFile = new JSONObject();
 
-		configFile.put(Semantics.GLOBAL_DEFS, flags);
+		try {
+			configFile.put(Semantics.GLOBAL_DEFS, flags);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void write() throws IOException
@@ -51,7 +57,12 @@ public class ConfigFile {
 		FileWriter fw = new FileWriter(f);
 		BufferedWriter bw = new BufferedWriter(fw);
 
-		bw.write(this.configFile.toString(8));
+		try {
+			bw.write(this.configFile.toString(8));
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		bw.close();
 		fw.close();
 	}

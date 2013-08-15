@@ -3,6 +3,7 @@ all: build
 	@./build --config new.config new.build -t random $(FLAGS)
 
 clean: build
+	@rm -rf ./src/main/java/META-INF ./src/main/java/org
 	@./build -c --config new.config new.build -t random $(FLAGS)
 
 configure: build
@@ -34,8 +35,11 @@ build.jar:
 native: bin/build
 
 bin/build:
+	@unzip -o -qq ~/.m2/repository/org/json/json/20090211/json-20090211.jar -d ./src/main/java
+	@rm -rf ./src/main/java/META-INF
 	./check_bin.sh
 	gcj --main=eu.orionos.build.Build -o bin/build `find -name *.java`
+	@rm -rf ./src/main/java/org
 
 test: all
 	./bin/main.bin
