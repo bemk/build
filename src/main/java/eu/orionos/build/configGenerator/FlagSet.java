@@ -30,7 +30,6 @@ import org.json.JSONObject;
 
 import eu.orionos.build.Config;
 import eu.orionos.build.Semantics;
-import eu.orionos.build.ui.CLI;
 
 public class FlagSet extends Flag {
 	protected boolean enabled = false;

@@ -20,7 +20,6 @@
 package eu.orionos.build.option;
 
 import eu.orionos.build.Config;
-import eu.orionos.build.ui.CLI;
 
 public class OptionGenDepfile extends Option {
 

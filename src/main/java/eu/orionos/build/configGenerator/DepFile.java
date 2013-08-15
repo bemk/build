@@ -22,7 +22,6 @@ package eu.orionos.build.configGenerator;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,8 +32,6 @@ import org.json.JSONObject;
 
 import eu.orionos.build.Config;
 import eu.orionos.build.Semantics;
-import eu.orionos.build.ui.CLI;
-import eu.orionos.build.ui.CLIError;
 
 public class DepFile {
 	private FlagSet flags = null;
