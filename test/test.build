@@ -1,0 +1,41 @@
+{
+	"name" : "test",
+
+	"compiler" : "clang",
+	"linker" : "clang",
+	"archiver" : "ar",
+
+	"compiler-flags" : "-c",
+	"linker-flags" : "",
+	"archiver-flags" : "rs",
+
+	"dcompiler-flags" : [{"key" : "alpha", "flags" : "-D ALPHA"}],
+	"dlinker-flags" : [{"key" : "alpha", "flags" : "-D ALPHA"}],
+	"darchiver-flags" : [{"key" : "alpha", "flags" : ""}],
+
+	"depend" : [{"path": "src/minimal.build"}],
+	"ddepend" : [
+		{"key" : "alpha", "path" : "src/alpha.build"},
+		{"key" : "beta", "path" : "src/beta.build"},
+		{"key" : "fubar", "path" : "src/fubar.build"}
+	],
+
+	"mcompiler" : "clang",
+	"mlinker" : "clang",
+	"marchiver" : "ar",
+
+	"mcompiler-flags" : "-Iinclude",
+	"mlinker-flags" : "-Iinclude",
+	"marchiver-flags" : "",
+
+	"mdcompiler-flags" : [{"key" : "beta", "flags" : "-D BETA"}],
+	"mdlinker-flags" : [{"key" : "beta", "flags" : "-D BETA"}],
+	"mdarchiver-flags" : [{"key" : "beta", "flags" : ""}],
+
+	"source-files" : ["src/test.c"],
+	"linked-file" : "main.bin",
+	"archived-file" : "main.a",
+
+	"link" : true,
+	"archive" : false
+}

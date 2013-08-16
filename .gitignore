@@ -6,6 +6,9 @@
 *.a
 *.swp
 *~
+*.deb
+*.rpm
+*.config
 build.jar
 test.bin
 build.bin
@@ -16,5 +19,3 @@ out/
 target/
 build
 dependency-reduced-pom.xml
-new.config
-
