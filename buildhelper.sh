@@ -37,7 +37,7 @@ HOMEPAGE="http://github.com/bemk/build/"
 SECTION="admin"
 PRIORITY="optional"
 ARCH="all" # May want to change this...
-DEPENDS="dash (>= 0.5.7-3~)" # Add java dependicy
+DEPENDS="dash" # Add java dependicy
 SUGGESTS="gcc (>= 4.7.3-1~), clang-3.2 (>= 3.2-1~)"
 CONFLICTS=""
 REPLACES=""
