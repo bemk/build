@@ -24,23 +24,17 @@ import eu.orionos.build.Config;
 public class OptionAflags extends Option {
 
 	public OptionAflags(char c, String s, boolean operands) {
-		super(c, s, operands);
+		super(c, s, operands, "[flags]", "Specify the flags to be passsed on to the archiver");
 	}
 
 	public OptionAflags()
 	{
 		this(' ', "aflags", true);
 	}
+	
 	@Override
 	public void option() {
 		Config.getInstance().aflags(operand);
-	}
-
-	@Override
-	public String help() {
-		String ret = "   | --aflags [flags]\n\t\t\t";
-		ret += "Specify the flags to be passsed on to the archiver";
-		return ret;
 	}
 
 }

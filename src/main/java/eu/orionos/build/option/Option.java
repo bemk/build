@@ -21,20 +21,23 @@
 package eu.orionos.build.option;
 
 public abstract class Option {
-	private char  shortForm;
-	private String longForm;
+	private final char  shortForm;
+	private final String longForm;
+	private final String parameters;
+	private final String info;
 	private boolean operands;
 	protected String operand;
 
-	public Option(char c, String s, boolean operands)
+	public Option(char c, String s, boolean operands, String parameters, String info)
 	{
 		this.shortForm = c;
 		this.longForm = s;
 		this.operands = operands;
+		this.parameters = parameters;
+		this.info = info;
 	}
 
 	public abstract void option();
-	public abstract String help();
 
 	public boolean operands()
 	{
@@ -53,5 +56,13 @@ public abstract class Option {
 	public String getLong()
 	{
 		return longForm;
+	}
+
+	public String getParameters() {
+		return parameters;
+	}
+
+	public String getInfo() {
+		return info;
 	}
 }

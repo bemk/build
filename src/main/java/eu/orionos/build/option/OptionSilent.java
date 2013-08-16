@@ -25,17 +25,12 @@ import eu.orionos.build.Config;
 public class OptionSilent extends Option {
 
 	public OptionSilent() {
-		super('s', "silent", false);
+		super('s', "silent", false, "", "Keep all text output from going to screen");
 	}
 
 	@Override
 	public void option() {
 		Config.getInstance().silent(true);
-	}
-
-	public String help()
-	{
-		return "-s | --silent\tKeep all text output from going to screen";
 	}
 
 }

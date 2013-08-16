@@ -131,9 +131,9 @@ public class Config {
 	{
 		return conf.optJSONObject(key);
 	}
-	public void setClean()
+	public void setClean(boolean clean)
 	{
-		this.clean = true;
+		this.clean = clean;
 	}
 	public boolean getClean()
 	{

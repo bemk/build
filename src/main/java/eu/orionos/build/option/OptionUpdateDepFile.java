@@ -24,25 +24,17 @@ import eu.orionos.build.Config;
 public class OptionUpdateDepFile extends Option {
 
 	private OptionUpdateDepFile(char c, String s, boolean operands) {
-		super(c, s, operands);
+		super(c, s, operands, "", "Add newly added build flags to the build file. (This does will likely not put them in the right place so manual editing will remain necessary.)");
 	}
 
 	public OptionUpdateDepFile()
 	{
-		super(' ', "update-depfile", false);
+		this(' ', "update-depfile", false);
 	}
 
 	@Override
 	public void option() {
 		Config.getInstance().updateDepFile(true);
-	}
-
-	@Override
-	public String help() {
-		return "   | --update-depfile\n\t\t\t" +
-				"Add newly added build flags to the build file\n\t\t\t"+
-				"(This does will likely not put them in the right place\n\t\t\t"+
-				"so manual editing will remain necessary.)";
 	}
 
 }

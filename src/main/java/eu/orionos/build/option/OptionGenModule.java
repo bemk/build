@@ -26,11 +26,11 @@ import eu.orionos.build.moduleGenerator.ModuleGenerator;
 public class OptionGenModule extends Option{
 
 	public OptionGenModule(char c, String s, boolean operands) {
-		super(c, s, operands);
+		super(c, s, operands, "", "Generate a module file");
 	}
 	public OptionGenModule()
 	{
-		this('\0', "gen-module", true);
+		this(' ', "gen-module", true);
 	}
 
 	@Override
@@ -38,11 +38,6 @@ public class OptionGenModule extends Option{
 		new ModuleGenerator(operand);
 		CLI.getInstance().kill();
 		System.exit(ErrorCode.SUCCESS);
-	}
-
-	@Override
-	public String help() {
-		return "   | --gen-module\n\t\t\tGenerate a module file";
 	}
 
 }

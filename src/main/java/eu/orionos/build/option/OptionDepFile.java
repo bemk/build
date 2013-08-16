@@ -24,7 +24,7 @@ import eu.orionos.build.Config;
 public class OptionDepFile extends Option {
 
 	private OptionDepFile(char c, String s, boolean operands) {
-		super(c, s, operands);
+		super(c, s, operands, "[dependency file]", "Specify the dependency file to be used for configuring");
 	}
 
 	public OptionDepFile()
@@ -35,14 +35,6 @@ public class OptionDepFile extends Option {
 	@Override
 	public void option() {
 		Config.getInstance().setDepFile(operand);
-	}
-
-	@Override
-	public String help() {
-		StringBuilder s = new StringBuilder();
-		s.append("   | --dep-file [dependency file]\n\t\t\t");
-		s.append("Specify the dependency file to be used for configuring");
-		return s.toString();
 	}
 
 }

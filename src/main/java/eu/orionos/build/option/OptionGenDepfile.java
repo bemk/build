@@ -24,7 +24,7 @@ import eu.orionos.build.Config;
 public class OptionGenDepfile extends Option {
 
 	private OptionGenDepfile(char c, String s, boolean operands) {
-		super(c, s, operands);
+		super(c, s, operands, "", "Generate a new file outlining dependencies of the build flags. (This does not put the flags in the right dependency. Manual editing will remain necessary.)");
 	}
 	
 	public OptionGenDepfile()
@@ -36,13 +36,5 @@ public class OptionGenDepfile extends Option {
 	public void option() {
 		Config.getInstance().genDepFile(true);
 		return;
-	}
-
-	@Override
-	public String help() {
-		return "   | --gen-depfile\n\t\t\t" +
-				"Generate a new file outlining dependencies of the build flags\n\t\t\t" +
-				"(This does not put the flags in the right dependency.\n\t\t\t" +
-				"Manual editing will remain necessary.)";
 	}
 }

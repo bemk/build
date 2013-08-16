@@ -24,7 +24,7 @@ import eu.orionos.build.Config;
 public class OptionConfigure extends Option {
 
 	public OptionConfigure(char c, String s, boolean operands) {
-		super(c, s, operands);
+		super(c, s, operands, "", "Go through the config file editor");
 	}
 	
 	public OptionConfigure()
@@ -35,11 +35,6 @@ public class OptionConfigure extends Option {
 	@Override
 	public void option() {
 		Config.getInstance().genConfigFile(true);
-	}
-
-	@Override
-	public String help() {
-		return "-C | --configure\tGo through the config file editor";
 	}
 
 }

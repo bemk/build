@@ -27,12 +27,12 @@ import java.io.IOException;
 public class OptionConfig extends Option {
 
 	public OptionConfig(char c, String s, boolean operands) {
-		super(c, s, operands);
+		super(c, s, operands, "[config file]", "Select an alternative config file");
 	}
 
 	public OptionConfig()
 	{
-		this('\0', "config", true);
+		this(' ', "config", true);
 	}
 
 	@Override
@@ -42,11 +42,6 @@ public class OptionConfig extends Option {
 		} catch (IOException e) {
 			System.err.println("Something went wrong in switching config files!");
 		}
-	}
-
-	@Override
-	public String help() {
-		return "   | --config [config file]\n\t\t\tSelect an alternative config file";
 	}
 
 }

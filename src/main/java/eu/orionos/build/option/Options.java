@@ -22,6 +22,7 @@
 
 package eu.orionos.build.option;
 
+import eu.orionos.build.Build;
 import eu.orionos.build.Config;
 import eu.orionos.build.ErrorCode;
 
@@ -30,9 +31,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.codehaus.plexus.util.StringUtils;
+
 public class Options {
 
 	private ArrayList<Option> options = new ArrayList<Option>();
+	//private static final int maxLongWidth = 12;
 
 	public Options(String args[]) throws FileNotFoundException, IOException
 	{
@@ -123,14 +127,124 @@ public class Options {
 		}
 	}
 	
-	public void help()
+	public ArrayList<String> autocomplete(String str)
 	{
-		System.out.println("OPTIONS");
+		ArrayList<String> result = new ArrayList<String>();
+		str = str.trim();
+		
+		if(str.charAt(0)=='-')
+		{
+			if(str.length()==1)
+			{
+				for (Option o : options)
+				{
+					result.add(String.valueOf(o.getShort()));
+					result.add("-" + o.getLong());
+				}
+				return result;
+			}
+			else if(str.charAt(1) == '-')
+			{
+				str = str.substring(2);
+				int strlen = str.length();
+				for (Option o : options)
+				{
+					if(o.getLong().substring(0, strlen).equalsIgnoreCase(str))
+						result.add(o.getLong());
+				}
+				return result;
+			}
+			else
+			{
+				char c = str.charAt(1);
+				for (Option o : options)
+				{
+					if(o.getShort() == c)
+						result.add(String.valueOf(o.getShort()));
+				}
+				return result;
+			}
+		}
+		else
+		{
+			; // TODO: TBD
+		}
+		
+		return null;
+	}
+	
+	public String help()
+	{
+		StringBuilder strbuild = new StringBuilder();
+		strbuild.append("OPTIONS:\n");
+		String[] strings = new String[options.size()];
+
+		int width = Build.terminalWidth();
+		int maxLongWidth = (width/2) - (4+7); // The start of the description may not be more to the right than half the screen width.
+		int length = 0;
+		int i = 0;
 		for (Option o : options)
 		{
-			String s = o.help();
-			if (s.length() > 0);
-				System.out.println("\t" + s);
+			String str = o.getLong() + " " + o.getParameters();
+			
+			int thisLength = str.length();
+			if( (thisLength > length) && (thisLength < maxLongWidth) )
+				length = thisLength;
+			
+			strings[i] = str;
+			i++;
 		}
+		length++; // We want at least one space.
+		
+		if(length > maxLongWidth)
+			length = maxLongWidth;
+		
+		width -= (4 + 7 + length);
+
+		i = 0;
+		int strlen;
+		for (Option o : options)
+		{
+			strbuild.append(StringUtils.repeat(" ", 4) + ((o.getShort()==' ')?"  ":("-"+o.getShort())) + " | --" + strings[i]);
+			if (strings[i].length() >= length)
+				strbuild.append("\n" + StringUtils.repeat(" ", 4+7+length));
+			else
+				strbuild.append(StringUtils.repeat(" ", length - strings[i].length()));
+
+			String s = o.getInfo();
+			strlen = 0;
+			for(char c : s.toCharArray())
+			{
+				if(c == '\n')
+				{
+					strlen = 0;
+					strbuild.append("\n" + StringUtils.repeat(" ", 4+7+length));
+				}
+				else
+				{
+					if(strlen >= width)
+					{
+						strlen = strbuild.length();
+						int place = strlen-1;
+						while( (place>0) && (strbuild.charAt(place)!=' ') )
+						{
+							place--;
+						}
+						strlen = strlen-place-1;
+						strbuild.insert(place, "\n" + StringUtils.repeat(" ", 4+7+length-1));
+					}
+					else
+					{
+						strlen++;
+					}
+					strbuild.append(c);
+				}
+			}
+			strbuild.append('\n');
+
+			i++;
+		}
+		
+		return strbuild.toString();
 	}
 }

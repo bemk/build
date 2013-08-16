@@ -26,7 +26,7 @@ import eu.orionos.build.ErrorCode;
 public class OptionVersion extends Option {
 
 	public OptionVersion(char c, String s, boolean operands) {
-		super(c, s, operands);
+		super(c, s, operands, "", "Display version information about the product");
 	}
 	
 	public OptionVersion()
@@ -41,12 +41,6 @@ public class OptionVersion extends Option {
 		Version version = Build.getVersion();
 		System.out.println("Version " + String.valueOf(version.major) + "." + String.valueOf(version.minor) + "-" + String.valueOf(version.build));
 		System.exit(ErrorCode.SUCCESS);
-	}
-
-	@Override
-	public String help() {
-		String ret = "-V | --version\tDisplay version information about the product";
-		return ret;
 	}
 
 }

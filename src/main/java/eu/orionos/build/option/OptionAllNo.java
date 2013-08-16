@@ -24,7 +24,7 @@ import eu.orionos.build.Config;
 public class OptionAllNo extends Option {
 
 	private OptionAllNo(char c, String s, boolean operands) {
-		super(c, s, operands);
+		super(c, s, operands, "", "Make the configure option with all flags set to no");
 	}
 
 	public OptionAllNo()
@@ -36,14 +36,6 @@ public class OptionAllNo extends Option {
 	public void option() {
 		Config.getInstance().allno_config(true);
 		Config.getInstance().genConfigFile(true);
-	}
-
-	@Override
-	public String help() {
-		StringBuilder s = new StringBuilder();
-		s.append("   | --allno-config\n\t\t\t");
-		s.append("Make the configure option with all flags set to no");
-		return s.toString();
 	}
 
 }

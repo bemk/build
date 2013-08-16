@@ -11,7 +11,6 @@
 *.config
 build.jar
 test.bin
-build.bin
 bin/
 .idea/
 build.iml
@@ -19,3 +18,4 @@ out/
 target/
 build
 dependency-reduced-pom.xml
+packages/

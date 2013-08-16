@@ -24,7 +24,7 @@ import eu.orionos.build.Config;
 public class OptionCflags extends Option {
 
 	public OptionCflags(char c, String s, boolean operands) {
-		super(c, s, operands);
+		super(c, s, operands, "[flags]", "Specify the flags to be passsed on to the compiler");
 	}
 
 	public OptionCflags()
@@ -34,13 +34,6 @@ public class OptionCflags extends Option {
 	@Override
 	public void option() {
 		Config.getInstance().cflags(operand);
-	}
-
-	@Override
-	public String help() {
-		String ret = "   | --cflags [flags]\n\t\t\t";
-		ret += "Specify the flags to be passsed on to the compiler";
-		return ret;
 	}
 
 }

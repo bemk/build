@@ -25,16 +25,11 @@ import eu.orionos.build.Config;
 public class OptionVerbose extends Option {
 
 	public OptionVerbose() {
-		super('v', "verbose", false);
+		super('v', "verbose", false, "", "Print the compiler output to screen");
 	}
 
 	@Override
 	public void option() {
 		Config.getInstance().verbose(true);
-	}
-
-	public String help()
-	{
-		return "-v | --verbose\tPrint the compiler output to screen";
 	}
 }

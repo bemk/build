@@ -24,17 +24,16 @@ import eu.orionos.build.Config;
 
 public class OptionClean extends Option {
 
+	public OptionClean(char c, String s, boolean operands) {
+		super(c, s, operands, "", "Cleans the project of its object files");
+	}
+
 	public OptionClean() {
-		super('c', "clean", false);
+		this('c', "clean", false);
 	}
 
 	@Override
 	public void option() {
-		Config.getInstance().setClean();
-	}
-
-	public String help()
-	{
-		return "-c | --clean\tCleanse the project of its object files";
+		Config.getInstance().setClean(true);
 	}
 }

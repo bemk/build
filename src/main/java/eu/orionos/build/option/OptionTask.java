@@ -32,12 +32,13 @@ import eu.orionos.build.ErrorCode;
 public class OptionTask extends Option {
 	private static final int max_factor = 8;
 
+	private OptionTask(char c, String s, boolean operands) {
+		super(c, s, operands, "[n | random | cores]", "Specify the number of tasks to build with. Random selects a random number of threads between 1 and 16. Cores selects the number of cpu's available to build.");
+	}
+
 	public OptionTask()
 	{
 		this('t', "tasks", true);
-	}
-	public OptionTask(char c, String s, boolean operands) {
-		super(c, s, operands);
 	}
 
 	@Override
@@ -82,15 +83,6 @@ public class OptionTask extends Option {
 			System.err.println("System input broke somehow ...");
 			System.exit(ErrorCode.GENERIC);
 		}
-	}
-
-	@Override
-	public String help() {
-		return "-t | --tasks [n]\n\t" +
-				"-t | --tasks [random | cores]\n\t\t\t" + 
-				"Specify the number of tasks to build with.\n\t\t\t" +
-				"Random selects a random number of threads between 1 and 16.\n\t\t\t" +
-				"cores selects the number of cpu's available to build.";
 	}
 
 }

@@ -24,7 +24,7 @@ import eu.orionos.build.Config;
 public class OptionLDflags extends Option {
 
 	public OptionLDflags(char c, String s, boolean operands) {
-		super(c, s, operands);
+		super(c, s, operands, "[flags]", "Specify the flags to be passsed on to the linker");
 	}
 
 	public OptionLDflags()
@@ -34,13 +34,6 @@ public class OptionLDflags extends Option {
 	@Override
 	public void option() {
 		Config.getInstance().ldflags(operand);
-	}
-
-	@Override
-	public String help() {
-		String ret = "   | --ldflags [flags]\n\t\t\t";
-		ret += "Specify the flags to be passsed on to the linker";
-		return ret;
 	}
 
 }

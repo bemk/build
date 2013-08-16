@@ -160,6 +160,14 @@ public class Build {
 		new Build("main.build", args);
 	}
 	
+	public static int terminalWidth()
+	{
+		String cols = System.getenv("COLUMNS");
+		if(cols==null)
+			return 80; // Assume 80 lines as default terminal width, if no actual with is found
+		return Integer.parseInt(cols);
+	}
+	
 	public static Version getVersion()
 	{
 		Version version = new Version();

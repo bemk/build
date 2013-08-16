@@ -26,7 +26,7 @@ public class OptionHelp extends Option {
 	
 	public OptionHelp(char c, String s, Options o)
 	{
-		super(c, s, false);
+		super(c, s, false, "", "Print this message");
 		this.o = o;
 	}
 	public OptionHelp(Options o) {
@@ -35,17 +35,12 @@ public class OptionHelp extends Option {
 
 	@Override
 	public void option() {
-		System.out.println("USAGE");
+		System.out.println("USAGE:");
 		System.out.println("\tbuild [options] [build file]");
 		System.out.println("");
-		o.help();
+		System.out.println(o.help());
 
 		System.exit(0);
-	}
-	
-	public String help()
-	{
-		return "-" + getShort() + " | --" + getLong() + " \tPrint this message";
 	}
 
 }

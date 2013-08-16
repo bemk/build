@@ -24,7 +24,7 @@ import eu.orionos.build.Config;
 public class OptionRandom extends Option {
 
 	private OptionRandom(char c, String s, boolean operands) {
-		super(c, s, operands);
+		super(c, s, operands, "", "Configure the project randomly");
 	}
 	
 	public OptionRandom()
@@ -36,14 +36,6 @@ public class OptionRandom extends Option {
 	public void option() {
 		Config.getInstance().random_config(true);
 		Config.getInstance().genConfigFile(true);
-	}
-
-	@Override
-	public String help() {
-		StringBuilder s = new StringBuilder();
-		s.append("   | --random-config\n\t\t\t");
-		s.append("Configure the project randomly");
-		return s.toString();
 	}
 
 }
