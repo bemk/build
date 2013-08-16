@@ -10,7 +10,7 @@ echo "Creating the binary..."
 cat <(echo -e "#!/bin/sh\nMYSELF=\`which \"\$0\" 2>/dev/null\`\n[ \$? -gt 0 -a -f \"\$0\" ] && MYSELF=\"./\$0\"\njava=java\nif test -n \"\$JAVA_HOME\"; then\n    java=\"\$JAVA_HOME/bin/java\"\nfi\nexec \"\$java\" \$java_args -jar \$MYSELF \"\$@\"\nexit 1\n") ./target/build.jar > build
 chmod +x ./build
 
-awk '{ if($1=="version.build") print $1 " " $2 " " ($3+1); else print $0; }' ./src/main/resources/version.properties > ./src/main/resources/version.properties.tmp && mv ./src/main/resources/version.properties.tmp ./src/main/resources/version.properties
+#awk '{ if($1=="version.build") print $1 " " $2 " " ($3+1); else print $0; }' ./src/main/resources/version.properties > ./src/main/resources/version.properties.tmp && mv ./src/main/resources/version.properties.tmp ./src/main/resources/version.properties
 
 echo "Creating debian package..."
 
