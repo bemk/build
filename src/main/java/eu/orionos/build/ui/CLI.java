@@ -57,6 +57,7 @@ public class CLI extends Thread {
 	{
 		this.getLock();
 		this.out.add(prefix + msg);
+		this.out.add("\033[0m");
 		this.unlock();
 		Thread.yield();
 	}

@@ -34,6 +34,6 @@ public class CLIWarning extends CLI {
 	private CLIWarning()
 	{
 		super();
-		this.prefix = "[ WARNING ] ";
+		this.prefix = "\033[1;33m[ WARNING ] ";
 	}
 }

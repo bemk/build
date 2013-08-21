@@ -34,6 +34,6 @@ public class CLIError extends CLI {
 	private CLIError()
 	{
 		super();
-		this.prefix = "[ ERROR ] ";
+		this.prefix = "\033[31m[ ERROR ] ";
 	}
 }
