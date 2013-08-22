@@ -19,6 +19,8 @@
 */
 package eu.orionos.build.ui;
 
+import net.michelmegens.xterm.Color;
+
 public class CLIWarning extends CLI {
 	private static CLIWarning instance = null;
 
@@ -34,6 +36,6 @@ public class CLIWarning extends CLI {
 	private CLIWarning()
 	{
 		super();
-		this.prefix = "\033[1;33m[ WARNING ] ";
+		this.prefix = Color.YELLOW + "[ WARNING ] ";
 	}
 }

@@ -27,6 +27,8 @@ import java.util.Iterator;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import net.michelmegens.xterm.Color;
+
 public class CLI extends Thread {
 	private static CLI cli = null;
 	protected static boolean finished = false;
@@ -57,7 +59,7 @@ public class CLI extends Thread {
 	{
 		this.getLock();
 		this.out.add(prefix + msg);
-		this.out.add("\033[0m");
+		this.out.add(Color.DEFAULT);
 		this.unlock();
 		Thread.yield();
 	}

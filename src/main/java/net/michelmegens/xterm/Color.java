@@ -1,5 +1,5 @@
-/*  Build - Hopefully a simple build system
-    Copyright (C) 2013 - Bart Kuivenhoven
+/*  xTerm terminal color codes.
+    Copyright (C) 2013 - Michel
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,35 +17,13 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package eu.orionos.build.moduleGenerator;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+package net.michelmegens.xterm;
 
-import eu.orionos.build.ErrorCode;
-import eu.orionos.build.ui.CLI;
-
-import net.michelmegens.xterm.Color;
-
-public class ModuleGenerator {
-	public ModuleGenerator(String path)
-	{
-		Module m = new Module();
-		String s = m.getJSON();
-
-		CLI.getInstance().writeline("Generating module");
-
-		File f = new File(path);
-		FileWriter fw;
-		try {
-			fw = new FileWriter(f);
-			fw.write(s);
-			fw.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(ErrorCode.GENERIC);
-		}
-		CLI.getInstance().writeline(Color.GREEN + "[ OK ] " + path);
-	}
+public class Color
+{
+	public static final String RED = "\033[31m";
+	public static final String YELLOW = "\033[1;33m";
+	public static final String DEFAULT = "\033[0m";
+	public static final String GREEN = "\033[1;32m";
 }

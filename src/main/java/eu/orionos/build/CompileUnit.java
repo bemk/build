@@ -22,6 +22,8 @@ package eu.orionos.build;
 
 import eu.orionos.build.ui.CLI;
 
+import net.michelmegens.xterm.Color;
+
 public class CompileUnit {
 	private String command[];
 	private Module module;
@@ -43,7 +45,7 @@ public class CompileUnit {
 	{
 		module.markCompileUnitDone(this);
 		if (!Config.getInstance().silent())
-			CLI.getInstance().writeline("[ OK ] " + object);
+			CLI.getInstance().writeline(Color.GREEN + "[ OK ] " + object);
 	}
 
 	public String key()
