@@ -59,7 +59,6 @@ public class CLI extends Thread {
 	{
 		this.getLock();
 		this.out.add(prefix + msg);
-		this.out.add(Color.DEFAULT);
 		this.unlock();
 		Thread.yield();
 	}

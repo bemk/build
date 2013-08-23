@@ -57,6 +57,7 @@ public class Config {
 	private int threads = 4;
 	private String depFile = "dep.flags";
 	private Random randomSource = new Random();
+	private boolean colors_enabled;
 
 	private void setConfigFile(String conf) throws FileNotFoundException, IOException
 	{
@@ -83,6 +84,17 @@ public class Config {
 			e.printStackTrace();
 		}
 	}
+
+	public void setColors(boolean val)
+	{
+		this.colors_enabled = val;
+	}
+
+	public boolean colors()
+	{
+		return this.colors_enabled;
+	}
+	
 	public static Config getInstance()
 	{
 		return instance;

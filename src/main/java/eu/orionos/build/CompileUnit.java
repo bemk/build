@@ -21,6 +21,7 @@
 package eu.orionos.build;
 
 import eu.orionos.build.ui.CLI;
+import eu.orionos.build.Config;
 
 import net.michelmegens.xterm.Color;
 
@@ -44,8 +45,13 @@ public class CompileUnit {
 	public void markComplete()
 	{
 		module.markCompileUnitDone(this);
-		if (!Config.getInstance().silent())
-			CLI.getInstance().writeline(Color.GREEN + "[ OK ] " + object);
+		if (!Config.getInstance().silent()) {
+				if(Config.getInstance().colors()) {
+					CLI.getInstance().writeline(Color.GREEN + "[ OK ] " + Color.DEFAULT + object);
+				} else {
+					CLI.getInstance().writeline("[ OK ] " + object);
+				}
+		}
 	}
 
 	public String key()

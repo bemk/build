@@ -64,6 +64,7 @@ public class Options {
 		options.add(new OptionAllYes());
 		options.add(new OptionAllNo());
 		options.add(new OptionRandom());
+		options.add(new OptionColors());
 
 		for (; i < args.length; i++)
 		{

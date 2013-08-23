@@ -20,14 +20,14 @@ function test_yes()
 {
 	echo "Compiling test project with all flags YES"
 	$BUILD_DIR/build --config $PROJECT.config $PROJECT.build --configure --allyes-config
-	$BUILD_DIR/build --config $PROJECT.config $PROJECT.build -t random
+	$BUILD_DIR/build --config $PROJECT.config $PROJECT.build -t random 
 }
 
 function test_random()
 {
 	echo "Compiling test project with random flags"
 	$BUILD_DIR/build --config $PROJECT.config $PROJECT.build --random-config
-	$BUILD_DIR/build --config $PROJECT.config $PROJECT.build
+	$BUILD_DIR/build --config $PROJECT.config $PROJECT.build 
 	
 }
 

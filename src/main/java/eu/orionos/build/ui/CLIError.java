@@ -19,6 +19,8 @@
 */
 package eu.orionos.build.ui;
 
+import eu.orionos.build.Config;
+
 import net.michelmegens.xterm.Color;
 
 public class CLIError extends CLI {
@@ -36,6 +38,9 @@ public class CLIError extends CLI {
 	private CLIError()
 	{
 		super();
-		this.prefix = Color.RED + "[ ERROR ] ";
+		if(Config.getInstance().colors())
+			this.prefix = Color.YELLOW + "[ ERROR ] " + Color.DEFAULT;
+		else
+			this.prefix = "[ ERROR ] ";
 	}
 }

@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import eu.orionos.build.ErrorCode;
 import eu.orionos.build.ui.CLI;
+import eu.orionos.build.Config;
 
 import net.michelmegens.xterm.Color;
 
@@ -46,6 +47,10 @@ public class ModuleGenerator {
 			e.printStackTrace();
 			System.exit(ErrorCode.GENERIC);
 		}
-		CLI.getInstance().writeline(Color.GREEN + "[ OK ] " + path);
+
+		if(Config.getInstance().colors())
+			CLI.getInstance().writeline(Color.GREEN + "[ OK ] " + Color.DEFAULT + path);
+		else
+			CLI.getInstance().writeline("[ OK ] " + path);
 	}
 }
