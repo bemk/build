@@ -831,7 +831,16 @@ public class Module {
 	public int clean()
 	{
 		this.phase = CompilePhase.CLEANING;
+
+		if (sourceFiles.isEmpty() && !(toArchive || toLink))
+		{
+			phase = CompilePhase.DONE;
+			switchPhases();
+			return 0;
+		}
+
 		Iterator<String> i = sourceFiles.iterator();
+
 		while (i.hasNext())
 		{
 			String sFile = i.next();
@@ -967,6 +976,8 @@ public class Module {
 	public boolean getDone()
 	{
 		if (waiting == null)
+			return true;
+		if (this.phase == CompilePhase.DONE)
 			return true;
 		return waiting.isEmpty();
 	}
