@@ -99,6 +99,8 @@ public class FlagSet extends Flag {
 	{
 		String[] keys = JSONObject.getNames(json);
 		this.ignore_autoconf = json.optBoolean(Semantics.FLAG_DEP_IGNORE_AUTOCONF);
+		if (keys == null)
+			return;
 
 		for (; mapKey < keys.length; mapKey++)
 		{
