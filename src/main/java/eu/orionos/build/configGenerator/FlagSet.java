@@ -105,6 +105,8 @@ public class FlagSet extends Flag {
 		for (; mapKey < keys.length; mapKey++)
 		{
 			JSONObject flag = json.optJSONObject(keys[mapKey]);
+			if (flag == null)
+				continue;
 			JSONObject set = flag.optJSONObject(Semantics.FLAG_DEP_SET);
 			JSONObject num = flag.optJSONObject(Semantics.FLAG_DEP_ENUM);
 

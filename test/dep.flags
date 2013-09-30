@@ -1,4 +1,5 @@
 {
+	"build_root" : "test.build",
         "gamma": {
                 "ignore-autoconf": false,
                 "mandatory": false,

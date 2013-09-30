@@ -72,4 +72,6 @@ public class Semantics {
 
 	public static final String FLAG_DEP_INFO = "info";
 	public static final String FLAG_DEP_MANDATORY = "mandatory";
+
+	public static final String DEP_BUILD_ROOT = "build_root";
 }

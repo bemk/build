@@ -62,7 +62,8 @@ public class Build {
 					System.exit(1);
 				}
 			}
-			this.modules = new Module(Config.getInstance().buildFile());
+			if (!Config.getInstance().genConfigFile())
+				this.modules = new Module(Config.getInstance().buildFile());
 			if (Config.getInstance().genDepFile())
 			{
 				Set<String> flags = modules.getBuildFlags();
@@ -121,6 +122,11 @@ public class Build {
 				{
 					d.parseJSON(d.generateDepFile(modules.getBuildFlags()));
 				}
+				if (d.getBuildRoot() != null && !Config.getInstance().buildFileOverride())
+					this.modules = new Module(d.getBuildRoot());
+				else
+					this.modules = new Module(Config.getInstance().buildFile());
+
 				ConfigFile c = d.generateConfigFile();
 				try {
 					c.write();

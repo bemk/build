@@ -47,6 +47,16 @@ public class ConfigFile {
 		}
 	}
 
+	public void setBuildRoot(String build_root)
+	{
+		try {
+			configFile.put(Semantics.DEP_BUILD_ROOT, build_root);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	public void write() throws IOException
 	{
 		File f = new File(Config.getInstance().getConfigFile());

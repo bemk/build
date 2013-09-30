@@ -35,6 +35,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import eu.orionos.build.ui.CLI;
+
 public class Config {
 	private JSONObject conf;
 	private static final Config instance = new Config();
@@ -42,6 +44,7 @@ public class Config {
 	private boolean silent = false;
 	private boolean verbose = false;
 	private String buildFile = "main.build";
+	private boolean buildFileOverride = false;
 	private String configFile = ".config";
 	private String cflags = "";
 	private String ldflags = "";
@@ -75,6 +78,9 @@ public class Config {
 			}
 			reader.close();
 			this.conf = new JSONObject(stringBuilder.toString());
+			String build_root = this.conf.optString(Semantics.DEP_BUILD_ROOT);
+			if (build_root != null && !build_root.equals(""))
+				this.buildFile(build_root);
 		} catch (JSONException e) {
 			System.err.println("File " + configFile + " can't be parsed!");
 			this.conf = null;
@@ -126,6 +132,14 @@ public class Config {
 	public String buildFile()
 	{
 		return this.buildFile;
+	}
+	public void buildFileOverride(boolean b)
+	{
+		this.buildFileOverride = b;
+	}
+	public boolean buildFileOverride()
+	{
+		return this.buildFileOverride;
 	}
 
 	public JSONObject get(String key)
