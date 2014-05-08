@@ -678,6 +678,12 @@ public class Module {
 		waiting = new ConcurrentHashMap<String, Module>(Config.getInstance().threads()+1);
 
 		ArrayList<Module> deps = calculateDependencies();
+		if (deps.size() == 0 && this.sourceFiles.size() == 0)
+		{
+			phase = phase.DONE;
+			switchPhases();
+			return;
+		}
 		Iterator<Module> i = deps.iterator();
 		while (i.hasNext())
 		{
