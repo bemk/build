@@ -28,7 +28,7 @@ import eu.orionos.build.moduleGenerator.ModuleGenerator;
 public class OptionGenModule extends Option{
 
 	public OptionGenModule(char c, String s, boolean operands) {
-		super(c, s, operands, "", "Generate a module file");
+		super(c, s, operands, "[module file]", "Generate a module file");
 	}
 	public OptionGenModule()
 	{
