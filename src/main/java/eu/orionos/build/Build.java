@@ -59,6 +59,8 @@ public class Build {
 				if (Config.getInstance().hasConf() == false && !Config.getInstance().genDepFile() && !Config.getInstance().genConfigFile())
 				{
 					System.err.println("No usable config files found!");
+					System.err.println("Use build --configure to configure the project ");
+					System.err.println("Or use the --config <config file> option to specify a config file");
 					System.exit(1);
 				}
 			}
