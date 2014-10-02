@@ -146,7 +146,26 @@ public class Module {
 			System.exit(ErrorCode.NAME_CONFLICT);
 		}
 
-		/* Read global stuff into local variables for easier access */
+		/* Determine whether or not we should link */
+		try {
+			this.toLink = module.getBoolean(Semantics.LINK);
+			if (this.toLink == true)
+				Config.getInstance().set_ld_required();
+		} catch (JSONException e) {
+			System.err.println("Module " + name + " Did not specify linking");
+			System.exit(ErrorCode.OPTION_UNSPECIFIED);
+		}
+		/* And determine the same for archiving */
+		try {
+			this.toArchive = module.getBoolean(Semantics.ARCHIVE);
+			if (this.toArchive == true)
+				Config.getInstance().set_ar_required();
+		} catch (JSONException e) {
+			System.err.println("Module " + name + " did not specify archiving");
+			System.exit(ErrorCode.OPTION_UNSPECIFIED);
+		}
+		
+		/* Read other global stuff into local variables for easier access */
 		this.globalCompiler = module.optString(Semantics.GLOBAL_COMPILER, null);
 		if (this.getGlobalCompiler() == null) {
 			System.err.println("A global compiler has to be set in the main build file");
@@ -174,19 +193,39 @@ public class Module {
 		}
 		this.globalOverrideLinkerFlags = module.optString(Semantics.GLOBAL_LINKER_OVERRIDE_FLAGS, null);
 		this.globalArchiver = module.optString(Semantics.GLOBAL_ARCHIVER, null);
-		if (this.getGlobalArchiver() == null) {
+		if (this.getGlobalArchiver() == null && Config.getInstance().get_ar_required()) {
 			System.err.println("A global archiver must be set in the main build file");
 			System.err.println("Specify: \"" + Semantics.GLOBAL_ARCHIVER + "\" : \"<archiver>\"");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
 		this.globalArchiverFlags = module.optString(Semantics.GLOBAL_ARCHIVER_FLAGS, null);
-		if (this.getGlobalArchiverFlags() == null) {
+		if (this.getGlobalArchiverFlags() == null && Config.getInstance().get_ar_required()) {
 			System.err.println("Global archiver flags must be set in the main build file");
 			System.err.println("Specify: \"" + Semantics.GLOBAL_ARCHIVER_FLAGS + "\" : \"<archiver flags>\"");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
 		this.globalOverrideArchiverFlags = module.optString(Semantics.GLOBAL_ARCHIVER_OVERRIDE_FLAGS, null);
 
+		/* Determine the linked output file */
+		if (this.toLink) {
+			try {
+				this.linkedFile = module.getString(Semantics.LINKED);
+			} catch (JSONException e) {
+				System.err.println("Module " + name + " is to link, but no output file specified");
+				System.err.println("Specify: \"" + Semantics.LINKED + "\" : \"<outputfile>\"");
+				System.exit(ErrorCode.PARSE_FAILED);
+			}
+		}
+		if (this.toArchive) {
+			try {
+				this.archivedFile = module.getString(Semantics.ARCHIVED);
+			} catch (JSONException e) {
+				System.err.println("Module " + name + " is to be archived, but no output file specified");
+				System.err.println("Specify: \"" + Semantics.ARCHIVED + "\" : \"<outputfile>\"");
+				System.exit(ErrorCode.PARSE_FAILED);
+			}
+		}
+		
 		/* Get all the modular data in place */
 		this.modCompiler = module.optString(Semantics.MOD_COMPILER, null);
 		this.modCompilerFlags = module.optString(Semantics.MOD_COMPILER_FLAGS, null);
@@ -211,39 +250,6 @@ public class Module {
 			final String source = sources.optString(i, null);
 			if (source != null)
 				this.sourceFiles.add(source);
-		}
-		/* Determine whether or not we should link */
-		try {
-			this.toLink = module.getBoolean(Semantics.LINK);
-		} catch (JSONException e) {
-			System.err.println("Module " + name + " Did not specify linking");
-			System.exit(ErrorCode.OPTION_UNSPECIFIED);
-		}
-		/* And determine the same for archiving */
-		try {
-			this.toArchive = module.getBoolean(Semantics.ARCHIVE);
-		} catch (JSONException e) {
-			System.err.println("Module " + name + " did not specify archiving");
-			System.exit(ErrorCode.OPTION_UNSPECIFIED);
-		}
-		/* Determine the linked output file */
-		if (this.toLink) {
-			try {
-				this.linkedFile = module.getString(Semantics.LINKED);
-			} catch (JSONException e) {
-				System.err.println("Module " + name + " is to link, but no output file specified");
-				System.err.println("Specify: \"" + Semantics.LINKED + "\" : \"<outputfile>\"");
-				System.exit(ErrorCode.PARSE_FAILED);
-			}
-		}
-		if (this.toArchive) {
-			try {
-				this.archivedFile = module.getString(Semantics.ARCHIVED);
-			} catch (JSONException e) {
-				System.err.println("Module " + name + " is to be archived, but no output file specified");
-				System.err.println("Specify: \"" + Semantics.ARCHIVED + "\" : \"<outputfile>\"");
-				System.exit(ErrorCode.PARSE_FAILED);
-			}
 		}
 		
 		/* Get all the dependencies, dynamic or not */

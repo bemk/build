@@ -60,6 +60,8 @@ public class Config {
 	private int threads = 4;
 	private String depFile = "dep.flags";
 	private Random randomSource = new Random();
+	private boolean ar_required = false;
+	private boolean ld_required = false;
 
 	private void setConfigFile(String conf) throws FileNotFoundException, IOException
 	{
@@ -362,5 +364,22 @@ public class Config {
 	public int getRandom(int min, int max)
 	{
 		return randomSource.nextInt(max - min + 1) + min;
+	}
+
+	public void set_ld_required ()
+	{
+		this.ld_required = true;
+	}
+	public void set_ar_required ()
+	{
+		this.ar_required = true;
+	}
+	public boolean get_ld_required ()
+	{
+		return this.ld_required;
+	}
+	public boolean get_ar_required ()
+	{
+		return this.ar_required;
 	}
 }
