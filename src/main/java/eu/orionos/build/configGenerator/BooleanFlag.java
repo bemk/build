@@ -55,7 +55,12 @@ public class BooleanFlag extends Flag {
 					value = true;
 			}
 			else if (Config.getInstance().random_config())
-				value = (Config.getInstance().getRandom(0, 1) == 0) ? false : true;
+			{
+				if (!this.ignore_autoconf)
+					value = (Config.getInstance().getRandom(0, 1) == 0) ? false : true;
+				else
+					value = false;
+			}
 			else
 				value = getBoolean("Enable flag ");
 		}

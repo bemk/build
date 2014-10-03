@@ -36,6 +36,7 @@ import eu.orionos.build.Semantics;
 public class DepFile {
 	private FlagSet flags = null;
 	private HashMap<String, Flag> flagMap = new HashMap<String, Flag>();
+	private String build_root = null;
 
 	public DepFile() throws IOException
 	{
@@ -49,6 +50,12 @@ public class DepFile {
 		JSONObject o = new JSONObject();
 		Iterator <String> i = flags.iterator();
 
+		try {
+			o.put(Semantics.DEP_BUILD_ROOT, Config.getInstance().buildFile());
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		while (i.hasNext())
 		{
 			String key = i.next();
@@ -113,12 +120,14 @@ public class DepFile {
 			return;
 		}
 
+		this.build_root = JSON.optString(Semantics.DEP_BUILD_ROOT);
 		parseJSON(JSON);
 	}
 
 	public void parseJSON(JSONObject o)
 	{
 		flags.parseJSON(o);
+		build_root = o.optString(Semantics.DEP_BUILD_ROOT);
 	}
 
 	public ConfigFile generateConfigFile()
@@ -126,6 +135,8 @@ public class DepFile {
 		flags.configure();
 
 		ConfigFile c = new ConfigFile(flags.getConfigFlags());
+		if (this.build_root != null)
+			c.setBuildRoot(build_root);
 
 		return c;
 	}
@@ -139,6 +150,11 @@ public class DepFile {
 	public Flag getFlag(String key)
 	{
 		return flagMap.get(key);
+	}
+
+	public String getBuildRoot()
+	{
+		return this.build_root;
 	}
 
 	@Override

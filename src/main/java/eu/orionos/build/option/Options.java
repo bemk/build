@@ -120,6 +120,7 @@ public class Options {
 			else if (args[i].endsWith(".build"))
 			{
 				Config.getInstance().buildFile(args[i]);
+				Config.getInstance().buildFileOverride(true);
 			}
 			else
 			{

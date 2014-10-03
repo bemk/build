@@ -1,7 +1,5 @@
 /*  Build - Hopefully a simple build system
-    Copyright (C)
-        Bart Kuivenhoven   <bemkuivenhoven@gmail.com> - 2013
-        Steven vd Schoot   <stevenvdschoot@gmail.com> - 2013
+    Copyright (C) 2013 - Bart Kuivenhoven
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,27 +17,46 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package eu.orionos.build.option;
+package eu.orionos.build.phase;
 
-import eu.orionos.build.ui.CLI;
-import eu.orionos.build.ErrorCode;
-import eu.orionos.build.moduleGenerator.ModuleGenerator;
+/**
+ * @author bemk
+ *
+ */
+public class PhaseManager {
+	private Phase phase;
+	private String[] cmd;
+	private boolean toConfigure = false;
 
-public class OptionGenModule extends Option{
-
-	public OptionGenModule(char c, String s, boolean operands) {
-		super(c, s, operands, "[module file]", "Generate a module file");
-	}
-	public OptionGenModule()
+	public PhaseManager(String[] cmd)
 	{
-		this(' ', "gen-module", true);
+		this.cmd = cmd;
 	}
 
-	@Override
-	public void option() {
-		new ModuleGenerator(operand);
-		CLI.getInstance().kill();
-		System.exit(ErrorCode.SUCCESS);
+	public void setToConfigure()
+	{
+		this.toConfigure = true;
+	}
+
+	public boolean getToConfigure()
+	{
+		return this.toConfigure;
+	}
+
+	public String[] getCmd()
+	{
+		return this.cmd;
+	}
+
+	public Phase getPhase()
+	{
+		return this.phase;
+	}
+
+	public void switchPhases(Phase phase)
+	{
+		this.phase = phase;
+		phase.run();
 	}
 
 }

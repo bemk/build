@@ -21,6 +21,7 @@
 package eu.orionos.build.exec;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -142,9 +143,9 @@ public class CommandKernel {
 
 	public int getNoCommands()
 	{
-		countLock.lock();
-		int ret = commandsRegistered;
-		countLock.unlock();
+		commandLock.lock();
+		int ret = compileCommands.size();
+		commandLock.unlock();
 		return ret;
 	}
 

@@ -35,6 +35,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import eu.orionos.build.ui.CLI;
+
 public class Config {
 	private JSONObject conf;
 	private static final Config instance = new Config();
@@ -42,6 +44,7 @@ public class Config {
 	private boolean silent = false;
 	private boolean verbose = false;
 	private String buildFile = "main.build";
+	private boolean buildFileOverride = false;
 	private String configFile = ".config";
 	private String cflags = "";
 	private String ldflags = "";
@@ -58,6 +61,8 @@ public class Config {
 	private String depFile = "dep.flags";
 	private Random randomSource = new Random();
 	private boolean colors_enabled;
+	private boolean ar_required = false;
+	private boolean ld_required = false;
 
 	private void setConfigFile(String conf) throws FileNotFoundException, IOException
 	{
@@ -76,6 +81,9 @@ public class Config {
 			}
 			reader.close();
 			this.conf = new JSONObject(stringBuilder.toString());
+			String build_root = this.conf.optString(Semantics.DEP_BUILD_ROOT);
+			if (build_root != null && !build_root.equals(""))
+				this.buildFile(build_root);
 		} catch (JSONException e) {
 			System.err.println("File " + configFile + " can't be parsed!");
 			this.conf = null;
@@ -138,6 +146,14 @@ public class Config {
 	public String buildFile()
 	{
 		return this.buildFile;
+	}
+	public void buildFileOverride(boolean b)
+	{
+		this.buildFileOverride = b;
+	}
+	public boolean buildFileOverride()
+	{
+		return this.buildFileOverride;
 	}
 
 	public JSONObject get(String key)
@@ -360,5 +376,22 @@ public class Config {
 	public int getRandom(int min, int max)
 	{
 		return randomSource.nextInt(max - min + 1) + min;
+	}
+
+	public void set_ld_required ()
+	{
+		this.ld_required = true;
+	}
+	public void set_ar_required ()
+	{
+		this.ar_required = true;
+	}
+	public boolean get_ld_required ()
+	{
+		return this.ld_required;
+	}
+	public boolean get_ar_required ()
+	{
+		return this.ar_required;
 	}
 }

@@ -45,6 +45,8 @@ public class FlagSet extends Flag {
 
 	public void configure()
 	{
+		if (this.key.equals("base"))
+			this.mandatory = true;
 		if (!mandatory)
 		{
 			if (Config.getInstance().auto_config())
@@ -62,7 +64,7 @@ public class FlagSet extends Flag {
 
 		if (mandatory || enabled)
 		{
-			if (Config.getInstance().allno_config())
+			if (Config.getInstance().allno_config() && !this.mandatory)
 			{
 				this.configured = true;
 				return;
@@ -97,10 +99,14 @@ public class FlagSet extends Flag {
 	{
 		String[] keys = JSONObject.getNames(json);
 		this.ignore_autoconf = json.optBoolean(Semantics.FLAG_DEP_IGNORE_AUTOCONF);
+		if (keys == null)
+			return;
 
 		for (; mapKey < keys.length; mapKey++)
 		{
 			JSONObject flag = json.optJSONObject(keys[mapKey]);
+			if (flag == null)
+				continue;
 			JSONObject set = flag.optJSONObject(Semantics.FLAG_DEP_SET);
 			JSONObject num = flag.optJSONObject(Semantics.FLAG_DEP_ENUM);
 

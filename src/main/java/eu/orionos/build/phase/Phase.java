@@ -1,7 +1,5 @@
 /*  Build - Hopefully a simple build system
-    Copyright (C)
-        Bart Kuivenhoven   <bemkuivenhoven@gmail.com> - 2013
-        Steven vd Schoot   <stevenvdschoot@gmail.com> - 2013
+    Copyright (C) 2013 - Bart Kuivenhoven
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,27 +17,30 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package eu.orionos.build.option;
+package eu.orionos.build.phase;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
-import eu.orionos.build.ui.CLI;
-import eu.orionos.build.ErrorCode;
-import eu.orionos.build.moduleGenerator.ModuleGenerator;
+import eu.orionos.build.*;
 
-public class OptionGenModule extends Option{
-
-	public OptionGenModule(char c, String s, boolean operands) {
-		super(c, s, operands, "[module file]", "Generate a module file");
-	}
-	public OptionGenModule()
+/**
+ * @author bemk
+ *
+ */
+public abstract class Phase { 
+	protected Module modules;
+	protected static Config configuration = Config.getInstance();
+	protected PhaseManager manager;
+	
+	public Phase(PhaseManager manager)
 	{
-		this(' ', "gen-module", true);
+		this.manager = manager;
 	}
 
-	@Override
-	public void option() {
-		new ModuleGenerator(operand);
-		CLI.getInstance().kill();
-		System.exit(ErrorCode.SUCCESS);
-	}
-
+	/**
+	 * @fn run
+	 * @author bemk
+	 * Start running this phase of the build process.
+	 */
+	public abstract void run();
 }
