@@ -41,10 +41,9 @@ public class Preconfigure extends Phase {
 	 */
 	public Preconfigure(PhaseManager manager) {
 		super(manager);
-		// TODO Auto-generated constructor stub
 	}
 
-	/* (non-Javadoc)
+	/** 
 	 * @see eu.orionos.build.phase.Phase#run()
 	 */
 	@Override

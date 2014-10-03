@@ -35,8 +35,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import eu.orionos.build.ui.CLI;
-
 public class Config {
 	private JSONObject conf;
 	private static final Config instance = new Config();

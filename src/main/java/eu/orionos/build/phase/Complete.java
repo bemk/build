@@ -38,8 +38,8 @@ public class Complete extends Phase {
 		super(manager);
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.orionos.build.phase.Phase#run()
+	/**
+	 *
 	 */
 	@Override
 	public void run() {

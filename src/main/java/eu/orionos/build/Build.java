@@ -1,6 +1,6 @@
 /*  Build - Hopefully a simple build system
     Copyright (C)
-        Bart Kuivenhoven   <bemkuivenhoven@gmail.com> - 2013
+        Bart Kuivenhoven   <bemkuivenhoven@gmail.com> - 2013 - 2014
         Toon Schoenmakers  <nighteyes1993@gmail.com>  - 2013
         Steven vd Schoot   <stevenvdschoot@gmail.com> - 2013
 
@@ -23,11 +23,6 @@
 
 package eu.orionos.build;
 
-import eu.orionos.build.configGenerator.ConfigFile;
-import eu.orionos.build.configGenerator.DepFile;
-import eu.orionos.build.configGenerator.DepfileException;
-import eu.orionos.build.exec.CommandKernel;
-import eu.orionos.build.option.Options;
 import eu.orionos.build.phase.Compile;
 import eu.orionos.build.phase.Configure;
 import eu.orionos.build.phase.InitialPreconfigure;
@@ -35,19 +30,10 @@ import eu.orionos.build.phase.ParseOptions;
 import eu.orionos.build.phase.PhaseManager;
 import eu.orionos.build.phase.Preconfigure;
 
-import org.json.JSONObject;
-
-import eu.orionos.build.ui.CLI;
-import eu.orionos.build.ui.CLIError;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.Set;
 
 public class Build {
 	

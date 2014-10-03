@@ -1,5 +1,5 @@
 /*  Build - Hopefully a simple build system
-    Copyright (C) 2013 - Bart Kuivenhoven
+    Copyright (C) 2013 - 2014 - Bart Kuivenhoven
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 package eu.orionos.build.exec;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -39,13 +38,11 @@ public class CommandKernel {
 	
 	private ArrayList<CommandRunner> runners = new ArrayList<CommandRunner>();
 	private AtomicInteger killedThreads = new AtomicInteger(0);
-	private int commandsRegistered = 0;
 	private Queue<CompileUnit> compileCommands = new ConcurrentLinkedQueue<CompileUnit>();
 	private ConcurrentHashMap<String, Module> modules;
 
 	private static Lock instanceLock = new ReentrantLock();
 	private static Lock commandLock = new ReentrantLock();
-	private static Lock countLock = new ReentrantLock();
 
 	public static CommandKernel getInstance()
 	{
@@ -136,9 +133,6 @@ public class CommandKernel {
 		commandLock.lock();
 		compileCommands.offer(cmd);
 		commandLock.unlock();
-		countLock.lock();
-		commandsRegistered ++;
-		countLock.unlock();
 	}
 
 	public int getNoCommands()

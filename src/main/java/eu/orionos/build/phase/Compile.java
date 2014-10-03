@@ -1,5 +1,5 @@
 /*  Build - Hopefully a simple build system
-    Copyright (C) 2013 - Bart Kuivenhoven
+    Copyright (C) 2014 - Bart Kuivenhoven
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -34,8 +34,8 @@ public class Compile extends Phase {
 	{
 		super(manager);
 	}
-	/* (non-Javadoc)
-	 * @see eu.orionos.build.phase.Phase#run()
+	/** 
+	 *
 	 */
 	@Override
 	public void run() {

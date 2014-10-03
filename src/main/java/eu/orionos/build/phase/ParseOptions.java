@@ -22,7 +22,6 @@ package eu.orionos.build.phase;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import eu.orionos.build.option.Option;
 import eu.orionos.build.option.Options;
 
 /**
@@ -36,10 +35,9 @@ public class ParseOptions extends Phase {
 	 */
 	public ParseOptions(PhaseManager manager) {
 		super(manager);
-		// TODO Auto-generated constructor stub
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see eu.orionos.build.phase.Phase#run()
 	 */
 	@Override
