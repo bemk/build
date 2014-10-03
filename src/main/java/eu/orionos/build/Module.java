@@ -86,7 +86,7 @@ public class Module {
 	private JSONArray dynModCompilerFlags;
 	private JSONArray dynModLinkerFlags;
 
-	public Module(String path) throws FileNotFoundException, IOException
+	public Module(String path) throws Exception
 	{
 		this(path, null);
 	}
@@ -96,7 +96,7 @@ public class Module {
 		return this.name;
 	}
 
-	public Module(String path, Module parent) throws FileNotFoundException, IOException
+	public Module(String path, Module parent) throws Exception
 	{
 		/* Get some verbosity out of our system */
 		if (Config.getInstance().verbose())
@@ -109,7 +109,8 @@ public class Module {
 		if (!f.exists())
 		{
 			System.err.println("Module at " +  path +  " can not be found");
-			System.exit(ErrorCode.FILE_NOT_FOUND);
+			throw new Exception("File not found!");
+//			System.exit(ErrorCode.FILE_NOT_FOUND);
 		}
 		BufferedReader reader = new BufferedReader(new FileReader(f));
 		StringBuilder stringBuilder = new StringBuilder();

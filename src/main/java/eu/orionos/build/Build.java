@@ -28,6 +28,12 @@ import eu.orionos.build.configGenerator.DepFile;
 import eu.orionos.build.configGenerator.DepfileException;
 import eu.orionos.build.exec.CommandKernel;
 import eu.orionos.build.option.Options;
+import eu.orionos.build.phase.Compile;
+import eu.orionos.build.phase.Configure;
+import eu.orionos.build.phase.InitialPreconfigure;
+import eu.orionos.build.phase.ParseOptions;
+import eu.orionos.build.phase.PhaseManager;
+import eu.orionos.build.phase.Preconfigure;
 
 import org.json.JSONObject;
 
@@ -47,122 +53,33 @@ public class Build {
 	
 	private Module modules;
 	private static int error = ErrorCode.SUCCESS;
+	private PhaseManager manager;
 
 	public Build(String path, String args[])
 	{
-		try {
-			Config.getInstance();
-			new Options(args);
-			if (Config.getInstance().hasConf() == false)
-			{
-				Config.getInstance().override(".config");
-				if (Config.getInstance().hasConf() == false && !Config.getInstance().genDepFile() && !Config.getInstance().genConfigFile())
-				{
-					System.err.println("No usable config files found!");
-					System.err.println("Use build --configure to configure the project ");
-					System.err.println("Or use the --config <config file> option to specify a config file");
-					System.exit(1);
-				}
-			}
-			if (!Config.getInstance().genConfigFile())
-				this.modules = new Module(Config.getInstance().buildFile());
-			if (Config.getInstance().genDepFile())
-			{
-				Set<String> flags = modules.getBuildFlags();
-				try {
-					File f = new File (Config.getInstance().getDepFile());
-					if (!f.exists())
-						f.createNewFile();
-					if (f.isDirectory())
-						throw (new Exception());
-					FileWriter fw = new FileWriter(f);
-
-					DepFile d = new DepFile();
-					fw.write(d.generateDepFile(flags).toString(8));
-
-					fw.close();
-				}
-				catch (NullPointerException e)
-				{
-					e.printStackTrace();
-				} catch (Exception e) {
-				}
-			}
-			else if (Config.getInstance().updateDepFile())
-			{
-				DepFile d = new DepFile();
-				try {
-					d.readDepFile();
-
-					Set<String> flags = modules.getBuildFlags();
-					JSONObject o = d.updateDepFile(flags);
-
-					File f = new File(Config.getInstance().getDepFile());
-					if (!f.exists() || f.isDirectory())
-						throw (new Exception());
-					FileWriter fw = new FileWriter(f);
-					fw.write(o.toString(8) + "\n");
-					fw.close();
-				}
-				catch (DepfileException e)
-				{
-					CLIError.getInstance().writeline("Missing depfile!");
-					CLIError.getInstance().writeline("Run with --gen-depfile first!");
-				}
-				catch (Exception e)
-				{
-				}
-
-			}
-			else if (Config.getInstance().genConfigFile())
-			{
-				DepFile d = new DepFile();
-				try {
-					d.readDepFile();
-				}
-				catch(DepfileException e)
-				{
-					d.parseJSON(d.generateDepFile(modules.getBuildFlags()));
-				}
-				if (d.getBuildRoot() != null && !Config.getInstance().buildFileOverride())
-					this.modules = new Module(d.getBuildRoot());
-				else
-					this.modules = new Module(Config.getInstance().buildFile());
-
-				ConfigFile c = d.generateConfigFile();
-				try {
-					c.write();
-				} catch (IOException e)
-				{
-					e.printStackTrace();
-				}
-			}
-			else
-			{
-				modules.build();
-			}
-			/* Wait until the commands have finished running & don't bother waiting if no commands were issued */
-			while (!modules.getDone() && CommandKernel.getInstance().getNoCommands() != 0 && error == ErrorCode.SUCCESS)
-				Thread.sleep(250);
-			if (error == ErrorCode.SUCCESS)
-				CommandKernel.getInstance().stopThreads();
-			else
-				CLIError.getInstance().writeline("Stopping due to error!");
-			Thread.yield();
-			CLI.getInstance().kill();
-		} catch (FileNotFoundException e) {
-			System.err.println(e.getMessage());
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		manager = new PhaseManager(args);
+		manager.switchPhases(new ParseOptions(manager));
+		
+		if (Config.getInstance().genConfigFile()) {
+			manager.switchPhases(new Configure(manager));
+		} else if (Config.getInstance().updateDepFile()) {
+			manager.switchPhases(new Preconfigure(manager));
+		} else if (Config.getInstance().genDepFile()) {
+			manager.switchPhases(new InitialPreconfigure(manager));
+		} else {
+			manager.switchPhases(new Compile(manager));
 		}
+
 		System.exit(error);
 	}
 
 	public static void setError(int error)
 	{
 		Build.error = error;
+	}
+	public static int getError()
+	{
+		return Build.error;
 	}
 	public static void main(String args[])
 	{

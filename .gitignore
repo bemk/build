@@ -16,6 +16,6 @@ bin/
 build.iml
 out/
 target/
-build
+/build
 dependency-reduced-pom.xml
 packages/
