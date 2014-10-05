@@ -26,6 +26,7 @@ import java.util.Set;
 import org.json.JSONObject;
 
 import eu.orionos.build.Config;
+import eu.orionos.build.Module;
 import eu.orionos.build.configGenerator.DepFile;
 import eu.orionos.build.configGenerator.DepfileException;
 import eu.orionos.build.ui.CLIError;
@@ -53,6 +54,9 @@ public class Preconfigure extends Phase {
 			DepFile d = new DepFile();
 			d.readDepFile();
 
+			if (this.modules == null)
+				this.modules = new Module(configuration.buildFile());
+
 			Set<String> flags = modules.getBuildFlags();
 			JSONObject o = d.updateDepFile(flags);
 
@@ -70,6 +74,7 @@ public class Preconfigure extends Phase {
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
 		}
 		manager.switchPhases(new Complete(manager));
 	}
