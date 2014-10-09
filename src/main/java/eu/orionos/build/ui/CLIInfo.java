@@ -19,6 +19,9 @@
 */
 package eu.orionos.build.ui;
 
+import net.michelmegens.xterm.Color;
+import eu.orionos.build.Config;
+
 public class CLIInfo extends CLI {
 	private static CLIInfo instance = null;
 
@@ -34,6 +37,9 @@ public class CLIInfo extends CLI {
 	private CLIInfo()
 	{
 		super();
-		this.prefix = "[ INFO ] ";
+		if(Config.getInstance().colors())
+			this.prefix = Color.BLUE + "[ INFO ] " + Color.DEFAULT;
+		else
+			this.prefix = "[ INFO ] ";
 	}
 }

@@ -25,6 +25,11 @@ import eu.orionos.build.Config;
 
 public class OptionColors extends Option
 {
+	public OptionColors(char shorthand, String operator)
+	{
+		super(shorthand, operator, false, "", "Enable XTerm colours in the terminal output.");
+	}
+
 	public OptionColors()
 	{
 		super('l', "colors", false, "", "Enable XTerm colors in the terminal output.");
