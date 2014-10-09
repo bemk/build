@@ -109,8 +109,11 @@ public class Module {
 		if (!f.exists())
 		{
 			System.err.println("Module at " +  path +  " can not be found");
-			throw new Exception("File not found!");
-//			System.exit(ErrorCode.FILE_NOT_FOUND);
+			if (parent != this && parent != null)
+				System.err.println("This dependency could be written incorrectly in " + parent.name);
+			else
+				System.err.println("Maybe you misspelled the name of the build file. If none exists, run build --gen-module");
+			System.exit(ErrorCode.FILE_NOT_FOUND);
 		}
 		BufferedReader reader = new BufferedReader(new FileReader(f));
 		StringBuilder stringBuilder = new StringBuilder();
@@ -829,8 +832,10 @@ public class Module {
 	{
 		ArrayList<String> dynamicCommand = new ArrayList<String>();
 		dynamicCommand.add(getLinker());
-		for (String s : getLinkerFlags())
-			dynamicCommand.add(s);
+		for (String s : getLinkerFlags()) {
+			if (!s.equalsIgnoreCase(""))
+				dynamicCommand.add(s);
+		}
 		dynamicCommand.add("-o");
 		dynamicCommand.add(getLFile());
 		dynamicCommand.addAll(getLinkableFiles());

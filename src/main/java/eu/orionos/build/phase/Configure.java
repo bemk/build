@@ -58,10 +58,12 @@ public class Configure extends Phase {
 			e.printStackTrace();
 		}
 		try {
-			if (d.getBuildRoot() != null && !Config.getInstance().buildFileOverride()) {
-				this.modules = new Module(d.getBuildRoot());
-			} else {
-				this.modules = new Module(Config.getInstance().buildFile());
+			if (this.modules == null) {
+				if (d.getBuildRoot() != null && !Config.getInstance().buildFileOverride()) {
+					this.modules = new Module(d.getBuildRoot());
+				} else {
+					this.modules = new Module(Config.getInstance().buildFile());
+				}
 			}
 
 			ConfigFile c = d.generateConfigFile();
