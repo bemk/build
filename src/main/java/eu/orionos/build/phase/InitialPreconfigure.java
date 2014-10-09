@@ -24,6 +24,7 @@ import java.io.FileWriter;
 import java.util.Set;
 
 import eu.orionos.build.Config;
+import eu.orionos.build.Module;
 import eu.orionos.build.configGenerator.DepFile;
 
 /**
@@ -45,8 +46,10 @@ public class InitialPreconfigure  extends Phase {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		Set<String> flags = modules.getBuildFlags();
 		try {
+			if (modules == null)
+				this.modules = new Module(configuration.buildFile());
+			Set<String> flags = modules.getBuildFlags();
 			File f = new File (Config.getInstance().getDepFile());
 			if (!f.exists())
 				f.createNewFile();

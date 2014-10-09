@@ -22,7 +22,6 @@ package eu.orionos.build;
 
 import eu.orionos.build.ui.CLI;
 import eu.orionos.build.Config;
-
 import net.michelmegens.xterm.Color;
 
 public class CompileUnit {

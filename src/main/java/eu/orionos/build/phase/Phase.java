@@ -18,8 +18,6 @@
     A version of the licence can also be found at http://gnu.org/licences/
 */
 package eu.orionos.build.phase;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import eu.orionos.build.*;
 
@@ -28,7 +26,7 @@ import eu.orionos.build.*;
  *
  */
 public abstract class Phase { 
-	protected Module modules;
+	protected static Module modules;
 	protected static Config configuration = Config.getInstance();
 	protected PhaseManager manager;
 	
