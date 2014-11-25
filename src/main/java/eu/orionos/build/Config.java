@@ -61,6 +61,8 @@ public class Config {
 	private boolean colors_enabled;
 	private boolean ar_required = false;
 	private boolean ld_required = false;
+	private boolean nosync = false;
+	private boolean debug = false;
 
 	private void setConfigFile(String conf) throws FileNotFoundException, IOException
 	{
@@ -194,6 +196,7 @@ public class Config {
 		}
 		return false;
 	}
+
 	public boolean getModuleDefined(String module, String key)
 	{
 		if (conf == null)
@@ -391,5 +394,21 @@ public class Config {
 	public boolean get_ar_required ()
 	{
 		return this.ar_required;
+	}
+	public boolean nosync()
+	{
+		return this.nosync;
+	}
+	public void nosync(boolean nosync)
+	{
+		this.nosync = nosync;
+	}
+	public void setDebug()
+	{
+		this.debug = true;
+	}
+	public boolean getDebug()
+	{
+		return this.debug;
 	}
 }

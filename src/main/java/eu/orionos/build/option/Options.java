@@ -66,6 +66,8 @@ public class Options {
 		options.add(new OptionRandom());
 		options.add(new OptionColors('l', "colours"));
 		options.add(new OptionColors());
+		options.add(new OptionNosync());
+		options.add(new OptionDebug());
 
 		for (; i < args.length; i++)
 		{

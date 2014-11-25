@@ -37,9 +37,9 @@ public class CLIError extends CLI {
 	
 	private CLIError()
 	{
-		super();
+		super("CLIError");
 		if(Config.getInstance().colors())
-			this.prefix = Color.YELLOW + "[ ERROR ] " + Color.DEFAULT;
+			this.prefix = Color.RED + "[ ERROR ] " + Color.DEFAULT;
 		else
 			this.prefix = "[ ERROR ] ";
 	}

@@ -1,51 +1,52 @@
 {
-	"build_root" : "test.build",
-        "gamma": {
-                "ignore-autoconf": false,
-                "mandatory": false,
-                "enum": {
-                        "epsylon": {
-                                "ignore-autoconf": false,
-                                "mandatory": false,
-                                "info": "epsylon flag"
-                        },
-                        "delta": {
-                                "ignore-autoconf": false,
-                                "mandatory": false,
-                                "info": "delta flag"
-                        }
-                },
-                "info": "Gamma enum"
-        },
         "alpha": {
                 "ignore-autoconf": false,
-                "mandatory": false,
-                "info": "alpha flag"
-        },
-        "zeta": {
-                "ignore-autoconf": false,
-                "set": {
-                        "eta": {
-                                "ignore-autoconf": false,
-                                "mandatory": false,
-                                "info": "eta flag"
-                        },
-                        "theta": {
-                                "ignore-autoconf": false,
-                                "mandatory": false,
-                                "info": "theta flag"
-                        }
-                },
-                "mandatory": true,
-                "info": "Zeta flag group"
+                "info": "alpha flag",
+                "mandatory": false
         },
         "beta": {
                 "ignore-autoconf": false,
-                "mandatory": true,
-                "info": "beta flag"
+                "info": "beta flag",
+                "mandatory": true
         },
+        "build_root": "test.build",
         "fubar": {
                 "ignore-autoconf": false,
+                "info": "",
                 "mandatory": false
+        },
+        "gamma": {
+                "enum": {
+                        "delta": {
+                                "ignore-autoconf": false,
+                                "info": "delta flag",
+                                "mandatory": false
+                        },
+                        "epsylon": {
+                                "ignore-autoconf": false,
+                                "info": "epsylon flag",
+                                "mandatory": false
+                        }
+                },
+                "ignore-autoconf": false,
+                "info": "Gamma enum",
+                "mandatory": false
+        },
+        "zeta": {
+                "ignore-autoconf": false,
+                "info": "Zeta flag group",
+                "mandatory": true,
+                "set": {
+                        "eta": {
+                                "ignore-autoconf": false,
+                                "info": "eta flag",
+                                "mandatory": false
+                        },
+                        "theta": {
+                                "ignore-autoconf": false,
+                                "info": "theta flag",
+                                "mandatory": false
+                        }
+                }
         }
 }

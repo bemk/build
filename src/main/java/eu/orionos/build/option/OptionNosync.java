@@ -16,47 +16,24 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
-*/
-package eu.orionos.build.phase;
+ */
+package eu.orionos.build.option;
+
+import eu.orionos.build.Config;
 
 /**
  * @author bemk
- *
+ * 
  */
-public class PhaseManager {
-	private Phase phase;
-	private String[] cmd;
-	private boolean toConfigure = false;
+public class OptionNosync extends Option {
 
-	public PhaseManager(String[] cmd)
-	{
-		this.cmd = cmd;
+	public OptionNosync() {
+		super (' ', "nosync", false, "", "Don't sync the file system before using dependencies (quicker but might lead to cache failures, depending on the OS)");
 	}
 
-	public void setToConfigure()
-	{
-		this.toConfigure = true;
-	}
-
-	public boolean getToConfigure()
-	{
-		return this.toConfigure;
-	}
-
-	public String[] getCmd()
-	{
-		return this.cmd;
-	}
-
-	public Phase getPhase()
-	{
-		return this.phase;
-	}
-
-	public void switchPhases(Phase phase)
-	{
-		this.phase = phase;
-		phase.run();
+	@Override
+	public void option() {
+		Config.getInstance().nosync(true);
 	}
 
 }

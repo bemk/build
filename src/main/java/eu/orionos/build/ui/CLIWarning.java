@@ -37,7 +37,7 @@ public class CLIWarning extends CLI {
 
 	private CLIWarning()
 	{
-		super();
+		super("CLIWarning");
 		if(Config.getInstance().colors())
 			this.prefix = Color.YELLOW + "[ WARNING ] " + Color.DEFAULT;
 		else

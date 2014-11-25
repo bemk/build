@@ -17,55 +17,60 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package eu.orionos.build.phase;
+package eu.orionos.build.buildPhase;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.File;
+import java.io.FileWriter;
+import java.util.Set;
 
+import eu.orionos.build.Config;
 import eu.orionos.build.Module;
+import eu.orionos.build.configGenerator.DepFile;
 
 /**
  * @author bemk
- * This class takes care of the actual compiling of the code
+ * This class runs the --gen-depfile option
  */
-public class Compile extends Phase {
+public class InitialPreconfigure  extends Phase {
 
-	public Compile(PhaseManager manager)
-	{
+	/**
+	 * @param manager
+	 */
+	public InitialPreconfigure(PhaseManager manager) {
 		super(manager);
 	}
+
 	/** 
-	 *
+	 * 
 	 */
 	@Override
 	public void run() {
+		// TODO Auto-generated method stub
 		try {
-			if (configuration.hasConf() == false)
-			{
-				configuration.override(".config");
-				if (configuration.hasConf() == false)
-				{
-					System.err.println("No usable config files found!");
-					System.err.println("Use build --configure to configure the project ");
-					System.err.println("Or use the --config <config file> option to specify a config file");
-					System.exit(1);
-				}
-			}
-			modules = new Module(configuration.buildFile());
-			this.modules.build();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			if (modules == null)
+				this.modules = new Module(configuration.buildFile());
+			Set<String> flags = modules.getBuildFlags();
+			File f = new File (Config.getInstance().getDepFile());
+			if (!f.exists())
+				f.createNewFile();
+			if (f.isDirectory())
+				throw (new Exception());
+			FileWriter fw = new FileWriter(f);
+
+			DepFile d = new DepFile();
+			fw.write(d.generateDepFile(flags).toString(8));
+
+			fw.close();
+		}
+		catch (NullPointerException e)
+		{
 			e.printStackTrace();
 		} catch (Exception e) {
-			e.printStackTrace();
 		}
-		manager.switchPhases(new Complete(manager));
+		if (manager.getToConfigure())
+			manager.switchPhases(new Configure(manager));
+		else
+			manager.switchPhases(new Complete(manager));
 	}
 
 }

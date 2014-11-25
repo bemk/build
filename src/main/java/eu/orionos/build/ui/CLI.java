@@ -16,7 +16,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
-*/
+ */
 package eu.orionos.build.ui;
 
 import java.io.BufferedReader;
@@ -24,9 +24,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import eu.orionos.build.Config;
 import net.michelmegens.xterm.Color;
 
 public class CLI extends Thread {
@@ -34,106 +36,127 @@ public class CLI extends Thread {
 	protected static boolean finished = false;
 	protected ArrayList<String> out = new ArrayList<String>();
 	private Lock lock = new ReentrantLock(true);
-	private BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+	private BufferedReader r = new BufferedReader(new InputStreamReader(
+			System.in));
 	protected static Lock instanceLock = new ReentrantLock(true);
 	protected String prefix = "";
+	private ConcurrentHashMap<String, Thread> threads = new ConcurrentHashMap<String, Thread>();
+	private String name = "";
+	private boolean silent = false;
 
-	public static CLI getInstance()
-	{
+	public static CLI getInstance() {
 		instanceLock.lock();
 		if (cli == null)
-			cli = new CLI();
+			cli = new CLI("CLI");
 		instanceLock.unlock();
 		return cli;
 	}
-	protected CLI()
-	{
+
+	protected CLI(String name) {
 		this.start();
+		this.name = name;
+		threads.put(name, this);
+		if (Config.getInstance().colors() && name.equals("CLI")) {
+			prefix = Color.DEFAULT;
+		} 
 	}
 
-	public void writeline(String msg)
-	{
+	public void writeline(String msg) {
 		this.write(msg + "\n");
 	}
-	public void write(String msg)
-	{
+
+	public void write(String msg) {
+		if (this.silent) {
+			return;
+		}
 		this.getLock();
 		this.out.add(prefix + msg);
 		this.unlock();
 		Thread.yield();
 	}
-	public String readline(String msg)
-	{
+
+	public String readline(String msg) {
 		String ret = null;
-		while (ret == null)
-		{
+		if (this.silent) {
+			return ret;
+		}
+		while (ret == null) {
 			this.getLock();
-			if (this.out.isEmpty())
-			{
+			if (this.out.isEmpty()) {
 				try {
 					System.out.print(msg);
 					ret = r.readLine();
 				} catch (IOException e) {
 					ret = "";
 				}
-			}
-			else
+			} else
 				Thread.yield();
 			this.unlock();
 		}
 		return ret;
 	}
 
-	public boolean readboolean(String msg)
-	{
+	public boolean readboolean(String msg) {
+		if (this.silent) {
+			return false;
+		}
 		String ret = this.readline(msg + " [y/N] ").toLowerCase();
-		if (ret.equals("y") || ret.equals("yes") || ret.equals("true") || ret.equals("1"))
-		{
+		if (ret.equals("y") || ret.equals("yes") || ret.equals("true")
+				|| ret.equals("1")) {
 			return true;
 		}
 		return false;
 	}
-	public int readint(String msg)
-	{
+
+	public int readint(String msg) {
+		if (this.silent) {
+			return 0;
+		}
 		String str = this.readline(msg + " [0..9] ").toLowerCase();
-		while (true)
-		{
+		while (true) {
 			try {
 				return Integer.parseInt(str);
-			} catch (NumberFormatException e)
-			{
+			} catch (NumberFormatException e) {
 				str = this.readline("Invalid number").toLowerCase();
 			}
 		}
 	}
 
-	public void run()
-	{
-		while (!finished || !out.isEmpty())
-		{
+	public void run() {
+		while (!finished || !out.isEmpty()) {
 			Thread.yield();
 			this.getLock();
 			Iterator<String> i = out.iterator();
-			while (i.hasNext())
-			{
+			while (i.hasNext()) {
 				System.out.print(i.next());
 				i.remove();
 			}
 			this.unlock();
 		}
+		CLI.getInstance().markDone(name);
 	}
-	public void kill()
-	{
+
+	public void kill() {
 		finished = true;
 	}
 
-	protected void getLock()
-	{
+	protected void getLock() {
 		lock.lock();
 	}
 
-	protected void unlock()
-	{
+	protected void unlock() {
 		lock.unlock();
+	}
+
+	protected void markDone(String name) {
+		threads.remove(name);
+	}
+
+	public boolean getDone() {
+		return threads.isEmpty();
+	}
+
+	protected void setSiltent() {
+		this.silent = true;
 	}
 }

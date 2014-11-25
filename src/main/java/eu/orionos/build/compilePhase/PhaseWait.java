@@ -16,41 +16,55 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
-*/
-package eu.orionos.build.phase;
+ */
+package eu.orionos.build.compilePhase;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import eu.orionos.build.option.Options;
+import eu.orionos.build.ui.CLIDebug;
 
 /**
  * @author bemk
- * This class outlines the state when parsing the commandline options
+ * 
  */
-public class ParseOptions extends Phase {
+public class PhaseWait extends Phase {
 
 	/**
-	 * @param manager
+	 * @param phaseMgr
 	 */
-	public ParseOptions(PhaseManager manager) {
-		super(manager);
+	public PhaseWait(BuildPhase phaseMgr) {
+		super(phaseMgr);
 	}
 
-	/**
-	 * @see eu.orionos.build.phase.Phase#run()
-	 */
 	@Override
-	public void run() {
-		try {
-			new Options(this.manager.getCmd());
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	public void setExecutable() {
+
+	}
+
+	@Override
+	public void setFlags() {
+
+	}
+
+	@Override
+	protected void switchPhase() {
+		if (phaseMgr.dependenciesDone()) {
+			CLIDebug.getInstance().writeline(
+					"Waiting done " + phaseMgr.getModule().getName());
+			phaseMgr.switchPhase(new PhaseSync(phaseMgr));
 		}
 	}
 
+	@Override
+	public synchronized void run() {
+		this.switchPhase(); // Should the dependencies already be done
+	}
+
+	@Override
+	protected String phaseName() {
+		return "Phase-Wait";
+	}
+
+	@Override
+	public void dependencyUpdate() {
+		switchPhase();
+	}
 }

@@ -1,5 +1,5 @@
 /*  Build - Hopefully a simple build system
-    Copyright (C) 2013 - Bart Kuivenhoven
+    Copyright (C) 2014 - Bart Kuivenhoven
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,31 +16,29 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
+*/
+package eu.orionos.build.buildPhase;
+
+import eu.orionos.build.*;
+
+/**
+ * @author bemk
+ *
  */
-package eu.orionos.build.ui;
-
-import net.michelmegens.xterm.Color;
-import eu.orionos.build.Config;
-
-public class CLIDebug extends CLI {
-	private static CLIDebug instance = null;
-
-	public static CLIDebug getInstance() {
-		instanceLock.lock();
-		if (instance == null)
-			instance = new CLIDebug();
-		instanceLock.unlock();
-		return instance;
+public abstract class Phase { 
+	protected static Module modules;
+	protected static Config configuration = Config.getInstance();
+	protected PhaseManager manager;
+	
+	public Phase(PhaseManager manager)
+	{
+		this.manager = manager;
 	}
 
-	public CLIDebug() {
-		super("CLIDebug");
-		if (!Config.getInstance().getDebug()) {
-			this.setSiltent();
-		}
-		if (Config.getInstance().colors())
-			this.prefix = Color.YELLOW + "[ DEBUG ] " + Color.DEFAULT;
-		else
-			this.prefix = "[ DEBUG ] ";
-	}
+	/**
+	 * @fn run
+	 * @author bemk
+	 * Start running this phase of the build process.
+	 */
+	public abstract void run();
 }

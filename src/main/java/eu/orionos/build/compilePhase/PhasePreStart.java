@@ -1,5 +1,5 @@
 /*  Build - Hopefully a simple build system
-    Copyright (C) 2014 - Bart Kuivenhoven
+    Copyright (C) 2013 - Bart Kuivenhoven
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,28 +17,48 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package eu.orionos.build.phase;
-
-import eu.orionos.build.*;
+package eu.orionos.build.compilePhase;
 
 /**
  * @author bemk
  *
  */
-public abstract class Phase { 
-	protected static Module modules;
-	protected static Config configuration = Config.getInstance();
-	protected PhaseManager manager;
-	
-	public Phase(PhaseManager manager)
-	{
-		this.manager = manager;
-	}
+public class PhasePreStart extends Phase {
 
 	/**
-	 * @fn run
-	 * @author bemk
-	 * Start running this phase of the build process.
+	 * @param phaseMgr
 	 */
-	public abstract void run();
+	protected PhasePreStart(BuildPhase phaseMgr) {
+		super(phaseMgr);
+	}
+
+	@Override
+	public void setExecutable() {
+
+	}
+
+	@Override
+	public void setFlags() {
+
+	}
+
+	@Override
+	protected void switchPhase() {
+
+	}
+
+	@Override
+	public synchronized void run() {
+
+	}
+
+	@Override
+	protected String phaseName() {
+		return "Phase-PreStart";
+	}
+
+	@Override
+	public void dependencyUpdate() {
+		return; // Not at all relevant for this stage
+	}
 }

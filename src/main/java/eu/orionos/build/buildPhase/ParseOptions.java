@@ -17,48 +17,40 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package eu.orionos.build.phase;
+package eu.orionos.build.buildPhase;
 
-import eu.orionos.build.Build;
-import eu.orionos.build.ErrorCode;
-import eu.orionos.build.exec.CommandKernel;
-import eu.orionos.build.ui.CLI;
-import eu.orionos.build.ui.CLIError;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import eu.orionos.build.option.Options;
 
 /**
  * @author bemk
- *
+ * This class outlines the state when parsing the commandline options
  */
-public class Complete extends Phase {
+public class ParseOptions extends Phase {
 
 	/**
 	 * @param manager
 	 */
-	public Complete(PhaseManager manager) {
+	public ParseOptions(PhaseManager manager) {
 		super(manager);
 	}
 
 	/**
-	 *
+	 * @see eu.orionos.build.buildPhase.Phase#run()
 	 */
 	@Override
 	public void run() {
-		/* Wait until the commands have finished running & don't bother waiting if no commands were issued */
 		try {
-		while ((modules == null || !modules.getDone()) && CommandKernel.getInstance().getNoCommands() != 0 && Build.getError() == ErrorCode.SUCCESS) {
-			Thread.sleep(250);
-		}
-		if (Build.getError() == ErrorCode.SUCCESS)
-			CommandKernel.getInstance().stopThreads();
-		else
-			CLIError.getInstance().writeline("Stopping due to error!");
-		Thread.yield();
-		CLI.getInstance().kill();
-		} catch (InterruptedException e) {
+			new Options(this.manager.getCmd());
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.exit(Build.getError());
-		
 	}
 
 }

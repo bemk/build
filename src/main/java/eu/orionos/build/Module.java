@@ -23,7 +23,12 @@
 
 package eu.orionos.build;
 
+import eu.orionos.build.buildPhase.PhaseManager;
+import eu.orionos.build.compilePhase.BuildPhase;
+import eu.orionos.build.compilePhase.PhaseCompile;
+import eu.orionos.build.compilePhase.PhaseStart;
 import eu.orionos.build.exec.CommandKernel;
+import eu.orionos.build.ui.CLIDebug;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,11 +57,13 @@ public class Module {
 	private String name;
 	private Module parent;
 	private JSONObject module;
+	private BuildPhase buildState;
 
 	private CompilePhase phase = CompilePhase.COMPILING;
 
 	private boolean toLink = false;
 	private boolean toArchive = false;
+	private boolean done = false;
 
 	private String globalCompiler;
 	private String globalLinker;
@@ -287,6 +294,7 @@ public class Module {
 				}
 			}
 		}
+		buildState = new BuildPhase(this);
 	}
 
 	/* These functions retrieve the global values only. These are helper
@@ -396,8 +404,8 @@ public class Module {
 		return builder.toString();
 	}
 
-	/* And get the actual strings to instert into the commands */
-	protected String getCompiler()
+	/* And get the actual strings to insert into the commands */
+	public String getCompiler()
 	{
 		if (modCompiler == null)
 			return getGlobalCompiler();
@@ -439,7 +447,8 @@ public class Module {
 				try {
 					final JSONObject o = dynModCompilerFlags.getJSONObject(i);
 					final String key = o.getString(Semantics.CONFIG_GLOBAL_KEY);
-					if (c.getModuleDefined(this.name, key) && o.has(Semantics.CONFIG_GLOBAL_FLAGS))
+					CLIDebug.getInstance().writeline("Dynamic modular cc flags found: " + key + " in module " + name);
+					if (c.getDefined(key) && o.has(Semantics.CONFIG_GLOBAL_FLAGS))
 					{
 						if (builder.length() > 0)
 							builder.append(' ');
@@ -449,10 +458,13 @@ public class Module {
 					e.printStackTrace();
 				}
 			}
+		} else {
+			CLIDebug.getInstance().writeline("No dynamic modular cc flags found in " + name);
 		}
 		return builder.toString();
 	}
-	protected String[] getCompilerFlags()
+
+	public String[] getCompilerFlags()
 	{
 		final String cflags = getGlobalCompilerFlags();
 		if (cflags == null)
@@ -475,7 +487,7 @@ public class Module {
 		return builder.toString().split(" ");
 	}
 
-	protected String getArchiver()
+	public String getArchiver()
 	{
 		if (modArchiver == null)
 			return getGlobalArchiver();
@@ -529,7 +541,7 @@ public class Module {
 		}
 		return builder.toString();
 	}
-	protected String[] getArchiverFlags()
+	public String[] getArchiverFlags()
 	{
 		final String aflags = getGlobalArchiverFlags();
 		if (aflags == null)
@@ -552,7 +564,7 @@ public class Module {
 		return builder.toString().split(" ");
 	}
 
-	protected String getLinker()
+	public String getLinker()
 	{
 		if (modLinker == null)
 			return getGlobalLinker();
@@ -606,7 +618,7 @@ public class Module {
 		}
 		return builder.toString();
 	}
-	protected String[] getLinkerFlags()
+	public String[] getLinkerFlags()
 	{
 		final String lflags = getGlobalLinkerFlags();
 		if (lflags == null)
@@ -629,26 +641,6 @@ public class Module {
 		return builder.toString().split(" ");
 	}
 
-	/* Turn an input file name into the name of a unique output file */
-	private String getOFile(String inFile)
-	{
-		inFile = inFile.substring(0, inFile.lastIndexOf("."));
-		inFile = inFile.replace('\\', '_');
-		inFile = inFile.replace('/', '-');
-
-		return Config.getInstance().getBuildDir() + "/" + this.name + "-" + inFile + ".o";
-	}
-
-	private String getAFile()
-	{
-		return Config.getInstance().getBuildDir() + "/" + archivedFile;
-	}
-
-	private String getLFile()
-	{
-		return Config.getInstance().getBuildDir() + "/" + linkedFile;
-	}
-
 	/* helper function for determining the actual dependencies */
 	private void addDynamicDeps(ArrayList<Module> dependencies, JSONArray array)
 	{
@@ -667,7 +659,7 @@ public class Module {
 	}
 
 	/* Use this to calculate the dependencies to wait for, and to make build */
-	private ArrayList<Module> calculateDependencies()
+	public ArrayList<Module> calculateDependencies()
 	{
 		ArrayList<Module> dependencies = new ArrayList<Module>(subModules);
 		JSONArray flags = Config.getInstance().getGlobalFlags();
@@ -680,30 +672,9 @@ public class Module {
 	}
 
 	/* Initialise build phase, make all dependencies compile, and then do the same */
-	public void build() throws InterruptedException
+	public void build() /*throws InterruptedException */
 	{
-		CommandKernel.getInstance().registerModule(this);
-		hasRun = new ConcurrentHashMap<String, CompileUnit>(Config.getInstance().threads()+1);
-		toRun = new ConcurrentHashMap<String, CompileUnit>(Config.getInstance().threads()+1);
-		waiting = new ConcurrentHashMap<String, Module>(Config.getInstance().threads()+1);
-
-		ArrayList<Module> deps = calculateDependencies();
-		if (deps.size() == 0 && this.sourceFiles.size() == 0)
-		{
-			phase = phase.DONE;
-			switchPhases();
-			return;
-		}
-		Iterator<Module> i = deps.iterator();
-		while (i.hasNext())
-		{
-			Module m = i.next();
-			waiting.put(m.getName(), m);
-			m.build();
-		}
-
-		if (this.compile() != 0)
-			System.exit(ErrorCode.COMPILE_FAILED);
+		buildState.switchPhase(new PhaseStart(buildState));
 	}
 
 	protected Set<String> getDynamicBuildFlags(JSONArray flaglist)
@@ -765,13 +736,13 @@ public class Module {
 	{
 		CompileUnit c = new CompileUnit(this, cmd, object);
 		toRun.put(c.key(), c);
-		CommandKernel.getInstance().runCommand(c);
+		//CommandKernel.getInstance().runCommand(c);
 	}
 
 	/* Does this need more explanation? */
 	public int compile()
 	{
-		if (Config.getInstance().getClean())
+	/*	if (Config.getInstance().getClean())
 			return this.clean();
 
 		Iterator<String> i = sourceFiles.iterator();
@@ -801,7 +772,7 @@ public class Module {
 			String cmd[] = command.toArray(new String[command.size()]);
 			sendCommand(cmd, oFile);
 		}
-
+	*/
 		return 0;
 	}
 
@@ -909,19 +880,22 @@ public class Module {
 	}
 
 	/* Mark a dependency as completed */
-	public void markDone(Module m)
+	public void markDependencyDone(Module m)
 	{
+		buildState.markDependencyDone(m);
+		/*
 		if (waiting.containsKey(m.getName()))
 		{
 			waiting.remove(m.name);
 			switchPhases();
 		}
+		*/
 	}
 
 	/* Make an attempt at moving on to the next build phase */
 	private void switchPhases()
 	{
-		if (toRun.isEmpty())
+		/*if (toRun.isEmpty())
 		{
 			switch (phase)
 			{
@@ -956,7 +930,7 @@ public class Module {
 				}
 				break;
 			case LINKING:
-				/* And we're done! */
+				// And we're done! 
 				CommandKernel.getInstance().unregisterModule(this);
 				phase = CompilePhase.DONE;
 				switchPhases();
@@ -964,39 +938,102 @@ public class Module {
 			case DONE:
 				CommandKernel.getInstance().unregisterModule(this);
 				if (parent != null)
-					parent.markDone(this);
+					parent.markDependencyDone(this);
 				break;
 			case CLEANING:
 				phase = CompilePhase.DONE;
 				switchPhases();
 				break;
 			default:
-				/* Not sure how we'll ever get here, but having a default option
-				 * is considered good practice ...
-				 */
+				// Not sure how we'll ever get here, but having a default option
+				// is considered good practice ...
 				break;
-			}
-		}
+			} 
+		} */
 	}
 
 	/* Is to run each time a compile unit is done */
 	public void markCompileUnitDone(CompileUnit unit)
 	{
+		buildState.markCompileUnitDone(unit);
+		/*
 		if (toRun.containsKey(unit.key()))
 		{
 			toRun.remove(unit.key());
 			hasRun.put(unit.key(), unit);
 		}
-		switchPhases();
+		switchPhases(); */
 	}
 
 	/* Allows parent objects to check whether we're done or not */
 	public boolean getDone()
 	{
-		if (waiting == null)
-			return true;
-		if (this.phase == CompilePhase.DONE)
-			return true;
-		return waiting.isEmpty();
+		return this.done;
+	}
+
+	public boolean toArchive()
+	{
+		return toArchive;
+	}
+
+	public boolean toLink()
+	{
+		return toLink;
+	}
+
+	public String archivedFile() {
+		return this.archivedFile;
+	}
+
+	public String linkedFile() {
+		return this.linkedFile;
+	}
+	
+	public Module getParent()
+	{
+		return this.parent;
+	}
+	
+	public String getLFile() {
+		return Config.getInstance().getBuildDir() + "/"
+				+ linkedFile;
+	}
+	
+	public String getAFile() {
+		return Config.getInstance().getBuildDir() + "/"
+				+ archivedFile;
+	}
+
+	/* Turn the source file name into the name of a unique output file */
+	public String getOFile(String inFile) {
+		inFile = getCWD() + "/" + inFile;
+		CLIDebug.getInstance().writeline("Target file: " + inFile);
+		String mainDir = Config.getInstance().getBuildDir();
+		int idx = 0;
+		for (; idx < mainDir.length(); idx++) {
+			if (!(mainDir.charAt(idx) == inFile.charAt(idx)))
+				break;
+		}
+
+		inFile = inFile.substring(idx);
+		inFile = inFile.substring(0, inFile.lastIndexOf("."));
+		inFile = inFile.replace('\\', '_');
+		inFile = inFile.replace('/', '-');
+
+		return Config.getInstance().getBuildDir() + "/"
+				+ getName() + "-" + inFile + ".o";
+	}
+	
+	public void setDone()
+	{
+		this.done = true;
+	}
+	public String getCWD() {
+		return this.cwd;
+	}
+	
+	public ArrayList<String> getSourceFiles()
+	{
+		return this.sourceFiles;
 	}
 }

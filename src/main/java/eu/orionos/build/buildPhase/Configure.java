@@ -17,60 +17,65 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package eu.orionos.build.phase;
+package eu.orionos.build.buildPhase;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.util.Set;
+import java.io.IOException;
 
 import eu.orionos.build.Config;
 import eu.orionos.build.Module;
+import eu.orionos.build.configGenerator.ConfigFile;
 import eu.orionos.build.configGenerator.DepFile;
+import eu.orionos.build.configGenerator.DepfileException;
 
 /**
  * @author bemk
- * This class runs the --gen-depfile option
+ * This class should take care of generating a config file
  */
-public class InitialPreconfigure  extends Phase {
+public class Configure extends Phase {
 
-	/**
-	 * @param manager
-	 */
-	public InitialPreconfigure(PhaseManager manager) {
+	public Configure(PhaseManager manager)
+	{
 		super(manager);
 	}
 
-	/** 
-	 * 
+
+	/* (non-Javadoc)
+	 * @see eu.orionos.build.phase.Phase#run()
 	 */
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
+		DepFile d = null;
 		try {
-			if (modules == null)
-				this.modules = new Module(configuration.buildFile());
-			Set<String> flags = modules.getBuildFlags();
-			File f = new File (Config.getInstance().getDepFile());
-			if (!f.exists())
-				f.createNewFile();
-			if (f.isDirectory())
-				throw (new Exception());
-			FileWriter fw = new FileWriter(f);
-
-			DepFile d = new DepFile();
-			fw.write(d.generateDepFile(flags).toString(8));
-
-			fw.close();
+			d = new DepFile();
+			d.readDepFile();
 		}
-		catch (NullPointerException e)
+		catch(DepfileException e)
 		{
+			manager.setToConfigure();
+			manager.switchPhases(new InitialPreconfigure(manager));
+			return;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			if (modules == null) {
+				if (d.getBuildRoot() != null && !Config.getInstance().buildFileOverride()) {
+					modules = new Module(d.getBuildRoot());
+				} else {
+					modules = new Module(Config.getInstance().buildFile());
+				}
+			}
+
+			ConfigFile c = d.generateConfigFile();
+			c.write();
+		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		if (manager.getToConfigure())
-			manager.switchPhases(new Configure(manager));
-		else
-			manager.switchPhases(new Complete(manager));
+		
+		manager.switchPhases(new Complete(manager));
 	}
+
 
 }

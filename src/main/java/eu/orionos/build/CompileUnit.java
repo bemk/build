@@ -16,10 +16,11 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
-*/
+ */
 
 package eu.orionos.build;
 
+import eu.orionos.build.compilePhase.Phase;
 import eu.orionos.build.ui.CLI;
 import eu.orionos.build.Config;
 import net.michelmegens.xterm.Color;
@@ -28,43 +29,56 @@ public class CompileUnit {
 	private String command[];
 	private Module module;
 	private String object;
+	private boolean silent;
+	private Phase phase = null;
 
-	public CompileUnit(Module module, String command[], String object)
-	{
+	public CompileUnit(Module module, String command[], String object) {
 		this.module = module;
 		this.command = command;
 		this.object = object;
 	}
 
-	public String[] getCommand()
-	{
+	public String[] getCommand() {
 		return this.command;
 	}
 
-	public void markComplete()
-	{
+	public void markComplete() {
 		module.markCompileUnitDone(this);
 		if (!Config.getInstance().silent()) {
-				if(Config.getInstance().colors()) {
-					CLI.getInstance().writeline(Color.GREEN + "[ OK ] " + Color.DEFAULT + object);
-				} else {
+			if (Config.getInstance().colors()) {
+				if (!this.silent) {
+					CLI.getInstance().writeline(
+							Color.GREEN + "[ OK ] " + Color.DEFAULT + object);
+				}
+			} else {
+				if (!this.silent) {
 					CLI.getInstance().writeline("[ OK ] " + object);
 				}
+			}
 		}
 	}
 
-	public String key()
-	{
-		return module.getName() + object;
+	public String key() {
+		return module.getName() + "-" + object;
 	}
 
-	public Module getModule()
-	{
+	public Module getModule() {
 		return module;
 	}
 
-	public String getObject()
-	{
+	public String getObject() {
 		return this.object;
+	}
+
+	public void setSilent() {
+		this.silent = true;
+	}
+
+	public void setPhase(Phase phase) {
+		this.phase = phase;
+	}
+
+	public Phase getPhase() {
+		return this.phase;
 	}
 }

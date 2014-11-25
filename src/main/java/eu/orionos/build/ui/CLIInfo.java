@@ -36,7 +36,7 @@ public class CLIInfo extends CLI {
 
 	private CLIInfo()
 	{
-		super();
+		super("CLIInfo");
 		if(Config.getInstance().colors())
 			this.prefix = Color.BLUE + "[ INFO ] " + Color.DEFAULT;
 		else

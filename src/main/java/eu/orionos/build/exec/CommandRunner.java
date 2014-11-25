@@ -113,6 +113,11 @@ public class CommandRunner extends Thread {
 					CLIError.getInstance().writeline(e.getMessage());
 					CommandKernel.getInstance().killThreads();
 					Build.setError(ErrorCode.GENERIC);
+					CLI.getInstance().kill();
+					while (!CLI.getInstance().getDone()) {
+						Thread.yield();
+					}
+					System.exit(Build.getError());
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

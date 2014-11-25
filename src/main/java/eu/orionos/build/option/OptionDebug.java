@@ -17,30 +17,28 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
  */
-package eu.orionos.build.ui;
+package eu.orionos.build.option;
 
-import net.michelmegens.xterm.Color;
 import eu.orionos.build.Config;
 
-public class CLIDebug extends CLI {
-	private static CLIDebug instance = null;
+/**
+ * @author bemk
+ * 
+ */
+public class OptionDebug extends Option {
 
-	public static CLIDebug getInstance() {
-		instanceLock.lock();
-		if (instance == null)
-			instance = new CLIDebug();
-		instanceLock.unlock();
-		return instance;
+	public OptionDebug() {
+		this(' ', "debug", false, "", "Enable build debug output. For developer use only");
 	}
 
-	public CLIDebug() {
-		super("CLIDebug");
-		if (!Config.getInstance().getDebug()) {
-			this.setSiltent();
-		}
-		if (Config.getInstance().colors())
-			this.prefix = Color.YELLOW + "[ DEBUG ] " + Color.DEFAULT;
-		else
-			this.prefix = "[ DEBUG ] ";
+	private OptionDebug(char c, String s, boolean operands, String parameters,
+			String info) {
+		super(c, s, operands, parameters, info);
 	}
+
+	@Override
+	public void option() {
+		Config.getInstance().setDebug();
+	}
+
 }

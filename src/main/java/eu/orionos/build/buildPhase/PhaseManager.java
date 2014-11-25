@@ -16,31 +16,57 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
+*/
+package eu.orionos.build.buildPhase;
+
+/**
+ * @author bemk
+ *
  */
-package eu.orionos.build.ui;
+public class PhaseManager {
+	private Phase phase;
+	private String[] cmd;
+	private boolean toConfigure = false;
+	private boolean toCompile = false;
 
-import net.michelmegens.xterm.Color;
-import eu.orionos.build.Config;
-
-public class CLIDebug extends CLI {
-	private static CLIDebug instance = null;
-
-	public static CLIDebug getInstance() {
-		instanceLock.lock();
-		if (instance == null)
-			instance = new CLIDebug();
-		instanceLock.unlock();
-		return instance;
+	public PhaseManager(String[] cmd)
+	{
+		this.cmd = cmd;
 	}
 
-	public CLIDebug() {
-		super("CLIDebug");
-		if (!Config.getInstance().getDebug()) {
-			this.setSiltent();
-		}
-		if (Config.getInstance().colors())
-			this.prefix = Color.YELLOW + "[ DEBUG ] " + Color.DEFAULT;
-		else
-			this.prefix = "[ DEBUG ] ";
+	public void setToConfigure()
+	{
+		this.toConfigure = true;
 	}
+
+	public boolean getToConfigure()
+	{
+		return this.toConfigure;
+	}
+	
+	public void setToCompile()
+	{
+		this.toCompile = true;
+	}
+	public boolean getToCompile()
+	{
+		return this.toCompile;
+	}
+
+	public String[] getCmd()
+	{
+		return this.cmd;
+	}
+
+	public Phase getPhase()
+	{
+		return this.phase;
+	}
+
+	public void switchPhases(Phase phase)
+	{
+		this.phase = phase;
+		phase.run();
+	}
+
 }

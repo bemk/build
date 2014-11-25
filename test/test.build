@@ -7,7 +7,7 @@
 
 	"compiler-flags" : "-c",
 	"linker-flags" : "",
-	"archiver-flags" : "rs",
+	"archiver-flags" : "rsv",
 
 	"dcompiler-flags" : [{"key" : "alpha", "flags" : "-D ALPHA"}],
 	"dlinker-flags" : [{"key" : "alpha", "flags" : "-D ALPHA"}],

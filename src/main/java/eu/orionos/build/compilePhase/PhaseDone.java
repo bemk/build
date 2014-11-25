@@ -17,30 +17,54 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
  */
-package eu.orionos.build.ui;
+package eu.orionos.build.compilePhase;
 
-import net.michelmegens.xterm.Color;
-import eu.orionos.build.Config;
+import eu.orionos.build.exec.CommandKernel;
 
-public class CLIDebug extends CLI {
-	private static CLIDebug instance = null;
+/**
+ * @author bemk
+ * 
+ */
+public class PhaseDone extends Phase {
 
-	public static CLIDebug getInstance() {
-		instanceLock.lock();
-		if (instance == null)
-			instance = new CLIDebug();
-		instanceLock.unlock();
-		return instance;
+	/**
+	 * @param phaseMgr
+	 */
+	public PhaseDone(BuildPhase phaseMgr) {
+		super(phaseMgr);
 	}
 
-	public CLIDebug() {
-		super("CLIDebug");
-		if (!Config.getInstance().getDebug()) {
-			this.setSiltent();
-		}
-		if (Config.getInstance().colors())
-			this.prefix = Color.YELLOW + "[ DEBUG ] " + Color.DEFAULT;
-		else
-			this.prefix = "[ DEBUG ] ";
+	@Override
+	public void setExecutable() {
+
+	}
+
+	@Override
+	public void setFlags() {
+
+	}
+
+	@Override
+	protected void switchPhase() {
+
+	}
+
+	@Override
+	public synchronized void run() {
+		CommandKernel.getInstance().unregisterModule(phaseMgr.getModule());
+		if (phaseMgr.getModule().getParent() != null)
+			phaseMgr.getModule().getParent()
+					.markDependencyDone(phaseMgr.getModule());
+		phaseMgr.getModule().setDone();
+	}
+
+	@Override
+	protected String phaseName() {
+		return "Phase-Done";
+	}
+
+	@Override
+	public void dependencyUpdate() {
+		return; // Not at all relevant for this stage
 	}
 }
