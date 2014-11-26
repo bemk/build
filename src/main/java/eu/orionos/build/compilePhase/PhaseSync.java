@@ -44,25 +44,12 @@ public class PhaseSync extends Phase {
 						+ Thread.currentThread().getId());
 		CLIDebug.getInstance().writeline(
 				"Leaving sync in " + phaseMgr.getModule().getName());
-		if (!phaseMgr.compileDone()) {
-			phaseMgr.switchPhase(new PhaseCompile(phaseMgr));
-		} else if (!phaseMgr.dependenciesDone()) {
-			CLIDebug.getInstance().writeline(
-					"Leaving for depwait " + phaseMgr.getModule().getName());
-			phaseMgr.switchPhase(new PhaseWait(phaseMgr));
-		} else if (!phaseMgr.archiveDone()) {
-			CLIDebug.getInstance().writeline(
-					"Leaving for archive " + phaseMgr.getModule().getName());
-			phaseMgr.switchPhase(new PhaseArchive(phaseMgr));
-		} else if (!phaseMgr.linkDone()) {
-			CLIDebug.getInstance().writeline(
-					"Leaving for link " + phaseMgr.getModule().getName());
-			phaseMgr.switchPhase(new PhaseLink(phaseMgr));
-		} else {
-			CLIDebug.getInstance().writeline(
-					"Leaving for done " + phaseMgr.getModule().getName());
+
+		if (Config.getInstance().getClean()) {
 			phaseMgr.switchPhase(new PhaseDone(phaseMgr));
-		}
+		} else {
+			phaseMgr.switchPhase(new PhaseArchive(phaseMgr));
+		} 
 	}
 
 	@Override

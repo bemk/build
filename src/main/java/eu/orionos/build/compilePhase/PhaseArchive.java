@@ -54,7 +54,7 @@ public class PhaseArchive extends Phase {
 	protected void switchPhase() {
 		if (this.toRun.isEmpty()) {
 			phaseMgr.archiveDone(true);
-			phaseMgr.switchPhase(new PhaseSync(phaseMgr));
+			phaseMgr.switchPhase(new PhaseLink(phaseMgr));
 		}
 	}
 

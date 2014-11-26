@@ -18,7 +18,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
-*/
+ */
 
 package eu.orionos.build.exec;
 
@@ -34,25 +34,22 @@ import eu.orionos.build.ui.*;
 public class CommandRunner extends Thread {
 	private boolean runnable = true;
 
-	public CommandRunner()
-	{
+	public CommandRunner() {
 		super();
 	}
 
-	public void haltThread()
-	{
+	public void haltThread() {
 		this.runnable = false;
 	}
 
-	private void writeStream(InputStream p, CLI output, boolean prio) throws IOException
-	{
-		
-		if ((prio || Config.getInstance().verbose()) && !Config.getInstance().silent())
-		{
+	private void writeStream(InputStream p, CLI output, boolean prio)
+			throws IOException {
+
+		if ((prio || Config.getInstance().verbose())
+				&& !Config.getInstance().silent()) {
 			BufferedReader in = new BufferedReader(new InputStreamReader(p));
 			String line;
-			while ((line = in.readLine()) != null)
-			{
+			while ((line = in.readLine()) != null) {
 				if (line.toLowerCase().contains("error"))
 					CLIError.getInstance().writeline(line);
 				else
@@ -61,13 +58,10 @@ public class CommandRunner extends Thread {
 		}
 	}
 
-	private void writeCmd(String[] cmd)
-	{
-		if (!Config.getInstance().silent() && Config.getInstance().verbose())
-		{
+	private void writeCmd(String[] cmd) {
+		if (!Config.getInstance().silent() && Config.getInstance().verbose()) {
 			StringBuilder s = new StringBuilder();
-			for (int i = 0; i < cmd.length; i++)
-			{
+			for (int i = 0; i < cmd.length; i++) {
 				s.append(cmd[i]);
 				s.append(" ");
 			}
@@ -76,24 +70,22 @@ public class CommandRunner extends Thread {
 	}
 
 	@Override
-	public void run()
-	{
+	public void run() {
 		super.run();
-		while (runnable)
-		{
+		while (runnable) {
 			CompileUnit c = CommandKernel.getInstance().getCommand();
-			if (c != null)
-			{
+			if (c != null) {
 				try {
 					writeCmd(c.getCommand());
 					Runtime r = Runtime.getRuntime();
 					Process p = r.exec(c.getCommand());
 
-					writeStream(p.getErrorStream(), CLIWarning.getInstance(), true);
-					writeStream(p.getInputStream(), CLIInfo.getInstance(), false);
+					writeStream(p.getErrorStream(), CLIWarning.getInstance(),
+							true);
+					writeStream(p.getInputStream(), CLIInfo.getInstance(),
+							false);
 
-					if (p.waitFor() != 0)
-					{
+					if (p.waitFor() != 0) {
 						StringBuilder err = new StringBuilder();
 						final String[] array = c.getCommand();
 						for (int i = 0; i < array.length; i++) {
@@ -107,9 +99,7 @@ public class CommandRunner extends Thread {
 					}
 
 					c.markComplete();
-				}
-				catch (IOException e)
-				{
+				} catch (IOException e) {
 					CLIError.getInstance().writeline(e.getMessage());
 					CommandKernel.getInstance().killThreads();
 					Build.setError(ErrorCode.GENERIC);

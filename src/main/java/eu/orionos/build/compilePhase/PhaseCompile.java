@@ -63,7 +63,7 @@ public class PhaseCompile extends Phase {
 					"Going to sync for module: "
 							+ phaseMgr.getModule().getName());
 			phaseMgr.compileDone(true);
-			phaseMgr.switchPhase(new PhaseSync(phaseMgr));
+			phaseMgr.switchPhase(new PhaseWait(phaseMgr));
 		} else {
 			CLIDebug.getInstance().writeline(
 					"Not yet switching phases in "

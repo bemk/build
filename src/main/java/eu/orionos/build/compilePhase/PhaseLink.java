@@ -53,7 +53,7 @@ public class PhaseLink extends Phase {
 	protected void switchPhase() {
 		if (this.toRun.isEmpty()) {
 			phaseMgr.linkDone(true);
-			phaseMgr.switchPhase(new PhaseSync(phaseMgr));
+			phaseMgr.switchPhase(new PhaseDone(phaseMgr));
 		}
 	}
 

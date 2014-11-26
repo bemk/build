@@ -51,7 +51,7 @@ public class PhaseClean extends Phase {
 			phaseMgr.compileDone(true);
 			phaseMgr.archiveDone(true);
 			phaseMgr.linkDone(true);
-			phaseMgr.switchPhase(new PhaseSync(phaseMgr));
+			phaseMgr.switchPhase(new PhaseWait(phaseMgr));
 		}
 	}
 

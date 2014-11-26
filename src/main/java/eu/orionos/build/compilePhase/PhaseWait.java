@@ -19,6 +19,7 @@
  */
 package eu.orionos.build.compilePhase;
 
+import eu.orionos.build.Config;
 import eu.orionos.build.ui.CLIDebug;
 
 /**
@@ -49,7 +50,12 @@ public class PhaseWait extends Phase {
 		if (phaseMgr.dependenciesDone()) {
 			CLIDebug.getInstance().writeline(
 					"Waiting done " + phaseMgr.getModule().getName());
-			phaseMgr.switchPhase(new PhaseSync(phaseMgr));
+			if ((phaseMgr.getModule().toArchive() || phaseMgr.getModule()
+					.toLink()) && !Config.getInstance().getClean()) {
+				phaseMgr.switchPhase(new PhaseSync(phaseMgr));
+			} else {
+				phaseMgr.switchPhase(new PhaseDone(phaseMgr));
+			}
 		}
 	}
 
