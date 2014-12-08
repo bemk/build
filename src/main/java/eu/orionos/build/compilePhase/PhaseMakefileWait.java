@@ -19,21 +19,13 @@
  */
 package eu.orionos.build.compilePhase;
 
-import eu.orionos.build.Config;
-import eu.orionos.build.exec.CommandKernel;
-import eu.orionos.build.ui.CLIDebug;
-import eu.orionos.build.ui.CLIError;
-
 /**
  * @author bemk
  * 
  */
-public class PhaseStart extends Phase {
+public class PhaseMakefileWait extends Phase {
 
-	/**
-	 * @param phaseMgr
-	 */
-	public PhaseStart(BuildPhase phaseMgr) {
+	protected PhaseMakefileWait(BuildPhase phaseMgr) {
 		super(phaseMgr);
 	}
 
@@ -49,33 +41,24 @@ public class PhaseStart extends Phase {
 
 	@Override
 	protected void switchPhase() {
-		CLIDebug.getInstance().writeline(
-				"Switching to start or clean in "
-						+ phaseMgr.getModule().getName());
-		if (Config.getInstance().genMakefile()) {
-			phaseMgr.switchPhase(new PhaseMakefileCompile(phaseMgr));
-		} else if (Config.getInstance().getClean()) {
-			phaseMgr.switchPhase(new PhaseClean(phaseMgr));
-		} else {
-			phaseMgr.switchPhase(new PhaseCompile(phaseMgr));
+		if (phaseMgr.dependenciesDone()) {
+			phaseMgr.switchPhase(new PhaseMakefileArchive(phaseMgr));
 		}
 	}
 
 	@Override
-	public synchronized void run() {
-		CommandKernel.getInstance().registerModule(phaseMgr.getModule());
-		CLIDebug.getInstance().writeline(
-				"Module " + phaseMgr.getModule().getName() + " registered!");
-		this.switchPhase();
-	}
-
-	@Override
 	protected String phaseName() {
-		return "Phase-Start";
+		return "Phase-Makefile-Wait";
 	}
 
 	@Override
 	public void dependencyUpdate() {
-		return; // Not at all relevant for this stage
+		switchPhase();
 	}
+
+	@Override
+	public void run() {
+		switchPhase();
+	}
+
 }

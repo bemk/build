@@ -16,49 +16,32 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
-*/
-package eu.orionos.build.compilePhase;
+ */
+package eu.orionos.build.option;
+
+import eu.orionos.build.Config;
 
 /**
  * @author bemk
- *
+ * 
  */
-public class PhasePreStart extends Phase {
+public class OptionMakefile extends Option {
 
-	/**
-	 * @param phaseMgr
-	 */
-	protected PhasePreStart(BuildPhase phaseMgr) {
-		super(phaseMgr);
+	public OptionMakefile() {
+
+		this(' ', "gen-makefile", true, "[Makefile name]",
+				"Generate a makefile");
+	}
+
+	private OptionMakefile(char c, String s, boolean operands,
+			String parameters, String info) {
+		super(c, s, operands, parameters, info);
 	}
 
 	@Override
-	public void setExecutable() {
-
+	public void option() {
+		Config.getInstance().genMakefile(true);
+		Config.getInstance().MakefilePath(operand);
 	}
 
-	@Override
-	public void setFlags() {
-
-	}
-
-	@Override
-	protected void switchPhase() {
-
-	}
-
-	@Override
-	public synchronized void run() {
-
-	}
-
-	@Override
-	protected String phaseName() {
-		return "Phase-PreStart";
-	}
-
-	@Override
-	public void dependencyUpdate() {
-		return; // Not at all relevant for this stage
-	}
 }

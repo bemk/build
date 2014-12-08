@@ -26,7 +26,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import eu.orionos.build.CompileUnit;
 import eu.orionos.build.Config;
 import eu.orionos.build.Module;
-import eu.orionos.build.buildPhase.PhaseManager;
+import eu.orionos.build.makefile.Target;
+import eu.orionos.build.makefile.ARTarget;
+import eu.orionos.build.makefile.LDTarget;
 import eu.orionos.build.ui.CLIDebug;
 import eu.orionos.build.ui.CLIError;
 
@@ -43,6 +45,9 @@ public class BuildPhase {
 	private boolean archiveDone = false;
 	private boolean linkDone = false;
 	private ArrayList<String> filesForArchive = new ArrayList<String>();
+	private ArrayList<Target> compileTargets = new ArrayList<Target>();
+	private ARTarget ARTarget;
+	private LDTarget LDTarget;
 
 	Object lock = new Object();
 
@@ -149,5 +154,29 @@ public class BuildPhase {
 
 	public ArrayList<String> filesForArchive() {
 		return new ArrayList<String>(filesForArchive);
+	}
+
+	public ArrayList<Target> compileTargets() {
+		return this.compileTargets;
+	}
+
+	public void compileTargets(ArrayList<Target> targets) {
+		this.compileTargets.addAll(targets);
+	}
+
+	public ARTarget arTarget() {
+		return this.ARTarget;
+	}
+
+	public void arTarget(ARTarget target) {
+		this.ARTarget = target;
+	}
+
+	public LDTarget ldTarget() {
+		return this.LDTarget;
+	}
+
+	public void ldTarget(LDTarget target) {
+		this.LDTarget = target;
 	}
 }

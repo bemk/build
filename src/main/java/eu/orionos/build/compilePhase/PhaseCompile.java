@@ -1,5 +1,5 @@
 /*  Build - Hopefully a simple build system
-    Copyright (C) 2013 - Bart Kuivenhoven
+    Copyright (C) 2014 - Bart Kuivenhoven
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -85,12 +85,6 @@ public class PhaseCompile extends Phase {
 	public synchronized void run() {
 		CLIDebug.getInstance().writeline(
 				"Running compile in module " + phaseMgr.getModule().getName());
-		/*
-		 * A double itteration has been chosen, because the command runner could
-		 * theoretically be quicker than the rate at which new commands are
-		 * entered into the list, causing the switchPhase method to run before
-		 * its time.
-		 */
 
 		getTargets();
 		Iterator<String> target = targets.iterator();

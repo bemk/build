@@ -16,49 +16,38 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
-*/
-package eu.orionos.build.compilePhase;
+ */
+package eu.orionos.build.makefile;
 
 /**
  * @author bemk
- *
+ * 
  */
-public class PhasePreStart extends Phase {
+public class Variable {
+	private String key;
+	private String value;
 
-	/**
-	 * @param phaseMgr
-	 */
-	protected PhasePreStart(BuildPhase phaseMgr) {
-		super(phaseMgr);
+	public Variable(String key, String value) {
+		this.key = key;
+		this.value = value;
 	}
 
-	@Override
-	public void setExecutable() {
-
+	public String getKey() {
+		return this.key;
 	}
 
-	@Override
-	public void setFlags() {
-
+	public String getValue() {
+		return this.value;
 	}
 
-	@Override
-	protected void switchPhase() {
+	public String getVarDef() {
+		StringBuilder varDef = new StringBuilder();
 
-	}
+		varDef.append(key);
+		varDef.append(":=");
+		varDef.append(value);
+		varDef.append("\n");
 
-	@Override
-	public synchronized void run() {
-
-	}
-
-	@Override
-	protected String phaseName() {
-		return "Phase-PreStart";
-	}
-
-	@Override
-	public void dependencyUpdate() {
-		return; // Not at all relevant for this stage
+		return varDef.toString();
 	}
 }

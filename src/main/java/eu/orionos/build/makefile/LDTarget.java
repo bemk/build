@@ -17,48 +17,21 @@
 
     A version of the licence can also be found at http://gnu.org/licences/
 */
-package eu.orionos.build.compilePhase;
+package eu.orionos.build.makefile;
 
 /**
  * @author bemk
  *
  */
-public class PhasePreStart extends Phase {
+public class LDTarget extends Target {
 
-	/**
-	 * @param phaseMgr
-	 */
-	protected PhasePreStart(BuildPhase phaseMgr) {
-		super(phaseMgr);
+	public LDTarget(String target) {
+		super(target);
 	}
 
 	@Override
-	public void setExecutable() {
-
+	public String getTarget() {
+		return getTargetDepencencies(parent.getLD(), parent.getLDFLAGS());
 	}
 
-	@Override
-	public void setFlags() {
-
-	}
-
-	@Override
-	protected void switchPhase() {
-
-	}
-
-	@Override
-	public synchronized void run() {
-
-	}
-
-	@Override
-	protected String phaseName() {
-		return "Phase-PreStart";
-	}
-
-	@Override
-	public void dependencyUpdate() {
-		return; // Not at all relevant for this stage
-	}
 }

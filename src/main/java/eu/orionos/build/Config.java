@@ -1,6 +1,6 @@
 /*  Build - Hopefully a simple build system
     Copyright (C)
-        Bart Kuivenhoven   <bemkuivenhoven@gmail.com> - 2013
+        Bart Kuivenhoven   <bemkuivenhoven@gmail.com> - 2013 - 2014
         Toon Schoenmakers  <nighteyes1993@gmail.com>  - 2013
         Steven vd Schoot   <stevenvdschoot@gmail.com> - 2013
 
@@ -19,7 +19,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
-*/
+ */
 
 package eu.orionos.build;
 
@@ -63,13 +63,14 @@ public class Config {
 	private boolean ld_required = false;
 	private boolean nosync = false;
 	private boolean debug = false;
+	private boolean genMakefile = false;
+	private String MakefilePath = "";
 
-	private void setConfigFile(String conf) throws FileNotFoundException, IOException
-	{
+	private void setConfigFile(String conf) throws FileNotFoundException,
+			IOException {
 		this.configFile = conf;
 		File f = new File(configFile);
-		if (!f.exists())
-		{
+		if (!f.exists()) {
 			return;
 		}
 		try {
@@ -93,90 +94,84 @@ public class Config {
 		}
 	}
 
-	public void setColors(boolean val)
-	{
+	public void setColors(boolean val) {
 		this.colors_enabled = val;
 	}
 
-	public boolean colors()
-	{
+	public boolean colors() {
 		return this.colors_enabled;
 	}
-	
-	public static Config getInstance()
-	{
+
+	public static Config getInstance() {
 		return instance;
 	}
-	public String getConfigFile()
-	{
+
+	public String getConfigFile() {
 		return this.configFile;
 	}
 
-	public synchronized static Config getInstance(String conf) throws FileNotFoundException, IOException
-	{
+	public synchronized static Config getInstance(String conf)
+			throws FileNotFoundException, IOException {
 		instance.setConfigFile(conf);
 		return instance;
 	}
-	
-	public synchronized void override(String conf) throws FileNotFoundException, IOException
-	{
+
+	public synchronized void override(String conf)
+			throws FileNotFoundException, IOException {
 		this.setConfigFile(conf);
 	}
 
-	public boolean silent()
-	{
+	public boolean silent() {
 		return this.silent;
 	}
-	public void silent(boolean silent)
-	{
+
+	public void silent(boolean silent) {
 		this.silent = silent;
 	}
-	public boolean verbose()
-	{
+
+	public boolean verbose() {
 		return this.verbose;
 	}
-	public void verbose(boolean verbose)
-	{
+
+	public void verbose(boolean verbose) {
 		this.verbose = verbose;
 	}
-	public void buildFile(String buildFile)
-	{
+
+	public void buildFile(String buildFile) {
 		this.buildFile = buildFile;
 	}
-	public String buildFile()
-	{
+
+	public String buildFile() {
 		return this.buildFile;
 	}
-	public void buildFileOverride(boolean b)
-	{
+
+	public void buildFileOverride(boolean b) {
 		this.buildFileOverride = b;
 	}
-	public boolean buildFileOverride()
-	{
+
+	public boolean buildFileOverride() {
 		return this.buildFileOverride;
 	}
 
-	public JSONObject get(String key)
-	{
+	public JSONObject get(String key) {
 		return conf.optJSONObject(key);
 	}
-	public void setClean(boolean clean)
-	{
+
+	public void setClean(boolean clean) {
 		this.clean = clean;
 	}
-	public boolean getClean()
-	{
+
+	public boolean getClean() {
 		return this.clean;
 	}
 
-	public boolean getDefined(String key)
-	{
+	public boolean getDefined(String key) {
 		if (conf == null)
 			return false;
 		if (!conf.has(Semantics.GLOBAL_DEFS))
 			return false;
 		JSONArray a;
-		
+
 		try {
 			a = conf.getJSONArray(Semantics.GLOBAL_DEFS);
 		} catch (JSONException e) {
@@ -184,7 +179,7 @@ public class Config {
 			e.printStackTrace();
 			return false;
 		}
-		
+
 		for (int i = 0; i < a.length(); i++) {
 			try {
 				if (key.equals(a.get(i)))
@@ -197,13 +192,12 @@ public class Config {
 		return false;
 	}
 
-	public boolean getModuleDefined(String module, String key)
-	{
+	public boolean getModuleDefined(String module, String key) {
 		if (conf == null)
 			return false;
 		if (!conf.has(module))
 			return false;
-		
+
 		JSONArray a;
 		try {
 			a = conf.getJSONArray(module);
@@ -212,7 +206,7 @@ public class Config {
 			e.printStackTrace();
 			return false;
 		}
-		
+
 		for (int i = 0; i < a.length(); i++) {
 			try {
 				if (key.equals(a.get(i)))
@@ -225,190 +219,198 @@ public class Config {
 		return false;
 	}
 
-	public synchronized void genDepFile(boolean value)
-	{
+	public synchronized void genDepFile(boolean value) {
 		this.genDepFile = value;
 	}
-	public synchronized boolean genDepFile()
-	{
+
+	public synchronized boolean genDepFile() {
 		return this.genDepFile;
 	}
 
-	public synchronized void genConfigFile(boolean value)
-	{
+	public synchronized void genConfigFile(boolean value) {
 		this.genConfigFile = value;
 	}
-	public synchronized boolean genConfigFile()
-	{
+
+	public synchronized boolean genConfigFile() {
 		return this.genConfigFile;
 	}
 
-	public synchronized void allyes_config(boolean value)
-	{
+	public synchronized void allyes_config(boolean value) {
 		this.allyes_config = value;
 	}
-	public synchronized boolean allyes_config()
-	{
+
+	public synchronized boolean allyes_config() {
 		return this.allyes_config;
 	}
-	public synchronized void allno_config(boolean value)
-	{
+
+	public synchronized void allno_config(boolean value) {
 		this.allno_config = value;
 	}
-	public synchronized boolean allno_config()
-	{
+
+	public synchronized boolean allno_config() {
 		return this.allno_config;
 	}
-	public synchronized void random_config(boolean value)
-	{
+
+	public synchronized void random_config(boolean value) {
 		this.random_config = value;
 	}
-	public synchronized boolean random_config()
-	{
+
+	public synchronized boolean random_config() {
 		return this.random_config;
 	}
-	public synchronized boolean auto_config()
-	{
+
+	public synchronized boolean auto_config() {
 		return allyes_config | allno_config | random_config;
 	}
 
-	public synchronized boolean hasConf()
-	{
+	public synchronized boolean hasConf() {
 		if (this.conf == null && this.genDepFile == false)
 			return false;
 		return true;
 	}
-	public JSONArray getGlobalFlags()
-	{
+
+	public JSONArray getGlobalFlags() {
 		return conf.optJSONArray(Semantics.GLOBAL_DEFS);
 	}
-	public JSONArray getModuleFlags(String key)
-	{
+
+	public JSONArray getModuleFlags(String key) {
 		return conf.optJSONArray(key);
 	}
-	public boolean RegisterModule(Module m)
-	{
+
+	public boolean RegisterModule(Module m) {
 		if (modules.containsKey(m.getName()))
 			return false;
-		
+
 		modules.put(m.getName(), m);
 		return true;
 	}
-	public synchronized String getBuildDir()
-	{
-		if (buildDir == null)
-		{
+
+	public synchronized String getBuildDir() {
+		if (buildDir == null) {
 			String s = (String) conf.optString(Semantics.CONFIG_BUILD_DIR);
 			if (s == null || s.equals(""))
 				s = "bin";
 			buildDir = new File(s);
 		}
-		if (!buildDir.exists())
-		{
+		if (!buildDir.exists()) {
 			buildDir.mkdir();
 		}
-		if (!buildDir.isDirectory())
-		{
-			System.err.println("The build directory specified is not a directory!");
+		if (!buildDir.isDirectory()) {
+			System.err
+					.println("The build directory specified is not a directory!");
 			System.exit(ErrorCode.FILE_NOT_FOUND);
 		}
 		return buildDir.getAbsolutePath();
 	}
-	public int threads()
-	{
+
+	public int threads() {
 		return this.threads;
 	}
-	public void threads(int threads)
-	{
+
+	public void threads(int threads) {
 		this.threads = threads;
 	}
 
-	public void cflags(String cflags)
-	{
+	public void cflags(String cflags) {
 		this.cflags = cflags;
 	}
-	public String cflags()
-	{
+
+	public String cflags() {
 		return this.cflags;
 	}
-	public void aflags(String aflags)
-	{
+
+	public void aflags(String aflags) {
 		this.aflags = aflags;
 	}
-	public String aflags()
-	{
+
+	public String aflags() {
 		return this.aflags;
 	}
-	public void ldflags(String ldflags)
-	{
+
+	public void ldflags(String ldflags) {
 		this.ldflags = ldflags;
 	}
-	public String ldflags()
-	{
+
+	public String ldflags() {
 		return this.ldflags;
 	}
-	public String getDepFile()
-	{
+
+	public String getDepFile() {
 		if (depFile == null || depFile.equals(""))
 			return "dep.flags";
 
 		return depFile;
 	}
-	public void setDepFile(String depFile)
-	{
+
+	public void setDepFile(String depFile) {
 		this.depFile = depFile;
 	}
 
-	public void updateDepFile(boolean value)
-	{
+	public void updateDepFile(boolean value) {
 		this.updateDepFile = value;
 	}
+
 	public boolean updateDepFile() {
 		return this.updateDepFile;
 	}
-	public int getRandom()
-	{
+
+	public int getRandom() {
 		return randomSource.nextInt();
 	}
-	public int getRandom(int max)
-	{
+
+	public int getRandom(int max) {
 		return randomSource.nextInt(max);
 	}
-	public int getRandom(int min, int max)
-	{
+
+	public int getRandom(int min, int max) {
 		return randomSource.nextInt(max - min + 1) + min;
 	}
 
-	public void set_ld_required ()
-	{
+	public void set_ld_required() {
 		this.ld_required = true;
 	}
-	public void set_ar_required ()
-	{
+
+	public void set_ar_required() {
 		this.ar_required = true;
 	}
-	public boolean get_ld_required ()
-	{
+
+	public boolean get_ld_required() {
 		return this.ld_required;
 	}
-	public boolean get_ar_required ()
-	{
+
+	public boolean get_ar_required() {
 		return this.ar_required;
 	}
-	public boolean nosync()
-	{
+
+	public boolean nosync() {
 		return this.nosync;
 	}
-	public void nosync(boolean nosync)
-	{
+
+	public void nosync(boolean nosync) {
 		this.nosync = nosync;
 	}
-	public void setDebug()
-	{
+
+	public void setDebug() {
 		this.debug = true;
 	}
-	public boolean getDebug()
-	{
+
+	public boolean getDebug() {
 		return this.debug;
+	}
+
+	public void genMakefile(boolean b) {
+		this.genMakefile = b;
+	}
+
+	public boolean genMakefile() {
+		return this.genMakefile;
+	}
+
+	public void MakefilePath(String path) {
+		this.MakefilePath = path;
+	}
+
+	public String MakefilePath() {
+		return this.MakefilePath;
 	}
 }

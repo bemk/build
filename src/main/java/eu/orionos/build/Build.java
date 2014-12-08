@@ -29,6 +29,8 @@ import eu.orionos.build.buildPhase.InitialPreconfigure;
 import eu.orionos.build.buildPhase.ParseOptions;
 import eu.orionos.build.buildPhase.PhaseManager;
 import eu.orionos.build.buildPhase.Preconfigure;
+import eu.orionos.build.ui.CLI;
+import eu.orionos.build.ui.CLIError;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -126,6 +128,16 @@ public class Build {
 		}
 
 		return version;
+	}
+	
+	public static void panic(String msg, int errCode) {
+		CLIError.getInstance().writeline(msg);
+		CLI.getInstance().kill();
+		while (CLI.getInstance().getDone()) {
+			Thread.yield();
+		}
+		System.exit(errCode);
+		
 	}
 
 	public static class Version {
