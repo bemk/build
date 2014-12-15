@@ -58,37 +58,43 @@ public class Complete extends Phase {
 			if (modules == null)
 				throw new Exception();
 			boolean buildDone = false;
-			while (!buildDone) {
+			while (!buildDone && !manager.panic()) {
 				if (!manager.getToCompile()) {
 					buildDone = true;
 				} else {
 					buildDone = modules.getDone();
 					if (!buildDone) {
-						//CLIDebug.getInstance().writeline("Waiting for modules!");
+						// CLIDebug.getInstance().writeline("Waiting for modules!");
 					}
 				}
 				if (CommandKernel.getInstance().getNoCommands() != 0) {
 					buildDone = false;
-					//CLIDebug.getInstance().writeline("Waiting for command kernel!");
+					// CLIDebug.getInstance().writeline("Waiting for command kernel!");
 				}
-				/*CLIDebug.getInstance().writeline(
-						"Main thread waiting for completion");
-				CLIDebug.getInstance().writeline(
-						"Modules.getDone: " + modules.getDone());
-				CLIDebug.getInstance().writeline(
-						"manager.getToCompile: " + manager.getToCompile());
-				CLIDebug.getInstance().writeline(
-						"CommandKernel.getNoCommands: "
-								+ CommandKernel.getInstance().getNoCommands());*/
+				/*
+				 * CLIDebug.getInstance().writeline(
+				 * "Main thread waiting for completion");
+				 * CLIDebug.getInstance().writeline( "Modules.getDone: " +
+				 * modules.getDone()); CLIDebug.getInstance().writeline(
+				 * "manager.getToCompile: " + manager.getToCompile());
+				 * CLIDebug.getInstance().writeline(
+				 * "CommandKernel.getNoCommands: " +
+				 * CommandKernel.getInstance().getNoCommands());
+				 */
 				Thread.sleep(100);
 			}
-			if (Build.getError() == ErrorCode.SUCCESS)
-				CommandKernel.getInstance().stopThreads();
-			else
-				CLIError.getInstance().writeline("Stopping due to error!");
-			while (CLI.getInstance().getDone())
-				Thread.sleep(100);
-			CLI.getInstance().kill();
+			if (Build.getError() != ErrorCode.SUCCESS) {
+				Build.panic("Stopping due to error", Build.getError());
+			} else {
+				Build.stop("", CLI.getInstance());
+			}
+			/*
+			 * if (Build.getError() == ErrorCode.SUCCESS)
+			 * CommandKernel.getInstance().stopThreads(); else
+			 * CLIError.getInstance().writeline("Stopping due to error!"); while
+			 * (CLI.getInstance().getDone()) Thread.sleep(100);
+			 * CLI.getInstance().kill();
+			 */
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (Exception e) {

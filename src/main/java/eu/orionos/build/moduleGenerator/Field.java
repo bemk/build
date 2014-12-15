@@ -16,30 +16,29 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
-*/
+ */
 package eu.orionos.build.moduleGenerator;
 
 import java.io.IOException;
 import eu.orionos.build.ui.CLI;
 
 public abstract class Field {
-	public static boolean askBoolean() throws IOException
-	{
-		while (true)
-		{
-			String s = CLI.getInstance().readline("[y/N] ");
+	private static CLI cli = CLI.getInstance();
+
+	public static boolean askBoolean() throws IOException {
+		while (true) {
+			String s = cli.readline("[y/N] ");
 			if (s.toLowerCase().equals("y") || s.toLowerCase().equals("yes"))
 				return true;
-			else if (s.toLowerCase().equals("n") || s.toLowerCase().equals("no") || s.equals(""))
+			else if (s.toLowerCase().equals("n")
+					|| s.toLowerCase().equals("no") || s.equals(""))
 				return false;
 		}
 	}
 
-	public static int askInt() throws IOException
-	{
-		while (true)
-		{
-			String s = CLI.getInstance().readline("[0..9] ");
+	public static int askInt() throws IOException {
+		while (true) {
+			String s = cli.readline("[0..9] ");
 			try {
 				int i = Integer.parseInt(s);
 				return i;
@@ -49,9 +48,8 @@ public abstract class Field {
 		}
 	}
 
-	public static String askString() throws IOException
-	{
-		return CLI.getInstance().readline(": ");
+	public static String askString() throws IOException {
+		return cli.readline(": ");
 	}
 
 	public abstract String toJSON();

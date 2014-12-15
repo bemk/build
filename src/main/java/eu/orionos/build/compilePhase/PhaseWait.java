@@ -48,10 +48,8 @@ public class PhaseWait extends Phase {
 	@Override
 	protected void switchPhase() {
 		if (phaseMgr.dependenciesDone()) {
-			CLIDebug.getInstance().writeline(
-					"Waiting done " + phaseMgr.getModule().getName());
 			if ((phaseMgr.getModule().toArchive() || phaseMgr.getModule()
-					.toLink()) && !Config.getInstance().getClean()) {
+					.toLink()) && !config.getClean()) {
 				phaseMgr.switchPhase(new PhaseSync(phaseMgr));
 			} else {
 				phaseMgr.switchPhase(new PhaseDone(phaseMgr));

@@ -75,8 +75,8 @@ public class PhaseLink extends Phase {
 		String[] command = new String[1];
 		command = cmd.toArray(command);
 
-		CompileUnit cu = new CompileUnit(phaseMgr.getModule(), command,
-				phaseMgr.getModule().getLFile());
+		CompileUnit cu = new CompileUnit(this, command, phaseMgr.getModule()
+				.getLFile());
 		this.toRun.put(cu.key(), cu);
 
 		sendCommands();

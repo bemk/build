@@ -16,57 +16,57 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
-*/
+ */
 package eu.orionos.build.buildPhase;
 
 /**
  * @author bemk
- *
+ * 
  */
 public class PhaseManager {
 	private Phase phase;
 	private String[] cmd;
 	private boolean toConfigure = false;
 	private boolean toCompile = false;
+	private boolean panic = false;
 
-	public PhaseManager(String[] cmd)
-	{
+	public PhaseManager(String[] cmd) {
 		this.cmd = cmd;
 	}
 
-	public void setToConfigure()
-	{
+	public void setToConfigure() {
 		this.toConfigure = true;
 	}
 
-	public boolean getToConfigure()
-	{
+	public boolean getToConfigure() {
 		return this.toConfigure;
 	}
-	
-	public void setToCompile()
-	{
+
+	public void setToCompile() {
 		this.toCompile = true;
 	}
-	public boolean getToCompile()
-	{
+
+	public boolean getToCompile() {
 		return this.toCompile;
 	}
 
-	public String[] getCmd()
-	{
+	public String[] getCmd() {
 		return this.cmd;
 	}
 
-	public Phase getPhase()
-	{
+	public Phase getPhase() {
 		return this.phase;
 	}
 
-	public void switchPhases(Phase phase)
-	{
+	public void switchPhases(Phase phase) {
 		this.phase = phase;
 		phase.run();
 	}
 
+	public void panic(boolean panic) {
+		this.panic = panic;
+	}
+	public boolean panic() {
+		return this.panic;
+	}
 }

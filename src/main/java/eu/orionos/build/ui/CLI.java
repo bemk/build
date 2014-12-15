@@ -22,20 +22,19 @@ package eu.orionos.build.ui;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import eu.orionos.build.Config;
 import net.michelmegens.xterm.Color;
 
-public class CLI extends Thread {
+public class CLI implements Runnable {
 	private static CLI cli = null;
 	protected static boolean finished = false;
-	protected ArrayList<String> out = new ArrayList<String>();
-	private Lock lock = new ReentrantLock(true);
+	protected ConcurrentLinkedQueue<String> out = new ConcurrentLinkedQueue<String>();
 	private BufferedReader r = new BufferedReader(new InputStreamReader(
 			System.in));
 	protected static Lock instanceLock = new ReentrantLock(true);
@@ -44,35 +43,49 @@ public class CLI extends Thread {
 	private String name = "";
 	private boolean silent = false;
 
+	private static Object synchronizedObject = new Object();
+
 	public static CLI getInstance() {
-		instanceLock.lock();
-		if (cli == null)
-			cli = new CLI("CLI");
-		instanceLock.unlock();
+		synchronized (synchronizedObject) {
+			if (cli == null) {
+				cli = new CLI("CLI");
+			}
+		}
 		return cli;
 	}
 
 	protected CLI(String name) {
-		this.start();
+		Thread t = new Thread(this);
+		t.setName("CLI-" + name);
+		t.start();
 		this.name = name;
-		threads.put(name, this);
+		threads.put(name, t);
 		if (Config.getInstance().colors() && name.equals("CLI")) {
 			prefix = Color.DEFAULT;
-		} 
+		}
 	}
 
 	public void writeline(String msg) {
-		this.write(msg + "\n");
+		this.write(msg, true);
 	}
 
 	public void write(String msg) {
+		write(msg, false);
+	}
+
+	public void write(String msg, boolean endline) {
 		if (this.silent) {
 			return;
 		}
-		this.getLock();
-		this.out.add(prefix + msg);
-		this.unlock();
-		Thread.yield();
+		StringBuilder message = new StringBuilder(prefix);
+		message.append(msg);
+		if (endline) {
+			message.append("\n");
+		}
+		synchronized (out) {
+			this.out.add(message.toString());
+			out.notifyAll();
+		}
 	}
 
 	public String readline(String msg) {
@@ -81,7 +94,6 @@ public class CLI extends Thread {
 			return ret;
 		}
 		while (ret == null) {
-			this.getLock();
 			if (this.out.isEmpty()) {
 				try {
 					System.out.print(msg);
@@ -89,9 +101,9 @@ public class CLI extends Thread {
 				} catch (IOException e) {
 					ret = "";
 				}
-			} else
+			} else {
 				Thread.yield();
-			this.unlock();
+			}
 		}
 		return ret;
 	}
@@ -124,28 +136,25 @@ public class CLI extends Thread {
 
 	public void run() {
 		while (!finished || !out.isEmpty()) {
-			Thread.yield();
-			this.getLock();
-			Iterator<String> i = out.iterator();
-			while (i.hasNext()) {
-				System.out.print(i.next());
-				i.remove();
+			try {
+				StringBuilder str = new StringBuilder();
+				synchronized (out) {
+					for (String next = out.poll(); next != null; next = out
+							.poll()) {
+						str.append(next);
+					}
+					out.wait(100);
+				}
+				System.out.print(str.toString());
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-			this.unlock();
 		}
 		CLI.getInstance().markDone(name);
 	}
 
 	public void kill() {
 		finished = true;
-	}
-
-	protected void getLock() {
-		lock.lock();
-	}
-
-	protected void unlock() {
-		lock.unlock();
 	}
 
 	protected void markDone(String name) {

@@ -19,8 +19,6 @@
  */
 package eu.orionos.build.compilePhase;
 
-import eu.orionos.build.exec.CommandKernel;
-
 /**
  * @author bemk
  * 
@@ -51,7 +49,7 @@ public class PhaseDone extends Phase {
 
 	@Override
 	public synchronized void run() {
-		CommandKernel.getInstance().unregisterModule(phaseMgr.getModule());
+		kernel.unregisterModule(phaseMgr.getModule());
 		if (phaseMgr.getModule().getParent() != null)
 			phaseMgr.getModule().getParent()
 					.markDependencyDone(phaseMgr.getModule());

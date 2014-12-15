@@ -49,10 +49,9 @@ public class PhaseStart extends Phase {
 
 	@Override
 	protected void switchPhase() {
-		CLIDebug.getInstance().writeline(
-				"Switching to start or clean in "
-						+ phaseMgr.getModule().getName());
-		if (Config.getInstance().genMakefile()) {
+		debug.writeline(new StringBuilder("Switching to start or clean in ")
+				.append(phaseMgr.getModule().getName()).toString());
+		if (config.genMakefile()) {
 			phaseMgr.switchPhase(new PhaseMakefileCompile(phaseMgr));
 		} else if (Config.getInstance().getClean()) {
 			phaseMgr.switchPhase(new PhaseClean(phaseMgr));
@@ -63,9 +62,8 @@ public class PhaseStart extends Phase {
 
 	@Override
 	public synchronized void run() {
-		CommandKernel.getInstance().registerModule(phaseMgr.getModule());
-		CLIDebug.getInstance().writeline(
-				"Module " + phaseMgr.getModule().getName() + " registered!");
+		kernel.registerModule(phaseMgr.getModule());
+		debug.writeline(new StringBuilder("Module ").append(phaseMgr.getModule().getName()).append(" registered!").toString());
 		this.switchPhase();
 	}
 

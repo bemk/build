@@ -81,10 +81,10 @@ public class PhaseMakefileWrite extends Phase {
 
 		try {
 			MakeModule m = phaseMgr.getModule().getMakefile();
-			File makefile = new File(Config.getInstance().MakefilePath());
-			
+			File makefile = new File(config.MakefilePath());
+
 			if (makefile.exists() && makefile.isDirectory()) {
-				Build.panic("File at " + Config.getInstance().MakefilePath()
+				Build.panic("File at " + config.MakefilePath()
 						+ " already exists and is directory!", -9004);
 			}
 			if (makefile.exists()) {

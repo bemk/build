@@ -38,33 +38,35 @@ public class PhaseSync extends Phase {
 
 	@Override
 	protected synchronized void switchPhase() {
-		CLIDebug.getInstance().writeline(
-				phaseMgr.getModule().getName()
-						+ " switching away from sync in thread: "
-						+ Thread.currentThread().getId());
-		CLIDebug.getInstance().writeline(
-				"Leaving sync in " + phaseMgr.getModule().getName());
+		if (config.getDebug()) {
+			debug.writeline(phaseMgr.getModule().getName()
+					+ " switching away from sync in thread: "
+					+ Thread.currentThread().getId());
+			debug.writeline("Leaving sync in " + phaseMgr.getModule().getName());
+		}
 
-		if (Config.getInstance().getClean()) {
+		if (config.getClean()) {
 			phaseMgr.switchPhase(new PhaseDone(phaseMgr));
 		} else {
 			phaseMgr.switchPhase(new PhaseArchive(phaseMgr));
-		} 
+		}
 	}
 
 	@Override
 	public synchronized void run() {
-		CLIDebug.getInstance().writeline(
-				"Switching to sync in module " + phaseMgr.getModule().getName()
-						+ " in thread: " + Thread.currentThread().getId());
-		if (Config.getInstance().nosync()) {
+		if (config.getDebug()) {
+			debug.writeline("Switching to sync in module "
+					+ phaseMgr.getModule().getName() + " in thread: "
+					+ Thread.currentThread().getId());
+		}
+		if (config.nosync()) {
 			this.switchPhase();
 			return;
 		}
 		String command[] = new String[1];
 		command[0] = "sync";
-		CompileUnit unit = new CompileUnit(phaseMgr.getModule(), command,
-				"Syncing " + phaseMgr.getModule().getName());
+		CompileUnit unit = new CompileUnit(this, command, "Syncing "
+				+ phaseMgr.getModule().getName());
 
 		unit.setSilent();
 

@@ -29,6 +29,7 @@ import eu.orionos.build.buildPhase.InitialPreconfigure;
 import eu.orionos.build.buildPhase.ParseOptions;
 import eu.orionos.build.buildPhase.PhaseManager;
 import eu.orionos.build.buildPhase.Preconfigure;
+import eu.orionos.build.exec.CommandKernel;
 import eu.orionos.build.ui.CLI;
 import eu.orionos.build.ui.CLIError;
 
@@ -40,17 +41,18 @@ import java.util.Enumeration;
 public class Build {
 
 	private static int error = ErrorCode.SUCCESS;
-	private PhaseManager manager;
+	private static PhaseManager manager;
+	Config config = Config.getInstance();
 
 	public Build(String path, String args[]) {
 		manager = new PhaseManager(args);
 		manager.switchPhases(new ParseOptions(manager));
 
-		if (Config.getInstance().genConfigFile()) {
+		if (config.genConfigFile()) {
 			manager.switchPhases(new Configure(manager));
-		} else if (Config.getInstance().updateDepFile()) {
+		} else if (config.updateDepFile()) {
 			manager.switchPhases(new Preconfigure(manager));
-		} else if (Config.getInstance().genDepFile()) {
+		} else if (config.genDepFile()) {
 			manager.switchPhases(new InitialPreconfigure(manager));
 		} else {
 			manager.switchPhases(new Compile(manager));
@@ -68,17 +70,12 @@ public class Build {
 	}
 
 	public static void main(String args[]) {
+		//CLI.getInstance().readboolean("Press enter when ready to continue");
 		new Build("main.build", args);
 	}
 
 	public static int terminalWidth() {
-		int terminalWidth = jline.TerminalFactory.get().getWidth();
-		return terminalWidth;
-		/*
-		 * String cols = System.getenv("COLUMNS"); if(cols==null) return 80; //
-		 * Assume 80 lines as default terminal width, if no actual with is found
-		 * return Integer.parseInt(cols);
-		 */
+		return jline.TerminalFactory.get().getWidth();
 	}
 
 	public static Version getVersion() {
@@ -89,7 +86,6 @@ public class Build {
 					"version.properties");
 
 			URL url = en.nextElement();
-			;
 
 			if (url == null)
 				return version;
@@ -130,14 +126,19 @@ public class Build {
 		return version;
 	}
 	
-	public static void panic(String msg, int errCode) {
-		CLIError.getInstance().writeline(msg);
+	public static void stop(String message, CLI stream) {
+		CommandKernel.getInstance().stopThreads();
+		stream.writeline(message);
 		CLI.getInstance().kill();
 		while (CLI.getInstance().getDone()) {
 			Thread.yield();
 		}
+	}
+	
+	public static void panic(String msg, int errCode) {
+		Build.stop(msg, CLIError.getInstance());
+		manager.panic(true);
 		System.exit(errCode);
-		
 	}
 
 	public static class Version {

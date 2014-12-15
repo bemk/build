@@ -49,11 +49,14 @@ public class BuildPhase {
 	private ARTarget ARTarget;
 	private LDTarget LDTarget;
 
+	private Config config;
+
 	Object lock = new Object();
 
 	public BuildPhase(Module parentModule) {
 		this.phase = new PhasePreStart(this);
 		this.module = parentModule;
+		config = Config.getInstance();
 	}
 
 	public Module getModule() {
@@ -72,7 +75,7 @@ public class BuildPhase {
 				}
 			}
 
-			if (Config.getInstance().getDebug()) {
+			if (config.getDebug()) {
 				System.out.println("Module: " + module.getName()
 						+ " current state:\t" + this.phase.toString());
 				System.out.println("Module: " + module.getName()
@@ -119,9 +122,11 @@ public class BuildPhase {
 								+ " whilst non-existent in dependency list");
 				return;
 			}
-			CLIDebug.getInstance().writeline(
-					"Removing dependency from " + module.getName() + " : "
-							+ m.getName());
+			if (config.getDebug()) {
+				CLIDebug.getInstance().writeline(
+						"Removing dependency from " + module.getName() + " : "
+								+ m.getName());
+			}
 			dependencies.remove(m.getName());
 
 			if (phase == null) {
@@ -133,9 +138,11 @@ public class BuildPhase {
 	}
 
 	private void addDependency(Module m) {
-		CLIDebug.getInstance().writeline(
-				"Adding dependency to " + module.getName() + " : "
-						+ m.getName());
+		if (config.getDebug()) {
+			CLIDebug.getInstance().writeline(
+					"Adding dependency to " + module.getName() + " : "
+							+ m.getName());
+		}
 		dependencies.put(m.getName(), m);
 		m.build();
 	}

@@ -24,10 +24,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
+import eu.orionos.build.Build;
 import eu.orionos.build.CompileUnit;
+import eu.orionos.build.Config;
 import eu.orionos.build.exec.CommandKernel;
 import eu.orionos.build.ui.CLI;
+import eu.orionos.build.ui.CLIDebug;
 import eu.orionos.build.ui.CLIError;
+import eu.orionos.build.ui.CLIWarning;
 
 /**
  * @author bemk
@@ -35,15 +39,25 @@ import eu.orionos.build.ui.CLIError;
  */
 public abstract class Phase {
 	protected BuildPhase phaseMgr;
-	protected AbstractMap<String, CompileUnit> toRun;
+	protected volatile AbstractMap<String, CompileUnit> toRun;
 	protected ConcurrentHashMap<String, CompileUnit> hasRun;
 	protected ArrayList<String> targets;
 	protected ArrayList<String> flags;
 	protected String executable;
-	private boolean readyForMarking = false;
+	private volatile boolean readyForMarking = false;
 	private Phase previous;
+	private String modName = null;
+
+	protected static final Config config = Config.getInstance();
+	protected static final CLI cli = CLI.getInstance();
+	protected static final CLI debug = CLIDebug.getInstance();
+	protected static final CLI error = CLIError.getInstance();
+	protected static final CLI warning = CLIWarning.getInstance();
+	
+	protected CommandKernel kernel;
 
 	protected Phase(BuildPhase phaseMgr) {
+		kernel = CommandKernel.getInstance();
 		this.phaseMgr = phaseMgr;
 		this.toRun = new ConcurrentHashMap<String, CompileUnit>();
 		this.hasRun = new ConcurrentHashMap<String, CompileUnit>();
@@ -73,8 +87,8 @@ public abstract class Phase {
 
 			printPreviousPhases();
 
-			CLI.getInstance().kill();
-			while (!CLI.getInstance().getDone()) {
+			cli.kill();
+			while (!cli.getDone()) {
 				Thread.yield();
 			}
 			System.exit(9001);
@@ -109,23 +123,33 @@ public abstract class Phase {
 			while (i.hasNext()) {
 				CompileUnit unit = i.next();
 				unit.setPhase(this);
-				CommandKernel.getInstance().runCommand(unit);
+				kernel.runCommand(unit);
 			}
 		}
+	}
+	
+	public String getName() {
+		if (modName == null) {
+			modName = phaseMgr.getModule().getName();
+		}
+		return modName;
 	}
 
 	public void markComplete(CompileUnit cu) {
 		synchronized (previous) {
 			String key = cu.key();
+			if (this.hasRun.containsKey(key)) {
+				error.writeline("Command: " + key + " has already run!");
+			}
 			this.hasRun.put(key, cu);
 			if (!readyForMarking || !this.toRun.containsKey(key)
 					|| cu.getPhase() != this) {
 				if (!readyForMarking) {
-					CLIError.getInstance().writeline(
+					error.writeline(
 							"Not yet ready for marking!");
 				}
 				if (cu.getPhase() != this) {
-					CLIError.getInstance().writeline(
+					error.writeline(
 							"Compile unit attributed to incorrect phase: "
 									+ phaseName() + " but belongs to "
 									+ cu.getPhase().phaseName());
@@ -139,11 +163,7 @@ public abstract class Phase {
 
 				printPreviousPhases();
 
-				CLI.getInstance().kill();
-				while (!CLI.getInstance().getDone()) {
-					Thread.yield();
-				}
-				System.exit(9001);
+				Build.panic("", 9001);
 			}
 			this.toRun.remove(cu.key());
 			if (this.toRun.isEmpty()) {

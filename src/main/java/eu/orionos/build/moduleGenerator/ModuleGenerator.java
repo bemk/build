@@ -16,7 +16,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
-*/
+ */
 package eu.orionos.build.moduleGenerator;
 
 import java.io.File;
@@ -30,12 +30,13 @@ import eu.orionos.build.Config;
 import net.michelmegens.xterm.Color;
 
 public class ModuleGenerator {
-	public ModuleGenerator(String path)
-	{
+
+	public ModuleGenerator(String path) {
+		CLI cli = CLI.getInstance();
 		Module m = new Module();
 		String s = m.getJSON();
 
-		CLI.getInstance().writeline("Generating module");
+		cli.writeline("Generating module");
 
 		File f = new File(path);
 		FileWriter fw;
@@ -48,9 +49,10 @@ public class ModuleGenerator {
 			System.exit(ErrorCode.GENERIC);
 		}
 
-		if(Config.getInstance().colors())
-			CLI.getInstance().writeline(Color.GREEN + "[ OK ] " + Color.DEFAULT + path);
+		if (Config.getInstance().colors())
+			cli.writeline(
+					Color.GREEN + "[ OK ] " + Color.DEFAULT + path);
 		else
-			CLI.getInstance().writeline("[ OK ] " + path);
+			cli.writeline("[ OK ] " + path);
 	}
 }

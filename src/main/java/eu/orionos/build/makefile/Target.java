@@ -22,6 +22,8 @@ package eu.orionos.build.makefile;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import eu.orionos.build.Config;
+
 /**
  * @author bemk
  * 
@@ -83,6 +85,9 @@ public class Target {
 		target.append(tmp.toString());
 
 		target.append("\n\t$(");
+		if (!Config.getInstance().nosync()) {
+			target.append("SYNC)\n\t$(");
+		}
 		target.append(exec);
 		target.append(") $(");
 		target.append(flags);

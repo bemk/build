@@ -22,6 +22,8 @@ package eu.orionos.build.exec;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -29,55 +31,61 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import eu.orionos.build.Build;
 import eu.orionos.build.CompileUnit;
 import eu.orionos.build.Config;
 import eu.orionos.build.ErrorCode;
 import eu.orionos.build.Module;
+import eu.orionos.build.ui.CLIDebug;
+import eu.orionos.build.ui.CLIError;
 
-public class CommandKernel {
+public class CommandKernel implements Runnable {
 	private static CommandKernel instance;
 
-	private ArrayList<CommandRunner> runners = new ArrayList<CommandRunner>();
-	private AtomicInteger killedThreads = new AtomicInteger(0);
-	private Queue<CompileUnit> compileCommands = new ConcurrentLinkedQueue<CompileUnit>();
+	private List<CommandRunner> runners = new ArrayList<CommandRunner>();
+	// private AtomicInteger killedThreads = new AtomicInteger(0);
+	// private Queue<CompileUnit> compileCommands = new
+	// ConcurrentLinkedQueue<CompileUnit>();
+	private List<CompileUnit> compileCommandsList = new LinkedList<CompileUnit>();
 	private ConcurrentHashMap<String, Module> modules;
+	private Config c = Config.getInstance();
 
-	private static Lock instanceLock = new ReentrantLock();
-	private static Lock commandLock = new ReentrantLock();
+	private static final Object instanceLock = new Object();
 
 	public static CommandKernel getInstance() {
-		instanceLock.lock();
-		if (instance == null) {
-			instance = new CommandKernel();
-			instance.startThreads();
+		synchronized (instanceLock) {
+			if (instance == null) {
+				instance = new CommandKernel();
+				Thread t = new Thread(instance);
+				t.start();
+			}
 		}
-		instanceLock.unlock();
 		return instance;
 	}
 
 	private CommandKernel() {
-		modules = new ConcurrentHashMap<String, Module>(Config.getInstance()
-				.threads() + 1);
-		for (int i = 0; i < Config.getInstance().threads(); i++) {
-			runners.add(new CommandRunner());
-		}
+		modules = new ConcurrentHashMap<String, Module>(c.threads() + 1);
+
 	}
 
 	private void startThreads() {
 		int i = 0;
 		for (CommandRunner r : runners) {
+			i++;
 			try {
-				r.start();
+				Thread t = new Thread(r);
+				t.setName("CommandRunner-" + i);
+				t.start();
 			} catch (OutOfMemoryError e) {
-				System.err
-						.println("Too many threads drained the memory resources.");
-				System.err.println("Thread count: " + i);
-				Runtime.getRuntime().halt(ErrorCode.GENERIC);
+				CLIError.getInstance().writeline("Thread count: " + i);
+				Build.panic(
+						"Too many threads have drained the memory resources",
+						ErrorCode.GENERIC);
 			}
-			if (Config.getInstance().verbose()) {
-				if (i % 16 == 0 && i != 0)
-					System.err.println("Starting worker thread: " + i);
-				i++;
+			if (c.verbose()) {
+				if ((i | 0xF) == 0 && i != 0)
+					CLIDebug.getInstance().writeline(
+							"Starting worker thread: " + i);
 			}
 		}
 	}
@@ -92,7 +100,7 @@ public class CommandKernel {
 			}
 		}
 		killThreads();
-		waitThreads();
+		// waitThreads();
 	}
 
 	public void killThreads() {
@@ -101,46 +109,47 @@ public class CommandKernel {
 		}
 	}
 
-	private void waitThreads() {
-		while (this.killedThreads.get() < this.runners.size()) {
+	public CompileUnit getCommand() throws InterruptedException {
+		CompileUnit ret = null;
+
+		synchronized (compileCommandsList) {
 			try {
-				Thread.sleep(250);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				ret = compileCommandsList.remove(0);
+			} catch (IndexOutOfBoundsException e) {
+				compileCommandsList.wait(5);
+				try {
+					ret = compileCommandsList.remove(0);
+				} catch (IndexOutOfBoundsException ee) {
+					ret = null;
+				}
 			}
 		}
-	}
 
-	public CompileUnit getCommand() {
-		commandLock.lock();
-		CompileUnit ret = compileCommands.poll();
-		commandLock.unlock();
 		return ret;
 	}
 
 	public void runCommand(CompileUnit cmd) {
-		commandLock.lock();
-		compileCommands.offer(cmd);
-		commandLock.unlock();
+		synchronized (compileCommandsList) {
+			compileCommandsList.add(cmd);
+			compileCommandsList.notify();
+		}
 	}
 
 	public int getNoCommands() {
-		commandLock.lock();
-		int ret = compileCommands.size();
-		commandLock.unlock();
-		return ret;
+		synchronized (compileCommandsList) {
+			return compileCommandsList.size();
+		}
 	}
 
 	public void dumpCommands() {
-		commandLock.lock();
-		Iterator<CompileUnit> cs = compileCommands.iterator();
-		while (cs.hasNext()) {
-			CompileUnit cu = cs.next();
-			System.err.println("Command: " + cu.getModule().getName() + " : "
-					+ cu.getObject());
+		synchronized (compileCommandsList) {
+			Iterator<CompileUnit> cs = compileCommandsList.iterator();
+			while (cs.hasNext()) {
+				CompileUnit cu = cs.next();
+				System.err.println("Command: " + cu.getName() + " : "
+						+ cu.getObject());
+			}
 		}
-		commandLock.unlock();
 	}
 
 	public void registerModule(Module m) {
@@ -156,10 +165,17 @@ public class CommandKernel {
 	}
 
 	public void unregisterTask(CommandRunner r) {
-		killedThreads.incrementAndGet();
 	}
 
 	public boolean getModule(Module m) {
 		return modules.containsKey(m.getName());
+	}
+
+	@Override
+	public void run() {
+		for (int i = 0; i < c.threads(); i++) {
+			runners.add(new CommandRunner());
+		}
+		this.startThreads();
 	}
 }

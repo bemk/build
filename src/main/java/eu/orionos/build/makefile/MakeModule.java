@@ -105,6 +105,7 @@ public class MakeModule {
 	public String getDependencies() {
 		StringBuilder deps = new StringBuilder();
 
+		deps.append("SYNC:=sync\n");
 		deps.append(getVariables());
 //		deps.append("\n\n");
 

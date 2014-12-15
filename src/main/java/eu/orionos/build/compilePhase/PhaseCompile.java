@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import eu.orionos.build.CompileUnit;
-import eu.orionos.build.ui.CLIDebug;
 
 /**
  * @author bemk
@@ -53,26 +52,26 @@ public class PhaseCompile extends Phase {
 		String[] command = new String[1];
 		command = commandList.toArray(command);
 
-		return new CompileUnit(this.phaseMgr.getModule(), command, objectName);
+		return new CompileUnit(this, command, objectName);
 	}
 
 	@Override
 	protected synchronized void switchPhase() {
 		if (this.toRun.isEmpty()) {
-			CLIDebug.getInstance().writeline(
-					"Going to sync for module: "
-							+ phaseMgr.getModule().getName());
+			if (config.getDebug()) {
+				debug.writeline("Going to sync for module: "
+						+ phaseMgr.getModule().getName());
+			}
 			phaseMgr.compileDone(true);
 			phaseMgr.switchPhase(new PhaseWait(phaseMgr));
-		} else {
-			CLIDebug.getInstance().writeline(
-					"Not yet switching phases in "
-							+ phaseMgr.getModule().getName());
-			CLIDebug.getInstance().writeline(
-					phaseMgr.getModule().getName() + "Still waiting for: ");
+		} else if (config.getDebug()) {
+			debug.writeline("Not yet switching phases in "
+					+ phaseMgr.getModule().getName());
+			debug.writeline(phaseMgr.getModule().getName()
+					+ "Still waiting for: ");
 			Iterator<CompileUnit> i = toRun.values().iterator();
 			while (i.hasNext()) {
-				CLIDebug.getInstance().writeline("\t" + i.next().key());
+				debug.writeline("\t" + i.next().key());
 			}
 		}
 	}
@@ -83,8 +82,10 @@ public class PhaseCompile extends Phase {
 
 	@Override
 	public synchronized void run() {
-		CLIDebug.getInstance().writeline(
-				"Running compile in module " + phaseMgr.getModule().getName());
+		if (config.getDebug()) {
+			debug.writeline("Running compile in module "
+					+ phaseMgr.getModule().getName());
+		}
 
 		getTargets();
 		Iterator<String> target = targets.iterator();

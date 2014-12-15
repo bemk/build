@@ -27,6 +27,7 @@ import eu.orionos.build.compilePhase.BuildPhase;
 import eu.orionos.build.compilePhase.PhaseStart;
 import eu.orionos.build.makefile.MakeModule;
 import eu.orionos.build.ui.CLIDebug;
+import eu.orionos.build.ui.CLIInfo;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -87,6 +88,8 @@ public class Module {
 	private JSONArray dynModCompilerFlags;
 	private JSONArray dynModLinkerFlags;
 
+	private static final Config config = Config.getInstance();
+
 	public Module(String path) throws Exception {
 		this(path, null);
 	}
@@ -97,8 +100,8 @@ public class Module {
 
 	public Module(String path, Module parent) throws Exception {
 		/* Get some verbosity out of our system */
-		if (Config.getInstance().verbose()) {
-			System.out.println("Parsing " + path);
+		if (config.verbose()) {
+			CLIInfo.getInstance().writeline("Parsing " + path);
 		}
 		this.parent = parent;
 		/* Get the actual module file */
@@ -144,19 +147,19 @@ public class Module {
 			System.err.println("Modules have to have a name field!");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
 		}
-		if (Config.getInstance().RegisterModule(this) == false) {
+		if (config.RegisterModule(this) == false) {
 			System.err.println("Module with name: " + this.name
 					+ " conflicts with another module of the same name");
 			System.exit(ErrorCode.NAME_CONFLICT);
 		}
 
 		makefile.setTarget(this.name);
-		
+
 		/* Determine whether or not we should link */
 		try {
 			this.toLink = module.getBoolean(Semantics.LINK);
 			if (this.toLink == true)
-				Config.getInstance().set_ld_required();
+				config.set_ld_required();
 		} catch (JSONException e) {
 			System.err.println("Module " + name + " Did not specify linking");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
@@ -165,7 +168,7 @@ public class Module {
 		try {
 			this.toArchive = module.getBoolean(Semantics.ARCHIVE);
 			if (this.toArchive == true)
-				Config.getInstance().set_ar_required();
+				config.set_ar_required();
 		} catch (JSONException e) {
 			System.err.println("Module " + name + " did not specify archiving");
 			System.exit(ErrorCode.OPTION_UNSPECIFIED);
@@ -211,8 +214,7 @@ public class Module {
 		this.globalOverrideLinkerFlags = module.optString(
 				Semantics.GLOBAL_LINKER_OVERRIDE_FLAGS, null);
 		this.globalArchiver = module.optString(Semantics.GLOBAL_ARCHIVER, null);
-		if (this.getGlobalArchiver() == null
-				&& Config.getInstance().get_ar_required()) {
+		if (this.getGlobalArchiver() == null && config.get_ar_required()) {
 			System.err
 					.println("A global archiver must be set in the main build file");
 			System.err.println("Specify: \"" + Semantics.GLOBAL_ARCHIVER
@@ -221,8 +223,7 @@ public class Module {
 		}
 		this.globalArchiverFlags = module.optString(
 				Semantics.GLOBAL_ARCHIVER_FLAGS, null);
-		if (this.getGlobalArchiverFlags() == null
-				&& Config.getInstance().get_ar_required()) {
+		if (this.getGlobalArchiverFlags() == null && config.get_ar_required()) {
 			System.err
 					.println("Global archiver flags must be set in the main build file");
 			System.err.println("Specify: \"" + Semantics.GLOBAL_ARCHIVER_FLAGS
@@ -357,7 +358,7 @@ public class Module {
 			if (parent != null)
 				builder.append(parent.getGlobalArchiverFlags());
 			else
-				builder.append(Config.getInstance().aflags());
+				builder.append(config.aflags());
 		} else {
 			builder.append(globalOverrideArchiverFlags);
 		}
@@ -382,7 +383,7 @@ public class Module {
 			if (parent != null)
 				builder.append(parent.getGlobalCompilerFlags());
 			else
-				builder.append(Config.getInstance().cflags());
+				builder.append(config.cflags());
 		} else {
 			builder.append(globalOverrideCompilerFlags);
 		}
@@ -407,7 +408,7 @@ public class Module {
 			if (parent != null)
 				builder.append(parent.getGlobalLinkerFlags());
 			else
-				builder.append(Config.getInstance().ldflags());
+				builder.append(config.ldflags());
 		} else {
 			builder.append(globalOverrideLinkerFlags);
 		}
@@ -434,7 +435,7 @@ public class Module {
 
 	private String getDynCompilerFlags() {
 		final StringBuilder builder = new StringBuilder();
-		Config c = Config.getInstance();
+		Config c = config;
 
 		if (dynCompilerFlags != null) {
 			for (int i = 0; i < dynCompilerFlags.length(); i++) {
@@ -457,7 +458,7 @@ public class Module {
 
 	private String getDynModCompilerFlags() {
 		final StringBuilder builder = new StringBuilder();
-		Config c = Config.getInstance();
+		Config c = config;
 
 		if (dynModCompilerFlags != null) {
 			for (int i = 0; i < dynModCompilerFlags.length(); i++) {
@@ -513,7 +514,7 @@ public class Module {
 
 	private String getDynArchiverFlags() {
 		final StringBuilder builder = new StringBuilder();
-		Config c = Config.getInstance();
+		Config c = config;
 
 		if (dynArchiverFlags != null) {
 			for (int i = 0; i < dynArchiverFlags.length(); i++) {
@@ -537,7 +538,7 @@ public class Module {
 
 	private String getDynModArchiverFlags() {
 		final StringBuilder builder = new StringBuilder();
-		Config c = Config.getInstance();
+		Config c = config;
 		if (dynModArchiverFlags != null) {
 			for (int i = 0; i < dynModArchiverFlags.length(); i++) {
 				try {
@@ -586,7 +587,7 @@ public class Module {
 
 	private String getDynLinkerFlags() {
 		final StringBuilder builder = new StringBuilder();
-		Config c = Config.getInstance();
+		Config c = config;
 
 		if (dynLinkerFlags != null) {
 			for (int i = 0; i < dynLinkerFlags.length(); i++) {
@@ -610,7 +611,7 @@ public class Module {
 
 	private String getDynModLinkerFlags() {
 		final StringBuilder builder = new StringBuilder();
-		Config c = Config.getInstance();
+		Config c = config;
 
 		if (dynModLinkerFlags != null) {
 			for (int i = 0; i < dynModLinkerFlags.length(); i++) {
@@ -672,11 +673,11 @@ public class Module {
 	/* Use this to calculate the dependencies to wait for, and to make build */
 	public ArrayList<Module> calculateDependencies() {
 		ArrayList<Module> dependencies = new ArrayList<Module>(subModules);
-		JSONArray flags = Config.getInstance().getGlobalFlags();
+		JSONArray flags = config.getGlobalFlags();
 		if (flags != null) {
 			addDynamicDeps(dependencies, flags);
 		}
-		flags = Config.getInstance().getModuleFlags(name);
+		flags = config.getModuleFlags(name);
 		if (flags != null) {
 			addDynamicDeps(dependencies, flags);
 		}
@@ -794,18 +795,22 @@ public class Module {
 	}
 
 	public String getLFile() {
-		return Config.getInstance().getBuildDir() + "/" + linkedFile;
+		return new StringBuilder(config.getBuildDir()).append('/')
+				.append(linkedFile).toString();
 	}
 
 	public String getAFile() {
-		return Config.getInstance().getBuildDir() + "/" + archivedFile;
+		return new StringBuilder(config.getBuildDir()).append('/')
+				.append(archivedFile).toString();
 	}
 
 	/* Turn the source file name into the name of a unique output file */
 	public String getOFile(String inFile) {
-		inFile = getCWD() + "/" + inFile;
-		CLIDebug.getInstance().writeline("Target file: " + inFile);
-		String mainDir = Config.getInstance().getBuildDir();
+		inFile = new StringBuilder(getCWD()).append('/').append(inFile)
+				.toString();
+		CLIDebug.getInstance().writeline(
+				new StringBuilder("Target file: ").append(inFile).toString());
+		String mainDir = config.getBuildDir();
 		int idx = 0;
 		for (; idx < mainDir.length(); idx++) {
 			if (!(mainDir.charAt(idx) == inFile.charAt(idx)))
@@ -817,8 +822,9 @@ public class Module {
 		inFile = inFile.replace('\\', '_');
 		inFile = inFile.replace('/', '-');
 
-		return Config.getInstance().getBuildDir() + "/" + getName() + "-"
-				+ inFile + ".o";
+		return new StringBuilder(config.getBuildDir()).append('/')
+				.append(getName()).append('-').append(inFile).append(".o")
+				.toString();
 	}
 
 	public void setDone() {

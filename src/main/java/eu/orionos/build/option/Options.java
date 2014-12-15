@@ -19,7 +19,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
-*/
+ */
 
 package eu.orionos.build.option;
 
@@ -37,10 +37,10 @@ import org.codehaus.plexus.util.StringUtils;
 public class Options {
 
 	private ArrayList<Option> options = new ArrayList<Option>();
-	//private static final int maxLongWidth = 12;
 
-	public Options(String args[]) throws FileNotFoundException, IOException
-	{
+	// private static final int maxLongWidth = 12;
+
+	public Options(String args[]) throws FileNotFoundException, IOException {
 		int i = 0;
 		if (args.length == 0)
 			return;
@@ -70,25 +70,19 @@ public class Options {
 		options.add(new OptionNosync());
 		options.add(new OptionDebug());
 
-		for (; i < args.length; i++)
-		{
-			nextarg:
-			if (args[i].startsWith("-") && !args[i].startsWith("--"))
-			{
+		for (; i < args.length; i++) {
+			nextarg: if (args[i].startsWith("-") && !args[i].startsWith("--")) {
 				String arg = args[i].substring(1);
-				for (char a : arg.toCharArray())
-				{
+				for (char a : arg.toCharArray()) {
 					Iterator<Option> o = options.iterator();
-					while (o.hasNext())
-					{
+					while (o.hasNext()) {
 						Option op = o.next();
-						if (a == op.getShort())
-						{
-							if (op.operands() && i+1 < args.length)
+						if (a == op.getShort()) {
+							if (op.operands() && i + 1 < args.length)
 								op.operand(args[++i]);
-							else if (op.operands())
-							{
-								System.err.println("Option " + a + " expects an argument");
+							else if (op.operands()) {
+								System.err.println("Option " + a
+										+ " expects an argument");
 								System.exit(ErrorCode.OPTION_UNSPECIFIED);
 							}
 							op.option();
@@ -97,21 +91,17 @@ public class Options {
 						}
 					}
 				}
-			}
-			else if (args[i].startsWith("--"))
-			{
+			} else if (args[i].startsWith("--")) {
 				Iterator<Option> o = options.iterator();
-				while (o.hasNext())
-				{
+				while (o.hasNext()) {
 					Option op = o.next();
 					String l = "--" + op.getLong();
-					if (args[i].equals(l))
-					{
+					if (args[i].equals(l)) {
 						if (op.operands() && i + 1 < args.length)
 							op.operand(args[++i]);
-						else if (op.operands())
-						{
-							System.err.println("Option " + args[i] + " expects an operand");
+						else if (op.operands()) {
+							System.err.println("Option " + args[i]
+									+ " expects an operand");
 							System.exit(ErrorCode.OPTION_UNSPECIFIED);
 						}
 						op.option();
@@ -120,128 +110,112 @@ public class Options {
 				}
 				System.err.println(args[i] + " Invalid option!");
 				new OptionHelp(this).option();
-			}
-			else if (args[i].endsWith(".build"))
-			{
+			} else if (args[i].endsWith(".build")) {
 				Config.getInstance().buildFile(args[i]);
 				Config.getInstance().buildFileOverride(true);
-			}
-			else
-			{
+			} else {
 				System.err.println(args[i] + " Invalid option!");
 				new OptionHelp(this).option();
 			}
 		}
 	}
-	
-	public ArrayList<String> autocomplete(String str)
-	{
+
+	public ArrayList<String> autocomplete(String str) {
 		ArrayList<String> result = new ArrayList<String>();
 		str = str.trim();
-		
-		if(str.charAt(0)=='-')
-		{
-			if(str.length()==1)
-			{
-				for (Option o : options)
-				{
+
+		if (str.charAt(0) == '-') {
+			if (str.length() == 1) {
+				for (Option o : options) {
 					result.add(String.valueOf(o.getShort()));
 					result.add("-" + o.getLong());
 				}
 				return result;
-			}
-			else if(str.charAt(1) == '-')
-			{
+			} else if (str.charAt(1) == '-') {
 				str = str.substring(2);
 				int strlen = str.length();
-				for (Option o : options)
-				{
-					if(o.getLong().substring(0, strlen).equalsIgnoreCase(str))
+				for (Option o : options) {
+					if (o.getLong().substring(0, strlen).equalsIgnoreCase(str))
 						result.add(o.getLong());
 				}
 				return result;
-			}
-			else
-			{
+			} else {
 				char c = str.charAt(1);
-				for (Option o : options)
-				{
-					if(o.getShort() == c)
+				for (Option o : options) {
+					if (o.getShort() == c)
 						result.add(String.valueOf(o.getShort()));
 				}
 				return result;
 			}
-		}
-		else
-		{
+		} else {
 			; // TODO: TBD
 		}
-		
+
 		return null;
 	}
-	
-	public String help()
-	{
+
+	public String help() {
 		StringBuilder strbuild = new StringBuilder();
 		strbuild.append("OPTIONS:\n");
 		String[] strings = new String[options.size()];
 
 		int width = Build.terminalWidth();
-		int maxLongWidth = (width/2) - (4+7); // The start of the description may not be more to the right than half the screen width.
+		int maxLongWidth = (width / 2) - (4 + 7); // The start of the
+													// description may not be
+													// more to the right than
+													// half the screen width.
 		int length = 0;
 		int i = 0;
-		for (Option o : options)
-		{
+		for (Option o : options) {
 			String str = o.getLong() + " " + o.getParameters();
-			
+
 			int thisLength = str.length();
-			if( (thisLength > length) && (thisLength < maxLongWidth) )
+			if ((thisLength > length) && (thisLength < maxLongWidth))
 				length = thisLength;
-			
+
 			strings[i] = str;
 			i++;
 		}
 		length++; // We want at least one space.
-		
-		if(length > maxLongWidth)
+
+		if (length > maxLongWidth)
 			length = maxLongWidth;
-		
+
 		width -= (4 + 7 + length);
 
 		i = 0;
 		int strlen;
-		for (Option o : options)
-		{
-			strbuild.append(StringUtils.repeat(" ", 4) + ((o.getShort()==' ')?"  ":("-"+o.getShort())) + " | --" + strings[i]);
+		for (Option o : options) {
+			strbuild.append(StringUtils.repeat(" ", 4)
+					+ ((o.getShort() == ' ') ? "  " : ("-" + o.getShort()))
+					+ " | --" + strings[i]);
 			if (strings[i].length() >= length)
-				strbuild.append("\n" + StringUtils.repeat(" ", 4+7+length));
+				strbuild.append("\n" + StringUtils.repeat(" ", 4 + 7 + length));
 			else
-				strbuild.append(StringUtils.repeat(" ", length - strings[i].length()));
+				strbuild.append(StringUtils.repeat(" ",
+						length - strings[i].length()));
 
 			String s = o.getInfo();
 			strlen = 0;
-			for(char c : s.toCharArray())
-			{
-				if(c == '\n')
-				{
+			for (char c : s.toCharArray()) {
+				if (c == '\n') {
 					strlen = 0;
-					strbuild.append("\n" + StringUtils.repeat(" ", 4+7+length));
-				}
-				else
-				{
-					if(strlen >= width)
-					{
+					strbuild.append("\n"
+							+ StringUtils.repeat(" ", 4 + 7 + length));
+				} else {
+					if (strlen >= width) {
 						strlen = strbuild.length();
-						int place = strlen-1;
-						while( (place>0) && (strbuild.charAt(place)!=' ') )
-						{
+						int place = strlen - 1;
+						while ((place > 0) && (strbuild.charAt(place) != ' ')) {
 							place--;
 						}
-						strlen = strlen-place-1;
-						strbuild.insert(place, "\n" + StringUtils.repeat(" ", 4+7+length-1));
-					}
-					else
-					{
+						strlen = strlen - place - 1;
+						strbuild.insert(
+								place,
+								"\n"
+										+ StringUtils.repeat(" ",
+												4 + 7 + length - 1));
+					} else {
 						strlen++;
 					}
 					strbuild.append(c);
@@ -251,7 +225,7 @@ public class Options {
 
 			i++;
 		}
-		
+
 		return strbuild.toString();
 	}
 }

@@ -56,7 +56,7 @@ public class PhaseClean extends Phase {
 	}
 
 	private void buildCommand(String[] cmd, String obj) {
-		CompileUnit cu = new CompileUnit(phaseMgr.getModule(), cmd, obj);
+		CompileUnit cu = new CompileUnit(this, cmd, obj);
 		this.toRun.put(cu.key(), cu);
 	}
 

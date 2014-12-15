@@ -31,11 +31,23 @@ import java.io.*;
 
 import eu.orionos.build.ui.*;
 
-public class CommandRunner extends Thread {
+public class CommandRunner implements Runnable {
 	private boolean runnable = true;
+	private Config config = Config.getInstance();
+	private CLIError error = CLIError.getInstance();
+	private CLIWarning warning = CLIWarning.getInstance();
+	private CLIInfo info = CLIInfo.getInstance();
+	private CLI cli = CLI.getInstance();
+	private CommandKernel kernel = null;
+	private int errorState = 0;
+	private boolean silent = false;
+
+	private CompileUnit next = null;
+	private ProcessBuilder builder = null;
 
 	public CommandRunner() {
 		super();
+		silent = config.silent();
 	}
 
 	public void haltThread() {
@@ -45,13 +57,12 @@ public class CommandRunner extends Thread {
 	private void writeStream(InputStream p, CLI output, boolean prio)
 			throws IOException {
 
-		if ((prio || Config.getInstance().verbose())
-				&& !Config.getInstance().silent()) {
+		if ((prio || config.verbose()) && !silent) {
 			BufferedReader in = new BufferedReader(new InputStreamReader(p));
 			String line;
 			while ((line = in.readLine()) != null) {
 				if (line.toLowerCase().contains("error"))
-					CLIError.getInstance().writeline(line);
+					error.writeline(line);
 				else
 					output.writeline(line);
 			}
@@ -59,33 +70,56 @@ public class CommandRunner extends Thread {
 	}
 
 	private void writeCmd(String[] cmd) {
-		if (!Config.getInstance().silent() && Config.getInstance().verbose()) {
+		if (!config.silent() && config.verbose()) {
 			StringBuilder s = new StringBuilder();
 			for (int i = 0; i < cmd.length; i++) {
 				s.append(cmd[i]);
 				s.append(" ");
 			}
-			CLIInfo.getInstance().writeline(s.toString());
+			info.writeline(s.toString());
 		}
+	}
+
+	private void getCommand() throws InterruptedException {
+		next = kernel.getCommand();
+		if (next != null) {
+			builder = new ProcessBuilder(next.getCommand());
+		}
+	}
+
+	private CompileUnit waitTask(Process p) throws InterruptedException {
+		getCommand();
+		/*
+		 * CompileUnit next = kernel.getCommand(); if (next != null) { builder =
+		 * new ProcessBuilder(next.getCommand()); }
+		 */
+		errorState = p.waitFor();
+		return next;
 	}
 
 	@Override
 	public void run() {
-		super.run();
+		kernel = CommandKernel.getInstance();
+		// Runtime r = Runtime.getRuntime();
+
+		CompileUnit c = null;
 		while (runnable) {
-			CompileUnit c = CommandKernel.getInstance().getCommand();
-			if (c != null) {
-				try {
+			try {
+				if (next == null) {
+					getCommand();
+				}
+				c = next;
+				next = null;
+				if (c != null) {
 					writeCmd(c.getCommand());
-					Runtime r = Runtime.getRuntime();
-					Process p = r.exec(c.getCommand());
+					Process p = builder.start();
+					// Process p = r.exec(c.getCommand());
 
-					writeStream(p.getErrorStream(), CLIWarning.getInstance(),
-							true);
-					writeStream(p.getInputStream(), CLIInfo.getInstance(),
-							false);
+					writeStream(p.getErrorStream(), warning, true);
+					writeStream(p.getInputStream(), info, false);
 
-					if (p.waitFor() != 0) {
+					next = waitTask(p);
+					if (errorState != 0) {
 						StringBuilder err = new StringBuilder();
 						final String[] array = c.getCommand();
 						for (int i = 0; i < array.length; i++) {
@@ -93,33 +127,31 @@ public class CommandRunner extends Thread {
 							err.append(' ');
 						}
 						err.append("Could not compute!");
-						CLIError.getInstance().writeline(err.toString());
-						CommandKernel.getInstance().killThreads();
-						Build.setError(ErrorCode.COMPILE_FAILED);
+						Build.panic(err.toString(), ErrorCode.COMPILE_FAILED);
 					}
+					p.destroy();
 
 					c.markComplete();
-				} catch (IOException e) {
-					CLIError.getInstance().writeline(e.getMessage());
-					CommandKernel.getInstance().killThreads();
-					Build.setError(ErrorCode.GENERIC);
-					CLI.getInstance().kill();
-					while (!CLI.getInstance().getDone()) {
-						Thread.yield();
-					}
-					System.exit(Build.getError());
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+				} else {
+					Thread.yield();
 				}
-				Thread.yield();
-			}
-			try {
-				Thread.sleep(10);
+			} catch (IOException e) {
+				error.writeline(e.getMessage());
+				kernel.killThreads();
+				Build.setError(ErrorCode.GENERIC);
+				cli.kill();
+				while (!cli.getDone()) {
+					Thread.yield();
+				}
+				System.exit(Build.getError());
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			/*
+			 * try { Thread.sleep(10); } catch (InterruptedException e) { //
+			 * TODO Auto-generated catch block e.printStackTrace(); }
+			 */
 		}
-		CommandKernel.getInstance().unregisterTask(this);
+		kernel.unregisterTask(this);
 	}
 }

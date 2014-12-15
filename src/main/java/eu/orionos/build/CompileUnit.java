@@ -27,15 +27,35 @@ import net.michelmegens.xterm.Color;
 
 public class CompileUnit {
 	private String command[];
-	private Module module;
+	private Phase module;
 	private String object;
 	private boolean silent;
 	private Phase phase = null;
+	private static String prefix = null;
+	private static CLI cli = CLI.getInstance();
+	private static Config config = Config.getInstance();
+	private String key;
 
-	public CompileUnit(Module module, String command[], String object) {
+	public CompileUnit(Phase module, String command[], String object) {
 		this.module = module;
 		this.command = command;
 		this.object = object;
+		this.silent = config.silent();
+		if (prefix == null && !silent) {
+			StringBuilder prefixBuilder = new StringBuilder();
+			if (config.colors()) {
+				prefixBuilder.append(Color.GREEN);
+			}
+			prefixBuilder.append(" [ OK ] ");
+			if (config.colors()) {
+				prefixBuilder.append(Color.DEFAULT);
+			}
+			prefix = prefixBuilder.toString();
+		}
+		StringBuilder key = new StringBuilder(module.getName());
+		key.append('-');
+		key.append(object);
+		this.key = key.toString();
 	}
 
 	public String[] getCommand() {
@@ -43,27 +63,18 @@ public class CompileUnit {
 	}
 
 	public void markComplete() {
-		module.markCompileUnitDone(this);
-		if (!Config.getInstance().silent()) {
-			if (Config.getInstance().colors()) {
-				if (!this.silent) {
-					CLI.getInstance().writeline(
-							Color.GREEN + "[ OK ] " + Color.DEFAULT + object);
-				}
-			} else {
-				if (!this.silent) {
-					CLI.getInstance().writeline("[ OK ] " + object);
-				}
-			}
+		module.markComplete(this);
+		if (!silent) {
+			StringBuilder output = new StringBuilder(prefix).append(object);
+			cli.writeline(output.toString());
 		}
 	}
 
-	public String key() {
-		return module.getName() + "-" + object;
+	public String getName() {
+		return module.getName();
 	}
-
-	public Module getModule() {
-		return module;
+	public String key() {
+		return key;
 	}
 
 	public String getObject() {

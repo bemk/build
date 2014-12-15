@@ -71,7 +71,7 @@ public class PhaseArchive extends Phase {
 			String[] cuCommand = new String[1];
 			cuCommand = command.toArray(cuCommand);
 
-			CompileUnit cu = new CompileUnit(phaseMgr.getModule(), cuCommand,
+			CompileUnit cu = new CompileUnit(this, cuCommand,
 					phaseMgr.getModule().getAFile());
 
 			this.toRun.put(cu.key(), cu);

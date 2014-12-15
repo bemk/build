@@ -23,6 +23,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import eu.orionos.build.Module;
+import eu.orionos.build.exec.CommandKernel;
 
 /**
  * @author bemk
@@ -40,6 +41,7 @@ public class Compile extends Phase {
 	@Override
 	public void run() {
 		manager.setToCompile();
+		CommandKernel.getInstance();
 		try {
 			if (configuration.hasConf() == false)
 			{
