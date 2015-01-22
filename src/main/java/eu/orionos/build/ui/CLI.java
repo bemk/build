@@ -96,7 +96,7 @@ public class CLI implements Runnable {
 		while (ret == null) {
 			if (this.out.isEmpty()) {
 				try {
-					System.out.print(msg);
+					this.write(msg);
 					ret = r.readLine();
 				} catch (IOException e) {
 					ret = "";

@@ -127,7 +127,7 @@ public class Module {
 		try {
 			module = new JSONObject(stringBuilder.toString());
 		} catch (JSONException e1) {
-			System.err.println("Failed to parse JSON string");
+			System.err.println("Failed to parse JSON string in file:" + f.getAbsolutePath());
 			e1.printStackTrace();
 		}
 		/* Get some paths right */

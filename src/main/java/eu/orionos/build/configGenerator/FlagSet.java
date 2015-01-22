@@ -18,7 +18,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
-*/
+ */
 package eu.orionos.build.configGenerator;
 
 import java.util.ArrayList;
@@ -36,43 +36,38 @@ import eu.orionos.build.Semantics;
 public class FlagSet extends Flag {
 	protected boolean enabled = false;
 	protected boolean ignore_autoconf;
-	protected HashMap <Integer, Flag> flags = new HashMap<Integer, Flag>();
+	protected HashMap<Integer, Flag> flags = new HashMap<Integer, Flag>();
 	int mapKey = 0;
 
 	public FlagSet(String key, DepFile depfile) {
 		super(key, depfile);
 	}
 
-	public void configure()
-	{
-		if (this.key.equals("base"))
+	public void configure() {
+		if (this.key.equals("base")) {
 			this.mandatory = true;
-		if (!mandatory)
-		{
-			if (Config.getInstance().auto_config())
-			{
+		}
+		if (!mandatory) {
+			if (Config.getInstance().auto_config()) {
 				if (this.ignore_autoconf)
 					this.enabled = false;
 				else if (Config.getInstance().allyes_config())
 					this.enabled = true;
 				else if (Config.getInstance().random_config())
-					this.enabled = Config.getInstance().getRandom(0, 1) == 0 ? true : false;
-			}
-			else
+					this.enabled = Config.getInstance().getRandom(0, 1) == 0 ? true
+							: false;
+			} else
 				this.enabled = getBoolean("Enable group ");
 		}
 
-		if (mandatory || enabled)
-		{
-			if (Config.getInstance().allno_config() && !this.mandatory)
-			{
+		if (mandatory || enabled) {
+			if (Config.getInstance().allno_config() && !this.mandatory) {
 				this.configured = true;
 				return;
 			}
 			Set<Entry<Integer, Flag>> entries = flags.entrySet();
 			Iterator<Entry<Integer, Flag>> i = entries.iterator();
-			while (i.hasNext())
-			{
+			while (i.hasNext()) {
 				Entry<Integer, Flag> o = i.next();
 				o.getValue().configure();
 			}
@@ -80,14 +75,12 @@ public class FlagSet extends Flag {
 		this.configured = true;
 	}
 
-	public void setEnabled()
-	{
+	public void setEnabled() {
 		this.mandatory = true;
 		this.enabled = true;
 	}
 
-	public synchronized void addFlag(Flag f)
-	{
+	public synchronized void addFlag(Flag f) {
 		int key = mapKey++;
 
 		flags.put(key, f);
@@ -95,15 +88,14 @@ public class FlagSet extends Flag {
 		return;
 	}
 
-	public synchronized void parseJSON(JSONObject json)
-	{
+	public synchronized void parseJSON(JSONObject json) {
 		String[] keys = JSONObject.getNames(json);
-		this.ignore_autoconf = json.optBoolean(Semantics.FLAG_DEP_IGNORE_AUTOCONF);
+		this.ignore_autoconf = json
+				.optBoolean(Semantics.FLAG_DEP_IGNORE_AUTOCONF);
 		if (keys == null)
 			return;
 
-		for (; mapKey < keys.length; mapKey++)
-		{
+		for (; mapKey < keys.length; mapKey++) {
 			JSONObject flag = json.optJSONObject(keys[mapKey]);
 			if (flag == null)
 				continue;
@@ -111,26 +103,21 @@ public class FlagSet extends Flag {
 			JSONObject num = flag.optJSONObject(Semantics.FLAG_DEP_ENUM);
 
 			Flag f = null;
-			
-			if (set != null)
-			{
+
+			if (set != null) {
 				f = new FlagSet(keys[mapKey], this.depfile);
-				((FlagSet)f).parseJSON(set);
-			}
-			else if (num != null)
-			{
+				((FlagSet) f).parseJSON(set);
+			} else if (num != null) {
 				f = new EnumFlag(keys[mapKey], this.depfile);
-				((EnumFlag)f).parseJSON(num);
-			}
-			else
-			{
-				boolean autoconf_ignore = flag.optBoolean(Semantics.FLAG_DEP_IGNORE_AUTOCONF);
+				((EnumFlag) f).parseJSON(num);
+			} else {
+				boolean autoconf_ignore = flag
+						.optBoolean(Semantics.FLAG_DEP_IGNORE_AUTOCONF);
 				f = new BooleanFlag(keys[mapKey], this.depfile, autoconf_ignore);
 			}
 
 			f.setInfo(flag.optString(Semantics.FLAG_DEP_INFO));
-			if (flag.optBoolean(Semantics.FLAG_DEP_MANDATORY))
-			{
+			if (flag.optBoolean(Semantics.FLAG_DEP_MANDATORY)) {
 				f.setEnabled();
 			}
 			flags.put(mapKey, f);
@@ -139,15 +126,12 @@ public class FlagSet extends Flag {
 		return;
 	}
 
-	public ArrayList<String> getConfigFlags()
-	{
+	public ArrayList<String> getConfigFlags() {
 		ArrayList<String> list = new ArrayList<String>();
-		if (this.getEnabled())
-		{
+		if (this.getEnabled()) {
 			list.add(this.key);
 			Iterator<Entry<Integer, Flag>> i = flags.entrySet().iterator();
-			while (i.hasNext())
-			{
+			while (i.hasNext()) {
 				Entry<Integer, Flag> e = i.next();
 				list.addAll(e.getValue().getConfigFlags());
 			}
@@ -155,8 +139,7 @@ public class FlagSet extends Flag {
 		return list;
 	}
 
-	public JSONObject getDepFlags()
-	{
+	public JSONObject getDepFlags() {
 		JSONObject o = new JSONObject();
 		JSONObject set = new JSONObject();
 
@@ -172,8 +155,7 @@ public class FlagSet extends Flag {
 
 		Set<Integer> keys = flags.keySet();
 		Iterator<Integer> i = keys.iterator();
-		while (i.hasNext())
-		{
+		while (i.hasNext()) {
 			Integer key = i.next();
 			Flag f = flags.get(key);
 			try {
@@ -188,12 +170,11 @@ public class FlagSet extends Flag {
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		if (configured && !getEnabled())
 			return "";
 		Set<Entry<Integer, Flag>> flags = this.flags.entrySet();
-		Iterator <Entry<Integer, Flag>> i = flags.iterator();
+		Iterator<Entry<Integer, Flag>> i = flags.iterator();
 
 		StringBuilder s = new StringBuilder();
 		s.append("Set: ");
@@ -202,11 +183,10 @@ public class FlagSet extends Flag {
 		s.append(info);
 		s.append(": {\n");
 
-		while (i.hasNext())
-		{
+		while (i.hasNext()) {
 			Entry<Integer, Flag> e = i.next();
-			if (!this.configured || (e.getValue().configured() && e.getValue().getEnabled()))
-			{
+			if (!this.configured
+					|| (e.getValue().configured() && e.getValue().getEnabled())) {
 				s.append("[");
 				s.append(e.getKey().toString());
 				s.append("] ");
@@ -219,11 +199,10 @@ public class FlagSet extends Flag {
 
 		s.append("}\n");
 
-		return s.toString(); 
+		return s.toString();
 	}
 
-	public boolean getEnabled()
-	{
+	public boolean getEnabled() {
 		return (this.mandatory || this.enabled);
 	}
 }
