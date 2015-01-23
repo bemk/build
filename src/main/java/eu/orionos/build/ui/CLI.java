@@ -45,6 +45,9 @@ public class CLI implements Runnable {
 
 	private static Object synchronizedObject = new Object();
 
+	private static String numberFormat = " [0 .. 9] ";
+	private static String booleanFormat = " [y/N] ";
+
 	public static CLI getInstance() {
 		synchronized (synchronizedObject) {
 			if (cli == null) {
@@ -62,6 +65,11 @@ public class CLI implements Runnable {
 		threads.put(name, t);
 		if (Config.getInstance().colors() && name.equals("CLI")) {
 			prefix = Color.DEFAULT;
+
+			numberFormat = new StringBuilder(Color.BLUE).append(numberFormat)
+					.append(Color.DEFAULT).toString();
+			booleanFormat = new StringBuilder(Color.BLUE).append(booleanFormat)
+					.append(Color.DEFAULT).toString();
 		}
 	}
 

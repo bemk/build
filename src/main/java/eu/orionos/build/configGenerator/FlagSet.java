@@ -27,6 +27,8 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import net.michelmegens.xterm.Color;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -47,6 +49,10 @@ public class FlagSet extends Flag {
 		if (this.key.equals("base")) {
 			this.mandatory = true;
 		}
+		String question = "Enable group ";
+		if (Config.getInstance().colors()) {
+			question = new StringBuilder(Color.BLUE).append(question).append(Color.DEFAULT).toString();
+		}
 		if (!mandatory) {
 			if (Config.getInstance().auto_config()) {
 				if (this.ignore_autoconf)
@@ -56,8 +62,9 @@ public class FlagSet extends Flag {
 				else if (Config.getInstance().random_config())
 					this.enabled = Config.getInstance().getRandom(0, 1) == 0 ? true
 							: false;
-			} else
-				this.enabled = getBoolean("Enable group ");
+			} else {
+				this.enabled = getBoolean(question);
+			}
 		}
 
 		if (mandatory || enabled) {

@@ -18,13 +18,15 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
-*/
+ */
 package eu.orionos.build.configGenerator;
 
 import java.util.Map.Entry;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
+
+import net.michelmegens.xterm.Color;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,31 +37,36 @@ import eu.orionos.build.ui.CLI;
 
 public class EnumFlag extends FlagSet {
 	int choice = 0;
+	CLI cli = CLI.getInstance();
 
 	public EnumFlag(String key, DepFile depfile) {
 		super(key, depfile);
 	}
 
 	@Override
-	public void configure()
-	{
-		if (!mandatory)
-		{
-			if (Config.getInstance().allyes_config() || Config.getInstance().allno_config() || Config.getInstance().random_config())
-			{
-				if (this.ignore_autoconf)
+	public void configure() {
+		if (!mandatory) {
+			if (Config.getInstance().allyes_config()
+					|| Config.getInstance().allno_config()
+					|| Config.getInstance().random_config()) {
+				if (this.ignore_autoconf) {
 					this.enabled = false;
-				else
+				} else {
 					this.enabled = true;
+				}
+			} else {
+				String question = "Enable ";
+				if (Config.getInstance().colors()) {
+					question = new StringBuilder(Color.BLUE).append(question).append(Color.DEFAULT).toString();
+				}
+				this.enabled = getBoolean(question);
 			}
-			else
-				this.enabled = getBoolean("Enable ");
 		}
 
-		if (mandatory || enabled)
-		{
-			if (Config.getInstance().allyes_config() || Config.getInstance().allno_config() || Config.getInstance().random_config())
-			{
+		if (mandatory || enabled) {
+			if (Config.getInstance().allyes_config()
+					|| Config.getInstance().allno_config()
+					|| Config.getInstance().random_config()) {
 				/* This keeps the current choice the first one */
 				this.configured = true;
 				if (Config.getInstance().random_config())
@@ -67,52 +74,89 @@ public class EnumFlag extends FlagSet {
 				flags.get(new Integer(choice)).setEnabled();
 				return;
 			}
-			while (true)
-			{
-				CLI.getInstance().writeline("Enum info: " + this.info);
+			while (true) {
+				String enumInfo = "Enum info: " + this.info;
+				if (Config.getInstance().colors()) {
+					enumInfo = new StringBuilder(Color.YELLOW).append(enumInfo)
+							.append(Color.DEFAULT).toString();
+				}
+				cli.writeline(enumInfo);
 				Set<Entry<Integer, Flag>> entries = flags.entrySet();
 				Iterator<Entry<Integer, Flag>> i = entries.iterator();
-				while (i.hasNext())
-				{
+				while (i.hasNext()) {
 					Entry<Integer, Flag> e = i.next();
-					CLI.getInstance().writeline("Index: " + e.getKey() + " : " + e.getValue().key);
+					StringBuilder tmp = new StringBuilder();
+					if (Config.getInstance().colors()) {
+						tmp.append(Color.GREEN);
+					}
+					tmp.append("Option ").append(e.getKey()).append(": ");
+					if (Config.getInstance().colors()) {
+						tmp.append(Color.DEFAULT);
+					}
+					tmp.append(e.getValue().key);
+					cli.writeline(tmp.toString());
 				}
-				String answer = CLI.getInstance().readline("({0 .. n},info {0 .. n}) ").toLowerCase();
+				String question = "({0 .. n},info {0 .. n}) ";
+				if (Config.getInstance().colors()) {
+					question = new StringBuilder(Color.BLUE).append(question)
+							.append(Color.DEFAULT).toString();
+					;
+				}
+				String answer = CLI.getInstance().readline(question)
+						.toLowerCase();
 				try {
 					choice = Integer.parseInt(answer);
 					if (flags.get(new Integer(choice)) == null)
 						continue;
-					else
-					{
+					else {
 						flags.get(new Integer(choice)).setEnabled();
 						break;
 					}
-				}
-				catch (NumberFormatException e)
-				{
-					if (answer.startsWith("info") || answer.startsWith("i"))
-					{
+				} catch (NumberFormatException e) {
+					if (answer.startsWith("info") || answer.startsWith("i")) {
 						answer = answer.replaceFirst("info", "");
 						answer = answer.replaceFirst("i", "");
 						answer = answer.replaceAll(" ", "");
-						if (!answer.equals(""))
-						{
+						if (!answer.equals("")) {
 							try {
 								int n = Integer.parseInt(answer);
-								if (flags.containsKey(new Integer(n)))
-									CLI.getInstance().writeline("Option info: " + flags.get(n).info);
-								else
-									CLI.getInstance().writeline("Requested information not available");
-							}
-							catch (NumberFormatException ee)
-							{
-								CLI.getInstance().writeline("Illegal answer format (2)");
+								if (flags.containsKey(new Integer(n))) {
+									StringBuilder out = new StringBuilder(
+											"Option info: ").append(flags
+											.get(n).info);
+									if (Config.getInstance().colors()) {
+										out = new StringBuilder(Color.YELLOW)
+												.append(out).append(
+														Color.DEFAULT);
+									}
+									cli.writeline(out.toString());
+								} else {
+									String output = "Requested information not available";
+									if (Config.getInstance().colors()) {
+										output = new StringBuilder(Color.YELLOW)
+												.append(output)
+												.append(Color.DEFAULT)
+												.toString();
+									}
+									cli.writeline(output);
+								}
+							} catch (NumberFormatException ee) {
+								String out = "Illegal answer format (2)";
+								if (Config.getInstance().colors()) {
+									out = new StringBuilder(Color.RED)
+											.append(out).append(Color.DEFAULT)
+											.toString();
+								}
+								cli.writeline(out);
 							}
 						}
-					}
-					else
-					{
-						CLI.getInstance().writeline("Illegal answer format");
+					} else {
+						String out = "Illegal answer format";
+						if (Config.getInstance().colors()) {
+							out = new StringBuilder(Color.RED).append(out)
+									.append(Color.DEFAULT).toString();
+						}
+						CLI.getInstance().writeline(out);
 					}
 				}
 			}
@@ -123,11 +167,9 @@ public class EnumFlag extends FlagSet {
 	}
 
 	@Override
-	public ArrayList<String> getConfigFlags()
-	{
+	public ArrayList<String> getConfigFlags() {
 		ArrayList<String> list = new ArrayList<String>();
-		if (this.getEnabled() && this.configured())
-		{
+		if (this.getEnabled() && this.configured()) {
 			list.add(this.key);
 			list.addAll(flags.get(new Integer(choice)).getConfigFlags());
 		}
@@ -135,8 +177,7 @@ public class EnumFlag extends FlagSet {
 	}
 
 	@Override
-	public JSONObject getDepFlags()
-	{
+	public JSONObject getDepFlags() {
 		JSONObject o = new JSONObject();
 		JSONObject set = new JSONObject();
 
@@ -152,8 +193,7 @@ public class EnumFlag extends FlagSet {
 
 		Set<Integer> keys = flags.keySet();
 		Iterator<Integer> i = keys.iterator();
-		while (i.hasNext())
-		{
+		while (i.hasNext()) {
 			Integer key = i.next();
 			Flag f = flags.get(key);
 			try {
@@ -167,12 +207,11 @@ public class EnumFlag extends FlagSet {
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		if (configured && !enabled)
 			return "";
 		Set<Entry<Integer, Flag>> flags = this.flags.entrySet();
-		Iterator <Entry<Integer, Flag>> i = flags.iterator();
+		Iterator<Entry<Integer, Flag>> i = flags.iterator();
 
 		StringBuilder s = new StringBuilder();
 		s.append("Enum: ");
@@ -181,10 +220,8 @@ public class EnumFlag extends FlagSet {
 		s.append(info);
 		s.append(": {\n");
 
-		if (!configured)
-		{	
-			while (i.hasNext())
-			{
+		if (!configured) {
+			while (i.hasNext()) {
 				Entry<Integer, Flag> e = i.next();
 				s.append("[");
 				s.append(e.getKey().toString());
@@ -194,9 +231,7 @@ public class EnumFlag extends FlagSet {
 				s.append(str);
 				s.append("\n");
 			}
-		}
-		else
-		{
+		} else {
 			s.append("[");
 			s.append(choice);
 			s.append("] ");
@@ -207,6 +242,6 @@ public class EnumFlag extends FlagSet {
 
 		s.append("}\n");
 
-		return s.toString(); 
+		return s.toString();
 	}
 }

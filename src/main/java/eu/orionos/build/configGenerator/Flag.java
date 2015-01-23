@@ -21,8 +21,11 @@ package eu.orionos.build.configGenerator;
 
 import java.util.ArrayList;
 
+import net.michelmegens.xterm.Color;
+
 import org.json.JSONObject;
 
+import eu.orionos.build.Config;
 import eu.orionos.build.ui.CLI;
 
 public abstract class Flag {
@@ -59,11 +62,23 @@ public abstract class Flag {
 
 	protected boolean getBoolean(String msg)
 	{
+		StringBuilder question = new StringBuilder(msg);
+		if (Config.getInstance().colors()) {
+			question.append(Color.GREEN);
+		}
+		question.append(this.key);
+		if (Config.getInstance().colors()) {
+			question.append(Color.BLUE);
+		}
+		question.append(" (Yes/No/Info) ");
+		if (Config.getInstance().colors()) {
+			question.append(Color.DEFAULT);
+		}
 		boolean finished = false;
 		boolean val = false;
 		while (!finished)
 		{
-			String Answer = CLI.getInstance().readline(msg + this.key + "(Yes/No/Info) ").toLowerCase();
+			String Answer = CLI.getInstance().readline(question.toString()).toLowerCase();
 			if (Answer.equals("y") || Answer.equals("yes"))
 			{
 				finished = true;
@@ -76,7 +91,16 @@ public abstract class Flag {
 			}
 			else if (Answer.equals("i") || Answer.equals("info"))
 			{
-				CLI.getInstance().writeline(info);
+				StringBuilder infoString = new StringBuilder();
+				if (Config.getInstance().colors()) {
+					infoString.append(Color.YELLOW);
+				}
+				infoString.append(info);
+				if (Config.getInstance().colors()) {
+					infoString.append(Color.DEFAULT);
+				}
+				
+				CLI.getInstance().writeline(infoString.toString());
 			}
 		}
 		return val;

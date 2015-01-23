@@ -16,7 +16,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
-*/
+ */
 package eu.orionos.build.configGenerator;
 
 import java.io.BufferedReader;
@@ -38,17 +38,15 @@ public class DepFile {
 	private HashMap<String, Flag> flagMap = new HashMap<String, Flag>();
 	private String build_root = null;
 
-	public DepFile() throws IOException
-	{
+	public DepFile() throws IOException {
 		flags = new FlagSet("base", this);
 		flags.setEnabled();
 		flags.setInfo("");
 	}
 
-	public JSONObject generateDepFile(Set<String> flags)
-	{
+	public JSONObject generateDepFile(Set<String> flags) {
 		JSONObject o = new JSONObject();
-		Iterator <String> i = flags.iterator();
+		Iterator<String> i = flags.iterator();
 
 		try {
 			o.put(Semantics.DEP_BUILD_ROOT, Config.getInstance().buildFile());
@@ -56,11 +54,10 @@ public class DepFile {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		while (i.hasNext())
-		{
+		while (i.hasNext()) {
 			String key = i.next();
 			JSONObject value = new JSONObject();
-	
+
 			try {
 				value.put(Semantics.FLAG_DEP_MANDATORY, false);
 				value.put(Semantics.FLAG_DEP_INFO, "");
@@ -80,24 +77,20 @@ public class DepFile {
 		return o;
 	}
 
-	public JSONObject updateDepFile(Set<String> flags)
-	{
-		Iterator <String> i = flags.iterator();
+	public JSONObject updateDepFile(Set<String> flags) {
+		Iterator<String> i = flags.iterator();
 
-		while (i.hasNext())
-		{
+		while (i.hasNext()) {
 			String key = i.next();
-			if (this.getFlag(key) == null)
-			{
+			if (this.getFlag(key) == null) {
 				this.flags.addFlag(new BooleanFlag(key, this, false));
 			}
 		}
 		return this.flags.getDepFlags().optJSONObject(Semantics.FLAG_DEP_SET);
 	}
 
-	public void readDepFile() throws IOException, DepfileException
-	{
-		File f = new File (Config.getInstance().getDepFile());
+	public void readDepFile() throws IOException, DepfileException {
+		File f = new File(Config.getInstance().getDepFile());
 		if (f.isDirectory() || !f.exists())
 			throw new DepfileException();
 		FileReader depReader = new FileReader(f);
@@ -105,8 +98,7 @@ public class DepFile {
 		StringBuilder b = new StringBuilder();
 		BufferedReader br = new BufferedReader(depReader);
 		String line = br.readLine();
-		for (; line != null; line = br.readLine())
-		{
+		for (; line != null; line = br.readLine()) {
 			b.append(line);
 		}
 		br.close();
@@ -124,14 +116,12 @@ public class DepFile {
 		parseJSON(JSON);
 	}
 
-	public void parseJSON(JSONObject o)
-	{
+	public void parseJSON(JSONObject o) {
 		flags.parseJSON(o);
 		build_root = o.optString(Semantics.DEP_BUILD_ROOT);
 	}
 
-	public ConfigFile generateConfigFile()
-	{
+	public ConfigFile generateConfigFile() {
 		flags.configure();
 
 		ConfigFile c = new ConfigFile(flags.getConfigFlags());
@@ -141,25 +131,21 @@ public class DepFile {
 		return c;
 	}
 
-	public void registerFlag(Flag flag)
-	{
+	public void registerFlag(Flag flag) {
 		String key = flag.key;
 		flagMap.put(key, flag);
 	}
 
-	public Flag getFlag(String key)
-	{
+	public Flag getFlag(String key) {
 		return flagMap.get(key);
 	}
 
-	public String getBuildRoot()
-	{
+	public String getBuildRoot() {
 		return this.build_root;
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return flags.toString();
 	}
 }

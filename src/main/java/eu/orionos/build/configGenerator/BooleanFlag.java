@@ -18,10 +18,12 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
-*/
+ */
 package eu.orionos.build.configGenerator;
 
 import java.util.ArrayList;
+
+import net.michelmegens.xterm.Color;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,59 +35,57 @@ public class BooleanFlag extends Flag {
 	private boolean value;
 	private boolean ignore_autoconf;
 
-	public BooleanFlag(String key, DepFile depfile, boolean ignore_autoconf)
-	{
-		super (key, depfile);
+	public BooleanFlag(String key, DepFile depfile, boolean ignore_autoconf) {
+		super(key, depfile);
 		this.ignore_autoconf = ignore_autoconf;
 	}
 
-	public void configure()
-	{
-		if (this.mandatory)
+	public void configure() {
+		if (this.mandatory) {
 			value = true;
-		else
-		{
-			if (Config.getInstance().allno_config())
+		} else {
+			if (Config.getInstance().allno_config()) {
 				value = false;
-			else if (Config.getInstance().allyes_config())
-			{
-				if (this.ignore_autoconf)
+			} else if (Config.getInstance().allyes_config()) {
+				if (this.ignore_autoconf) {
 					value = false;
-				else
+				} else {
 					value = true;
-			}
-			else if (Config.getInstance().random_config())
-			{
-				if (!this.ignore_autoconf)
-					value = (Config.getInstance().getRandom(0, 1) == 0) ? false : true;
-				else
+				}
+			} else if (Config.getInstance().random_config()) {
+				if (!this.ignore_autoconf) {
+					value = (Config.getInstance().getRandom(0, 1) == 0) ? false
+							: true;
+				} else {
 					value = false;
+				}
+			} else {
+				String question = "Enable flag ";
+				if (Config.getInstance().colors()) {
+					question = new StringBuilder(Color.BLUE).append(question).append(Color.DEFAULT).toString();
+				}
+				value = getBoolean(question);
 			}
-			else
-				value = getBoolean("Enable flag ");
 		}
 
 		this.configured = true;
 		return;
 	}
 
-	public void setEnabled()
-	{
+	public void setEnabled() {
 		this.configured = true;
 		this.value = true;
 		this.mandatory = true;
 	}
 
-	public ArrayList<String> getConfigFlags()
-	{
+	public ArrayList<String> getConfigFlags() {
 		ArrayList<String> list = new ArrayList<String>();
 		if (this.getEnabled())
 			list.add(key);
 		return list;
 	}
 
-	public JSONObject getDepFlags()
-	{
+	public JSONObject getDepFlags() {
 		JSONObject o = new JSONObject();
 		try {
 			o.put(Semantics.FLAG_DEP_MANDATORY, this.mandatory);
@@ -99,13 +99,12 @@ public class BooleanFlag extends Flag {
 	}
 
 	@Override
-	public String toString()
-	{
-		return "Key: " + this.key + ", mandator: " + Boolean.toString(mandatory);
+	public String toString() {
+		return "Key: " + this.key + ", mandator: "
+				+ Boolean.toString(mandatory);
 	}
 
-	public boolean getEnabled()
-	{
+	public boolean getEnabled() {
 		return (this.mandatory || this.value);
 	}
 }
