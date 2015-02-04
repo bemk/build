@@ -45,7 +45,9 @@ public class EnumFlag extends FlagSet {
 
 	@Override
 	public void configure() {
+		/* if this enum is not mandatory check whether we need this */
 		if (!mandatory) {
+			/* check if we're auto configuring */
 			if (Config.getInstance().allyes_config()
 					|| Config.getInstance().allno_config()
 					|| Config.getInstance().random_config()) {
@@ -55,15 +57,19 @@ public class EnumFlag extends FlagSet {
 					this.enabled = true;
 				}
 			} else {
+				/* We're not in autoconfig so ask the user */
 				String question = "Enable ";
 				if (Config.getInstance().colors()) {
-					question = new StringBuilder(Color.BLUE).append(question).append(Color.DEFAULT).toString();
+					/* Add the option for using colours */
+					question = new StringBuilder(Color.BLUE).append(question)
+							.append(Color.DEFAULT).toString();
 				}
 				this.enabled = getBoolean(question);
 			}
 		}
 
 		if (mandatory || enabled) {
+			/* If this option gets used, select the appropriate option */
 			if (Config.getInstance().allyes_config()
 					|| Config.getInstance().allno_config()
 					|| Config.getInstance().random_config()) {
@@ -74,14 +80,20 @@ public class EnumFlag extends FlagSet {
 				flags.get(new Integer(choice)).setEnabled();
 				return;
 			}
+			/* While we don't have a valid answer */
 			while (true) {
+				/* State what this enum is all about */
 				String enumInfo = "Enum info: " + this.info;
 				if (Config.getInstance().colors()) {
 					enumInfo = new StringBuilder(Color.YELLOW).append(enumInfo)
 							.append(Color.DEFAULT).toString();
 				}
 				cli.writeline(enumInfo);
+				/* List all of the options */
 				Set<Entry<Integer, Flag>> entries = flags.entrySet();
+				if (entries.size() == 0) {
+					break;
+				}
 				Iterator<Entry<Integer, Flag>> i = entries.iterator();
 				while (i.hasNext()) {
 					Entry<Integer, Flag> e = i.next();
@@ -100,11 +112,27 @@ public class EnumFlag extends FlagSet {
 				if (Config.getInstance().colors()) {
 					question = new StringBuilder(Color.BLUE).append(question)
 							.append(Color.DEFAULT).toString();
-					;
 				}
-				String answer = CLI.getInstance().readline(question)
-						.toLowerCase();
+				String answer;
+				/* If there is only 1 option, choose that one */
+				if (entries.size() == 1) {
+					answer = "0";
+					StringBuilder msg = new StringBuilder(
+							"Choosing only option ");
+					msg.append(flags.get(0).key);
+					if (Config.getInstance().colors()) {
+						msg = new StringBuilder(Color.YELLOW).append(msg)
+								.append(Color.DEFAULT);
+						/* Show the user the information about the option */
+						print_info("i 0");
+					}
+					CLI.getInstance().writeline(msg.toString());
+				} else {
+					/* get the answer from the user */
+					answer = CLI.getInstance().readline(question).toLowerCase();
+				}
 				try {
+					/* Set the choice */
 					choice = Integer.parseInt(answer);
 					if (flags.get(new Integer(choice)) == null)
 						continue;
@@ -113,44 +141,15 @@ public class EnumFlag extends FlagSet {
 						break;
 					}
 				} catch (NumberFormatException e) {
+					/* 
+					 * The choice turns out not to be a simple number.
+					 * See if this is a request for info
+					 */
+					
 					if (answer.startsWith("info") || answer.startsWith("i")) {
-						answer = answer.replaceFirst("info", "");
-						answer = answer.replaceFirst("i", "");
-						answer = answer.replaceAll(" ", "");
-						if (!answer.equals("")) {
-							try {
-								int n = Integer.parseInt(answer);
-								if (flags.containsKey(new Integer(n))) {
-									StringBuilder out = new StringBuilder(
-											"Option info: ").append(flags
-											.get(n).info);
-									if (Config.getInstance().colors()) {
-										out = new StringBuilder(Color.YELLOW)
-												.append(out).append(
-														Color.DEFAULT);
-									}
-									cli.writeline(out.toString());
-								} else {
-									String output = "Requested information not available";
-									if (Config.getInstance().colors()) {
-										output = new StringBuilder(Color.YELLOW)
-												.append(output)
-												.append(Color.DEFAULT)
-												.toString();
-									}
-									cli.writeline(output);
-								}
-							} catch (NumberFormatException ee) {
-								String out = "Illegal answer format (2)";
-								if (Config.getInstance().colors()) {
-									out = new StringBuilder(Color.RED)
-											.append(out).append(Color.DEFAULT)
-											.toString();
-								}
-								cli.writeline(out);
-							}
-						}
+						print_info(answer);
 					} else {
+						/* This seems to be an illegal input, try again */
 						String out = "Illegal answer format";
 						if (Config.getInstance().colors()) {
 							out = new StringBuilder(Color.RED).append(out)
@@ -161,6 +160,7 @@ public class EnumFlag extends FlagSet {
 				}
 			}
 		}
+		/* Do the book keeping and list this option as configured */
 		configured = true;
 
 		return;
@@ -243,5 +243,39 @@ public class EnumFlag extends FlagSet {
 		s.append("}\n");
 
 		return s.toString();
+	}
+
+	private void print_info(String answer) {
+		answer = answer.replaceFirst("info", "");
+		answer = answer.replaceFirst("i", "");
+		answer = answer.replaceAll(" ", "");
+		if (!answer.equals("")) {
+			try {
+				int n = Integer.parseInt(answer);
+				if (flags.containsKey(new Integer(n))) {
+					StringBuilder out = new StringBuilder("Option info: ")
+							.append(flags.get(n).info);
+					if (Config.getInstance().colors()) {
+						out = new StringBuilder(Color.YELLOW).append(out)
+								.append(Color.DEFAULT);
+					}
+					cli.writeline(out.toString());
+				} else {
+					String output = "Requested information not available";
+					if (Config.getInstance().colors()) {
+						output = new StringBuilder(Color.YELLOW).append(output)
+								.append(Color.DEFAULT).toString();
+					}
+					cli.writeline(output);
+				}
+			} catch (NumberFormatException ee) {
+				String out = "Illegal answer format (2)";
+				if (Config.getInstance().colors()) {
+					out = new StringBuilder(Color.RED).append(out)
+							.append(Color.DEFAULT).toString();
+				}
+				cli.writeline(out);
+			}
+		}
 	}
 }
