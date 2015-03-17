@@ -16,7 +16,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
-*/
+ */
 
 package eu.orionos.build;
 
@@ -32,6 +32,7 @@ public class Semantics {
 	public static final String GLOBAL_ARCHIVER = "archiver";
 	public static final String GLOBAL_ARCHIVER_FLAGS = "archiver-flags";
 	public static final String GLOBAL_ARCHIVER_OVERRIDE_FLAGS = "archiver-override-flags";
+	public static final String GLOBAL_DEFINE = "defines-header";
 
 	public static final String GLOBAL_DEFS = "global";
 
@@ -45,7 +46,7 @@ public class Semantics {
 	public static final String DYN_ARCHIVER_FLAGS = "darchiver-flags";
 	public static final String DYN_COMPILER_FLAGS = "dcompiler-flags";
 	public static final String DYN_LINKER_FLAGS = "dlinker-flags";
-	
+
 	public static final String DYN_MOD_COMPILER_FLAGS = "mdcompiler-flags";
 	public static final String DYN_MOD_LINKER_FLAGS = "mdcompiler-flags";
 	public static final String DYN_MOD_ARCHIVER_FLAGS = "mdarchiver-flags";
@@ -74,4 +75,6 @@ public class Semantics {
 	public static final String FLAG_DEP_MANDATORY = "mandatory";
 
 	public static final String DEP_BUILD_ROOT = "build_root";
+	public static final String DEP_DEFINE_HEADER = "def-hdr";
+
 }

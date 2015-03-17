@@ -56,6 +56,14 @@ public class ConfigFile {
 			e.printStackTrace();
 		}
 	}
+	public void setDefHeader(String defHdr) {
+		try {
+			configFile.put(Semantics.GLOBAL_DEFINE, defHdr);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+	}
 
 	public void write() throws IOException
 	{

@@ -16,7 +16,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
-*/
+ */
 package eu.orionos.build.buildPhase;
 
 import java.io.IOException;
@@ -24,22 +24,33 @@ import java.io.IOException;
 import eu.orionos.build.Config;
 import eu.orionos.build.Module;
 import eu.orionos.build.configGenerator.ConfigFile;
+import eu.orionos.build.configGenerator.DefHeader;
 import eu.orionos.build.configGenerator.DepFile;
 import eu.orionos.build.configGenerator.DepfileException;
 
 /**
- * @author bemk
- * This class should take care of generating a config file
+ * @author bemk This class should take care of generating a config file
  */
 public class Configure extends Phase {
 
-	public Configure(PhaseManager manager)
-	{
+	public Configure(PhaseManager manager) {
 		super(manager);
 	}
 
+	private void setModules(DepFile d) throws Exception {
+		if (modules == null) {
+			if (d.getBuildRoot() != null
+					&& !Config.getInstance().buildFileOverride()) {
+				modules = new Module(d.getBuildRoot());
+			} else {
+				modules = new Module(Config.getInstance().buildFile());
+			}
+		}
+	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see eu.orionos.build.phase.Phase#run()
 	 */
 	@Override
@@ -48,9 +59,7 @@ public class Configure extends Phase {
 		try {
 			d = new DepFile();
 			d.readDepFile();
-		}
-		catch(DepfileException e)
-		{
+		} catch (DepfileException e) {
 			manager.setToConfigure();
 			manager.switchPhases(new InitialPreconfigure(manager));
 			return;
@@ -58,24 +67,23 @@ public class Configure extends Phase {
 			e.printStackTrace();
 		}
 		try {
-			if (modules == null) {
-				if (d.getBuildRoot() != null && !Config.getInstance().buildFileOverride()) {
-					modules = new Module(d.getBuildRoot());
-				} else {
-					modules = new Module(Config.getInstance().buildFile());
-				}
-			}
-
+			setModules(d);
 			ConfigFile c = d.generateConfigFile();
 			c.write();
+
+			Config.getInstance().clearModules();
+			Config.getInstance(Config.getInstance().getConfigFile());
+			modules = null;
+			setModules(d);
+			DefHeader def_hdr = new DefHeader(modules, d);
+			def_hdr.write();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		manager.switchPhases(new Complete(manager));
 	}
-
 
 }

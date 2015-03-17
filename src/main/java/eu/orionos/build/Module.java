@@ -88,6 +88,8 @@ public class Module {
 	private JSONArray dynModCompilerFlags;
 	private JSONArray dynModLinkerFlags;
 
+	private JSONArray defFileFlags;
+
 	private static final Config config = Config.getInstance();
 
 	public Module(String path) throws Exception {
@@ -109,12 +111,13 @@ public class Module {
 		if (!f.exists()) {
 			System.err.println("Module at " + path + " can not be found");
 			if (parent != this && parent != null)
-				System.err
-						.println("This dependency could be written incorrectly in "
-								+ parent.name);
+				System.err.println("This dependency could be written "
+						+ "incorrectly in " + parent.name);
 			else
 				System.err
-						.println("Maybe you misspelled the name of the build file. If none exists, run build --gen-module");
+						.println("Maybe you misspelled the name of the build "
+								+ "file. If none exists, run build "
+								+ "--gen-module");
 			System.exit(ErrorCode.FILE_NOT_FOUND);
 		}
 		BufferedReader reader = new BufferedReader(new FileReader(f));
@@ -127,16 +130,18 @@ public class Module {
 		try {
 			module = new JSONObject(stringBuilder.toString());
 		} catch (JSONException e1) {
-			System.err.println("Failed to parse JSON string in file:" + f.getAbsolutePath());
+			System.err.println("Failed to parse JSON string in file:"
+					+ f.getAbsolutePath());
 			e1.printStackTrace();
 		}
 		/* Get some paths right */
 		this.cwd = f.getAbsolutePath();
 		int len = 0;
-		if (System.getProperty("os.name").toLowerCase().contains("win"))
+		if (System.getProperty("os.name").toLowerCase().contains("win")) {
 			len = this.cwd.lastIndexOf('\\');
-		else
+		} else {
 			len = this.cwd.lastIndexOf('/');
+		}
 		this.cwd = this.cwd.substring(0, len);
 
 		try {
@@ -325,6 +330,9 @@ public class Module {
 				}
 			}
 		}
+
+		this.defFileFlags = module.optJSONArray(Semantics.GLOBAL_DEFINE);
+
 		buildState = new BuildPhase(this);
 	}
 
@@ -733,6 +741,7 @@ public class Module {
 		flags.addAll(getDynamicBuildFlags(dynModArchiverFlags));
 		flags.addAll(getDynamicBuildFlags(dynModCompilerFlags));
 		flags.addAll(getDynamicBuildFlags(dynModLinkerFlags));
+		flags.addAll(getDynamicBuildFlags(defFileFlags));
 		flags.addAll(tmp);
 
 		return flags;
@@ -841,5 +850,46 @@ public class Module {
 
 	public MakeModule getMakefile() {
 		return this.makefile;
+	}
+
+	public Set<String> get_def_hdr() {
+		Set<String> set = new HashSet<String>();
+
+		Config c = Config.getInstance();
+		ArrayList<Module> modules = calculateDependencies();
+		for (Module m : modules) {
+			set.addAll(m.get_def_hdr());
+		}
+
+		if (defFileFlags == null) {
+			return set;
+		}
+		int length = defFileFlags.length();
+		String flagPrefix = "_CONFIG_";
+		for (int i = 0; i < length; i++) {
+			try {
+				JSONObject o = defFileFlags.getJSONObject(i);
+				String key = o.getString(Semantics.CONFIG_GLOBAL_KEY);
+				if (c.getDefined(key) == true) {
+
+					String flag = o.getString(Semantics.CONFIG_GLOBAL_FLAGS);
+
+					StringBuilder str = new StringBuilder();
+					str.append("#ifdef ").append(flagPrefix).append(flag)
+							.append("\n");
+					str.append("#undef ").append(flagPrefix).append(flag)
+							.append("\n");
+					str.append("#endif\n");
+					str.append("#define ").append(flagPrefix).append(flag)
+							.append("\n\n");
+					set.add(str.toString());
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		return set;
 	}
 }

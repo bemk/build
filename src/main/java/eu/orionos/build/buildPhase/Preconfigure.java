@@ -55,12 +55,13 @@ public class Preconfigure extends Phase {
 			DepFile d = new DepFile();
 			d.readDepFile();
 
-			if (modules == null)
+			if (modules == null) {
 				modules = new Module(configuration.buildFile());
+			}
 
 			Set<String> flags = modules.getBuildFlags();
 			JSONObject o = d.updateDepFile(flags);
-			o.put(Semantics.DEP_BUILD_ROOT, configuration.buildFile());
+			//o.put(Semantics.DEP_BUILD_ROOT, configuration.buildFile());
 
 			File f = new File(Config.getInstance().getDepFile());
 			if (!f.exists() || f.isDirectory())

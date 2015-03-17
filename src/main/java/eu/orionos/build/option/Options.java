@@ -61,6 +61,7 @@ public class Options {
 		options.add(new OptionDepFile());
 		options.add(new OptionGenDepfile());
 		options.add(new OptionUpdateDepFile());
+		options.add(new OptionDefFile());
 		options.add(new OptionMakefile());
 		options.add(new OptionAllYes());
 		options.add(new OptionAllNo());

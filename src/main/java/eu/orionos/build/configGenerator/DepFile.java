@@ -37,6 +37,7 @@ public class DepFile {
 	private FlagSet flags = null;
 	private HashMap<String, Flag> flagMap = new HashMap<String, Flag>();
 	private String build_root = null;
+	private String defHeader = null;
 
 	public DepFile() throws IOException {
 		flags = new FlagSet("base", this);
@@ -50,6 +51,7 @@ public class DepFile {
 
 		try {
 			o.put(Semantics.DEP_BUILD_ROOT, Config.getInstance().buildFile());
+			o.put(Semantics.GLOBAL_DEFINE, Config.getInstance().def_hdr());
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -86,7 +88,16 @@ public class DepFile {
 				this.flags.addFlag(new BooleanFlag(key, this, false));
 			}
 		}
-		return this.flags.getDepFlags().optJSONObject(Semantics.FLAG_DEP_SET);
+		JSONObject o = this.flags.getDepFlags().optJSONObject(
+				Semantics.FLAG_DEP_SET);
+		try {
+			o.put(Semantics.DEP_BUILD_ROOT, build_root);
+			o.put(Semantics.GLOBAL_DEFINE, defHeader);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return o;
 	}
 
 	public void readDepFile() throws IOException, DepfileException {
@@ -112,21 +123,25 @@ public class DepFile {
 			return;
 		}
 
-		this.build_root = JSON.optString(Semantics.DEP_BUILD_ROOT);
 		parseJSON(JSON);
 	}
 
 	public void parseJSON(JSONObject o) {
 		flags.parseJSON(o);
 		build_root = o.optString(Semantics.DEP_BUILD_ROOT);
+		defHeader = o.optString(Semantics.GLOBAL_DEFINE);
 	}
 
 	public ConfigFile generateConfigFile() {
 		flags.configure();
 
 		ConfigFile c = new ConfigFile(flags.getConfigFlags());
-		if (this.build_root != null)
+		if (this.build_root != null) {
 			c.setBuildRoot(build_root);
+		}
+		if (this.defHeader != null) {
+			c.setDefHeader(this.defHeader);
+		}
 
 		return c;
 	}
@@ -142,6 +157,10 @@ public class DepFile {
 
 	public String getBuildRoot() {
 		return this.build_root;
+	}
+
+	public String getDefHeader() {
+		return this.defHeader;
 	}
 
 	@Override

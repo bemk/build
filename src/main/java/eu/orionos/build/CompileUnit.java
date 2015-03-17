@@ -31,7 +31,7 @@ public class CompileUnit {
 	private String object;
 	private boolean silent;
 	private Phase phase = null;
-	private static String prefix = null;
+	private static StringBuilder prefix = null;
 	private static CLI cli = CLI.getInstance();
 	private static Config config = Config.getInstance();
 	private String key;
@@ -50,7 +50,7 @@ public class CompileUnit {
 			if (config.colors()) {
 				prefixBuilder.append(Color.DEFAULT);
 			}
-			prefix = prefixBuilder.toString();
+			prefix = prefixBuilder;
 		}
 		StringBuilder key = new StringBuilder(module.getName());
 		key.append('-');

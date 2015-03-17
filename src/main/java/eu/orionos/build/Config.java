@@ -41,6 +41,7 @@ public class Config {
 	private boolean updateDepFile = false;
 	private boolean silent = false;
 	private boolean verbose = false;
+	private String def_hdr = "def_hdr.h";
 	private String buildFile = "main.build";
 	private boolean buildFileOverride = false;
 	private String configFile = ".config";
@@ -83,8 +84,13 @@ public class Config {
 			reader.close();
 			this.conf = new JSONObject(stringBuilder.toString());
 			String build_root = this.conf.optString(Semantics.DEP_BUILD_ROOT);
-			if (build_root != null && !build_root.equals(""))
+			if (build_root != null && !build_root.equals("")) {
 				this.buildFile(build_root);
+			}
+			String def_file = this.conf.optString(Semantics.GLOBAL_DEFINE);
+			if (def_file != null && !def_file.equals("")) {
+				this.def_hdr(def_file);
+			}
 		} catch (JSONException e) {
 			System.err.println("File " + configFile + " can't be parsed!");
 			this.conf = null;
@@ -284,6 +290,10 @@ public class Config {
 		modules.put(m.getName(), m);
 		return true;
 	}
+	
+	public void clearModules () {
+		modules.clear();
+	}
 
 	public synchronized String getBuildDir() {
 		if (buildDir == null) {
@@ -412,5 +422,13 @@ public class Config {
 
 	public String MakefilePath() {
 		return this.MakefilePath;
+	}
+	
+	public String def_hdr() {
+		return this.def_hdr;
+	}
+	
+	public void def_hdr(String def_hdr) {
+		this.def_hdr = def_hdr;
 	}
 }
