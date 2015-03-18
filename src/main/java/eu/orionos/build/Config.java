@@ -51,6 +51,7 @@ public class Config {
 	private boolean clean = false;
 	private boolean genDepFile = false;
 	private boolean genConfigFile = false;
+	private boolean genHeaderFile = false;
 	private boolean allyes_config = false;
 	private boolean allno_config = false;
 	private boolean random_config = false;
@@ -233,6 +234,14 @@ public class Config {
 		return this.genDepFile;
 	}
 
+	public synchronized void genHeaderFile(boolean value) {
+		this.genHeaderFile = value;
+	}
+
+	public synchronized boolean genHeaderFile() {
+		return genHeaderFile;
+	}
+
 	public synchronized void genConfigFile(boolean value) {
 		this.genConfigFile = value;
 	}
@@ -290,8 +299,8 @@ public class Config {
 		modules.put(m.getName(), m);
 		return true;
 	}
-	
-	public void clearModules () {
+
+	public void clearModules() {
 		modules.clear();
 	}
 
@@ -423,11 +432,11 @@ public class Config {
 	public String MakefilePath() {
 		return this.MakefilePath;
 	}
-	
+
 	public String def_hdr() {
 		return this.def_hdr;
 	}
-	
+
 	public void def_hdr(String def_hdr) {
 		this.def_hdr = def_hdr;
 	}

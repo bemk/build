@@ -25,6 +25,7 @@ package eu.orionos.build;
 
 import eu.orionos.build.buildPhase.Compile;
 import eu.orionos.build.buildPhase.Configure;
+import eu.orionos.build.buildPhase.DefHdrConfigure;
 import eu.orionos.build.buildPhase.InitialPreconfigure;
 import eu.orionos.build.buildPhase.ParseOptions;
 import eu.orionos.build.buildPhase.PhaseManager;
@@ -48,7 +49,9 @@ public class Build {
 		manager = new PhaseManager(args);
 		manager.switchPhases(new ParseOptions(manager));
 
-		if (config.genConfigFile()) {
+		if (config.genHeaderFile()) {
+			manager.switchPhases(new DefHdrConfigure(manager));
+		} else if (config.genConfigFile()) {
 			manager.switchPhases(new Configure(manager));
 		} else if (config.updateDepFile()) {
 			manager.switchPhases(new Preconfigure(manager));

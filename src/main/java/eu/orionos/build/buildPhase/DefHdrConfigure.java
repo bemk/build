@@ -1,5 +1,5 @@
 /*  Build - Hopefully a simple build system
-    Copyright (C) 2014 - Bart Kuivenhoven
+    Copyright (C) 2015 - Bart Kuivenhoven
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,51 +22,47 @@ package eu.orionos.build.buildPhase;
 import java.io.IOException;
 
 import eu.orionos.build.Config;
-import eu.orionos.build.Module;
-import eu.orionos.build.configGenerator.ConfigFile;
 import eu.orionos.build.configGenerator.DefHeader;
 import eu.orionos.build.configGenerator.DepFile;
 import eu.orionos.build.configGenerator.DepfileException;
 
 /**
- * @author bemk This class should take care of generating a config file
+ * @author bemk
+ *
  */
-public class Configure extends Phase {
+public class DefHdrConfigure extends Phase {
 
-	public Configure(PhaseManager manager) {
+	/**
+	 * @param manager
+	 */
+	public DefHdrConfigure(PhaseManager manager) {
 		super(manager);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see eu.orionos.build.phase.Phase#run()
-	 */
 	@Override
 	public void run() {
-		DepFile d = null;
 		try {
-			d = new DepFile();
+			DepFile d = new DepFile();
 			d.readDepFile();
-		} catch (DepfileException e) {
-			manager.setToConfigure();
-			manager.switchPhases(new InitialPreconfigure(manager));
-			return;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		try {
-			setModules(d);
-			ConfigFile c = d.generateConfigFile();
-			c.write();
 
+			Config.getInstance().clearModules();
+			Config.getInstance(Config.getInstance().getConfigFile());
+			modules = null;
+			this.setModules(d);
+			DefHeader def_hdr = new DefHeader(modules, d);
+			def_hdr.write();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DepfileException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		manager.switchPhases(new DefHdrConfigure(manager));
+		manager.switchPhases(new Complete(manager));
 	}
 
 }

@@ -1,5 +1,5 @@
 /*  Build - Hopefully a simple build system
-    Copyright (C) 2014 - Bart Kuivenhoven
+    Copyright (C) 2015 - Bart Kuivenhoven
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,39 +16,29 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 
     A version of the licence can also be found at http://gnu.org/licences/
- */
-package eu.orionos.build.buildPhase;
+*/
+package eu.orionos.build.option;
 
-import eu.orionos.build.*;
-import eu.orionos.build.configGenerator.DepFile;
+import eu.orionos.build.Config;
 
 /**
  * @author bemk
  *
  */
-public abstract class Phase {
-	protected static Module modules;
-	protected static Config configuration = Config.getInstance();
-	protected PhaseManager manager;
+public class OptionGenHeaderfile extends Option {
 
-	public Phase(PhaseManager manager) {
-		this.manager = manager;
+	public OptionGenHeaderfile() {
+		this (' ', "gen-def-hdr", false, "", "Only generate the configuration headerfile");
+	}
+	
+	private OptionGenHeaderfile(char c, String s, boolean operands,
+			String parameters, String info) {
+		super(c, s, operands, parameters, info);
 	}
 
-	protected void setModules(DepFile d) throws Exception {
-		if (modules == null) {
-			if (d.getBuildRoot() != null
-					&& !Config.getInstance().buildFileOverride()) {
-				modules = new Module(d.getBuildRoot());
-			} else {
-				modules = new Module(Config.getInstance().buildFile());
-			}
-		}
+	@Override
+	public void option() {
+		Config.getInstance().genHeaderFile(true);
 	}
 
-	/**
-	 * @fn run
-	 * @author bemk Start running this phase of the build process.
-	 */
-	public abstract void run();
 }
