@@ -23,6 +23,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.SortedSet;
 
 import eu.orionos.build.Config;
 import eu.orionos.build.Module;
@@ -34,7 +39,6 @@ import eu.orionos.build.Semantics;
  */
 public class DefHeader {
 	private Module modules;
-	private Config config;
 	private DepFile dep_file;
 
 	private static String license_hdr = "/* THIS FILE HAS BEEN GENERATED AUTOMATICALLY,\n"
@@ -53,7 +57,6 @@ public class DefHeader {
 
 	public DefHeader(Module modules, DepFile dep_file) {
 		this.modules = modules;
-		this.config = Config.getInstance();
 		this.dep_file = dep_file;
 	}
 
@@ -62,6 +65,12 @@ public class DefHeader {
 		if (def_hdr_path == null || def_hdr_path.equals("")) {
 			return;
 		}
+		/* Prepare the headers and sort them */
+		Set<String> hdrs = modules.get_def_hdr();
+		ArrayList<String> sorted_headers = new ArrayList<String>(hdrs);
+		Collections.sort(sorted_headers);
+
+		/* Try to write the file */
 		try {
 			File def_file = new File(def_hdr_path);
 			if (def_file.exists() && !def_file.isDirectory()) {
@@ -74,12 +83,12 @@ public class DefHeader {
 			defines.write(C_hdr);
 			defines.write("\n");
 
-			for (String s : modules.get_def_hdr()) {
+			for (String s : sorted_headers) {
 				defines.write(s);
 			}
 
 			defines.write(C_ftr);
-			
+
 			defines.close();
 
 		} catch (IOException e) {
